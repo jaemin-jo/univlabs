@@ -25,6 +25,24 @@ logger = logging.getLogger(__name__)
 # FastAPI 앱 생성
 app = FastAPI(title="LearnUs Scheduler Server", version="1.0.0")
 
+# Cloud Run에서 자동으로 스케줄러 시작
+def start_scheduler_auto():
+    """Cloud Run에서 자동으로 스케줄러 시작"""
+    print("🚀 LearnUs 스케줄러 서버 시작 중...")
+    print("📡 서버 주소: http://0.0.0.0:8080")
+    print("📋 API 문서: http://0.0.0.0:8080/docs")
+    print("🔍 헬스체크: http://0.0.0.0:8080/health")
+    print("📊 과제 정보: http://0.0.0.0:8080/assignments")
+    print("⏰ 자동화 실행: 매일 09:00, 18:00 (개발용: 5분마다)")
+    
+    # 스케줄러를 별도 스레드에서 실행
+    scheduler_thread = threading.Thread(target=start_scheduler, daemon=True)
+    scheduler_thread.start()
+    print("✅ 스케줄러 스레드 시작됨")
+
+# Cloud Run에서 자동 시작
+start_scheduler_auto()
+
 # CORS 설정
 app.add_middleware(
     CORSMiddleware,
@@ -278,18 +296,9 @@ async def get_status():
         "assignment_file_exists": os.path.exists("assignment.txt")
     }
 
+# Cloud Run에서는 uvicorn이 자동으로 실행됨
+# 로컬 테스트용 (개발 시에만 사용)
 if __name__ == "__main__":
-    print("🚀 LearnUs 스케줄러 서버 시작 중...")
-    print("📡 서버 주소: http://localhost:8000")
-    print("📋 API 문서: http://localhost:8000/docs")
-    print("🔍 헬스체크: http://localhost:8000/health")
-    print("📊 과제 정보: http://localhost:8000/assignments")
-    print("⏰ 자동화 실행: 매일 09:00, 18:00 (개발용: 5분마다)")
-    
-    # 스케줄러를 별도 스레드에서 실행
-    scheduler_thread = threading.Thread(target=start_scheduler, daemon=True)
-    scheduler_thread.start()
-    
     # FastAPI 서버 시작
     port = int(os.environ.get("PORT", 8080))
     uvicorn.run(
