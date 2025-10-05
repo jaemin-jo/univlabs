@@ -313,6 +313,7 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
       
       // 시도할 서버 주소들
       final serverUrls = [
+        'https://learnus-backend-986202706020.asia-northeast3.run.app', // Cloud Run 서비스
         'http://10.0.2.2:8000',  // 에뮬레이터용
         'http://localhost:8000', // 로컬호스트
         'http://127.0.0.1:8000', // 루프백
