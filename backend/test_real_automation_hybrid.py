@@ -260,23 +260,23 @@ def setup_driver():
         
         chrome_options = Options()
         
-               # Cloud Run 환경을 위한 필수 옵션들
-               chrome_options.add_argument("--no-sandbox")
-               chrome_options.add_argument("--disable-dev-shm-usage")
+               # Cloud Run 환경을 위한 필수 옵션들 (DevToolsActivePort 오류 해결)
+               chrome_options.add_argument("--no-sandbox")  # 필수: 샌드박스 비활성화
+               chrome_options.add_argument("--disable-dev-shm-usage")  # 필수: 공유 메모리 비활성화
+               chrome_options.add_argument("--single-process")  # 필수: 단일 프로세스 모드
+               chrome_options.add_argument("--headless")  # 필수: 헤드리스 모드
                chrome_options.add_argument("--disable-gpu")
                chrome_options.add_argument("--disable-extensions")
                chrome_options.add_argument("--disable-plugins")
                chrome_options.add_argument("--disable-images")
                chrome_options.add_argument("--disable-web-security")
                chrome_options.add_argument("--disable-features=VizDisplayCompositor")
-               chrome_options.add_argument("--headless")  # Cloud Run에서는 헤드리스 모드 필수
                chrome_options.add_argument("--window-size=1920,1080")
                chrome_options.add_argument("--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
                chrome_options.add_argument("--log-level=3")
                chrome_options.add_argument("--disable-blink-features=AutomationControlled")
                
                # Cloud Run 환경에서 Chrome 실행을 위한 추가 옵션
-               chrome_options.add_argument("--single-process")
                chrome_options.add_argument("--no-zygote")
                chrome_options.add_argument("--disable-background-timer-throttling")
                chrome_options.add_argument("--disable-backgrounding-occluded-windows")
@@ -306,23 +306,6 @@ def setup_driver():
                # DevToolsActivePort 오류 해결을 위한 추가 옵션
                chrome_options.add_argument("--disable-dev-tools")
                chrome_options.add_argument("--disable-software-rasterizer")
-               chrome_options.add_argument("--disable-background-networking")
-               chrome_options.add_argument("--disable-default-apps")
-               chrome_options.add_argument("--disable-sync")
-               chrome_options.add_argument("--disable-translate")
-               chrome_options.add_argument("--hide-scrollbars")
-               chrome_options.add_argument("--mute-audio")
-               chrome_options.add_argument("--no-first-run")
-               chrome_options.add_argument("--disable-logging")
-               chrome_options.add_argument("--disable-permissions-api")
-               chrome_options.add_argument("--disable-popup-blocking")
-               chrome_options.add_argument("--disable-prompt-on-repost")
-               chrome_options.add_argument("--disable-hang-monitor")
-               chrome_options.add_argument("--disable-client-side-phishing-detection")
-               chrome_options.add_argument("--disable-component-update")
-               chrome_options.add_argument("--disable-domain-reliability")
-               chrome_options.add_argument("--disable-features=TranslateUI")
-               chrome_options.add_argument("--disable-ipc-flooding-protection")
                
                chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
                chrome_options.add_experimental_option('useAutomationExtension', False)
