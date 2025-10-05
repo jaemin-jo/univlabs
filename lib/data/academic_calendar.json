@@ -1,0 +1,314 @@
+{
+  "university": "연세대학교",
+  "semester": "2025-2학기",
+  "schedule": [
+    {
+      "month": "8월",
+      "month_en": "August",
+      "events": [
+        {
+          "date": "11 (월) ~ 18 (월)",
+          "event": "2025-2학기 수강신청",
+          "type": "수강신청",
+          "priority": "high"
+        },
+        {
+          "date": "15 (금)",
+          "event": "광복절",
+          "type": "휴일",
+          "priority": "medium"
+        },
+        {
+          "date": "22 (금) ~ 28 (목)",
+          "event": "2025-2학기 등록",
+          "type": "등록",
+          "priority": "high"
+        },
+        {
+          "date": "25 (월)",
+          "event": "복학 접수 마감",
+          "type": "복학",
+          "priority": "high"
+        },
+        {
+          "date": "29 (금)",
+          "event": "학위수여식",
+          "type": "졸업",
+          "priority": "medium"
+        }
+      ]
+    },
+    {
+      "month": "9월",
+      "month_en": "September",
+      "events": [
+        {
+          "date": "01 (월)",
+          "event": "개강",
+          "type": "개강",
+          "priority": "high"
+        },
+        {
+          "date": "03 (수) ~ 05 (금)",
+          "event": "수강신청 확인 및 변경",
+          "type": "수강신청",
+          "priority": "high"
+        },
+        {
+          "date": "04 (목)",
+          "event": "교무위원회",
+          "type": "행사",
+          "priority": "low"
+        },
+        {
+          "date": "09 (화) ~ 11 (목)",
+          "event": "2025-2학기 추가등록",
+          "type": "등록",
+          "priority": "high"
+        },
+        {
+          "date": "15 (월)",
+          "event": "미등록자 일반휴학 접수 마감",
+          "type": "휴학",
+          "priority": "high"
+        },
+        {
+          "date": "15 (월) ~ 19 (금)",
+          "event": "조기졸업 신청",
+          "type": "졸업",
+          "priority": "medium"
+        }
+      ]
+    },
+    {
+      "month": "10월",
+      "month_en": "October",
+      "events": [
+        {
+          "date": "02 (목)",
+          "event": "교무위원회",
+          "type": "행사",
+          "priority": "low"
+        },
+        {
+          "date": "03 (금)",
+          "event": "개천절",
+          "type": "휴일",
+          "priority": "medium"
+        },
+        {
+          "date": "05 (일) ~ 07 (화)",
+          "event": "추석연휴",
+          "type": "휴일",
+          "priority": "high"
+        },
+        {
+          "date": "08 (수)",
+          "event": "학기 1/3선, 대체휴일",
+          "type": "학사",
+          "priority": "medium"
+        },
+        {
+          "date": "09 (목)",
+          "event": "한글날",
+          "type": "휴일",
+          "priority": "medium"
+        },
+        {
+          "date": "13 (월) ~ 15 (수)",
+          "event": "수강철회",
+          "type": "수강신청",
+          "priority": "high"
+        },
+        {
+          "date": "20 (월) ~ 25 (토)",
+          "event": "중간시험",
+          "type": "시험",
+          "priority": "high"
+        },
+        {
+          "date": "27 (월) ~ 31 (금)",
+          "event": "2026-1학기 캠퍼스내 소속변경 신청",
+          "type": "전과",
+          "priority": "medium"
+        },
+        {
+          "date": "27 (월) ~ 29 (수)",
+          "event": "S/U평가 신청",
+          "type": "성적",
+          "priority": "high"
+        }
+      ]
+    },
+    {
+      "month": "11월",
+      "month_en": "November",
+      "events": [
+        {
+          "date": "06 (목)",
+          "event": "교무위원회",
+          "type": "행사",
+          "priority": "low"
+        },
+        {
+          "date": "13 (목)",
+          "event": "학기 2/3선, 일반휴학 접수 마감",
+          "type": "휴학",
+          "priority": "high"
+        },
+        {
+          "date": "14 (금)",
+          "event": "질병휴학 접수시작",
+          "type": "휴학",
+          "priority": "medium"
+        },
+        {
+          "date": "16 (일)",
+          "event": "추수감사절",
+          "type": "휴일",
+          "priority": "medium"
+        },
+        {
+          "date": "24 (월) ~ 28 (금)",
+          "event": "캠퍼스간 소속변경",
+          "type": "전과",
+          "priority": "medium"
+        }
+      ]
+    },
+    {
+      "month": "12월",
+      "month_en": "December",
+      "events": [
+        {
+          "date": "01 (월)",
+          "event": "질병휴학 접수마감",
+          "type": "휴학",
+          "priority": "high"
+        },
+        {
+          "date": "04 (목)",
+          "event": "성탄절예배",
+          "type": "행사",
+          "priority": "low"
+        },
+        {
+          "date": "08 (월) ~ 13 (토)",
+          "event": "자율학습 및 보충수업 기간",
+          "type": "학사",
+          "priority": "medium"
+        },
+        {
+          "date": "15 (월) ~ 20 (토)",
+          "event": "학기말 시험",
+          "type": "시험",
+          "priority": "high"
+        },
+        {
+          "date": "16 (화)",
+          "event": "교무위원회",
+          "type": "행사",
+          "priority": "low"
+        },
+        {
+          "date": "22 (월)",
+          "event": "겨울방학시작",
+          "type": "방학",
+          "priority": "medium"
+        },
+        {
+          "date": "22 (월) ~ 29 (월)",
+          "event": "2026-1학기 캠퍼스내 복수전공 · 연계전공 · 융합심화전공 신청",
+          "type": "전공",
+          "priority": "high"
+        },
+        {
+          "date": "25 (목)",
+          "event": "성탄절",
+          "type": "휴일",
+          "priority": "medium"
+        },
+        {
+          "date": "28 (일)",
+          "event": "성적제출 마감",
+          "type": "성적",
+          "priority": "high"
+        },
+        {
+          "date": "29 (월)",
+          "event": "겨울계절제 수업 시작",
+          "type": "계절제",
+          "priority": "medium"
+        }
+      ]
+    },
+    {
+      "month": "1월",
+      "month_en": "January",
+      "events": [
+        {
+          "date": "01 (목)",
+          "event": "신정",
+          "type": "휴일",
+          "priority": "medium"
+        },
+        {
+          "date": "12 (월)",
+          "event": "복학 접수 시작",
+          "type": "복학",
+          "priority": "high"
+        },
+        {
+          "date": "20 (화)",
+          "event": "겨울계절제 수업 종료",
+          "type": "계절제",
+          "priority": "medium"
+        }
+      ]
+    },
+    {
+      "month": "2월",
+      "month_en": "February",
+      "events": [
+        {
+          "date": "02 (월)",
+          "event": "휴학 접수 시작",
+          "type": "휴학",
+          "priority": "high"
+        },
+        {
+          "date": "09 (월) ~ 13 (금)",
+          "event": "2026-1학기 수강신청",
+          "type": "수강신청",
+          "priority": "high"
+        },
+        {
+          "date": "16 (월) ~ 18 (수)",
+          "event": "설연휴",
+          "type": "휴일",
+          "priority": "high"
+        },
+        {
+          "date": "22 (일)",
+          "event": "졸업예배",
+          "type": "졸업",
+          "priority": "medium"
+        },
+        {
+          "date": "23 (월)",
+          "event": "학위수여식",
+          "type": "졸업",
+          "priority": "medium"
+        },
+        {
+          "date": "23 (월)",
+          "event": "복학 접수 마감",
+          "type": "복학",
+          "priority": "high"
+        }
+      ]
+    }
+  ]
+}
+
+

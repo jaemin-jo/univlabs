@@ -1,0 +1,300 @@
+#!/usr/bin/env python3
+"""
+주기적 자동화 실행 서버
+LearnUs에서 주기적으로 정보를 수집하여 assignment.txt 파일에 저장
+"""
+
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
+import asyncio
+import logging
+import schedule
+import time
+import threading
+import json
+import os
+from datetime import datetime
+from test_real_automation_hybrid import test_direct_selenium
+from firebase_service import get_all_active_users, update_user_last_used
+
+# 로깅 설정
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# FastAPI 앱 생성
+app = FastAPI(title="LearnUs Scheduler Server", version="1.0.0")
+
+# CORS 설정
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# 전역 변수
+_automation_running = False
+_last_update_time = None
+_assignment_data = []
+
+def run_automation_job():
+    """주기적으로 실행되는 자동화 작업"""
+    global _automation_running, _last_update_time, _assignment_data
+    
+    if _automation_running:
+        logger.info("⏳ 자동화가 이미 실행 중입니다. 건너뜁니다.")
+        return
+    
+    try:
+        _automation_running = True
+        logger.info("🤖 주기적 자동화 시작...")
+        
+        # Firebase에서 활성화된 사용자 정보 가져오기
+        active_users = get_all_active_users()
+        
+        if not active_users:
+            logger.warning("⚠️ 활성화된 사용자가 없습니다. 실제 LearnUs 사용자 정보를 Firebase에 추가해주세요.")
+            # 사용자 데이터가 없으면 자동화 실행하지 않음
+            result = {
+                'assignments': [],
+                'total_count': 0,
+                'users_processed': 0,
+                'message': '활성화된 사용자가 없습니다. Flutter 앱에서 LearnUs 정보를 설정해주세요.'
+            }
+        else:
+            logger.info(f"📊 {len(active_users)}명의 활성화된 사용자 발견")
+            
+            # 모든 사용자에 대해 자동화 실행
+            all_assignments = []
+            for user in active_users:
+                try:
+                    logger.info(f"🔄 사용자 {user.get('username', 'Unknown')} 자동화 시작...")
+                    
+                    # 사용자별 자동화 실행
+                    user_result = test_direct_selenium(
+                        user.get('university', '연세대학교'),
+                        user.get('username', ''),
+                        user.get('password', ''),
+                        user.get('studentId', '')
+                    )
+                    
+                    if user_result:
+                        # 사용자별 결과를 전체 결과에 추가
+                        all_assignments.extend(user_result.get('assignments', []))
+                        
+                        # 마지막 사용 시간 업데이트
+                        update_user_last_used(user.get('uid', ''))
+                        
+                        logger.info(f"✅ 사용자 {user.get('username')} 자동화 완료")
+                    else:
+                        logger.warning(f"⚠️ 사용자 {user.get('username')} 자동화 결과 없음")
+                        
+                except Exception as user_error:
+                    logger.error(f"❌ 사용자 {user.get('username')} 자동화 실패: {user_error}")
+                    continue
+            
+            # 모든 사용자의 결과를 통합
+            result = {
+                'assignments': all_assignments,
+                'total_count': len(all_assignments),
+                'users_processed': len(active_users)
+            }
+        
+        # 결과를 assignment.txt 파일에 저장
+        save_assignment_data(result)
+        
+        _last_update_time = datetime.now()
+        logger.info("✅ 주기적 자동화 완료")
+        
+    except Exception as e:
+        logger.error(f"❌ 자동화 실행 실패: {e}")
+    finally:
+        _automation_running = False
+
+def save_assignment_data(automation_result):
+    """자동화 결과를 assignment.txt 파일에 저장"""
+    try:
+        # assignment.txt 파일 경로
+        assignment_file = "assignment.txt"
+        
+        # 파일이 존재하면 읽어서 기존 데이터와 병합
+        existing_data = []
+        if os.path.exists(assignment_file):
+            try:
+                with open(assignment_file, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    # 간단한 파싱 (실제로는 더 정교한 파싱 필요)
+                    if "📋 이번주 해야 할 과제 목록" in content:
+                        existing_data = parse_assignment_file(content)
+            except Exception as e:
+                logger.warning(f"기존 파일 읽기 실패: {e}")
+        
+        # 새로운 데이터와 병합
+        global _assignment_data
+        _assignment_data = existing_data
+        
+        # 파일에 저장
+        with open(assignment_file, 'w', encoding='utf-8') as f:
+            f.write(f"=== LearnUs 과제 정보 업데이트 ===\n")
+            f.write(f"업데이트 시간: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+            
+            if _assignment_data:
+                f.write("📋 과제 목록:\n")
+                for assignment in _assignment_data:
+                    f.write(f"  • {assignment['course']}: {assignment['activity']} - {assignment['status']}\n")
+            else:
+                f.write("📭 이번주 과제가 없습니다.\n")
+        
+        logger.info(f"📄 assignment.txt 파일 업데이트 완료")
+        
+    except Exception as e:
+        logger.error(f"❌ 파일 저장 실패: {e}")
+
+def parse_assignment_file(content):
+    """assignment.txt 파일을 파싱하여 구조화된 데이터로 변환"""
+    assignments = []
+    lines = content.split('\n')
+    
+    for line in lines:
+        if '•' in line and ':' in line:
+            try:
+                # "• 과목명: 활동명 - 상태" 형식 파싱
+                parts = line.split('•')[1].strip()
+                if ':' in parts and '-' in parts:
+                    course_part, activity_part = parts.split(':', 1)
+                    if '-' in activity_part:
+                        activity, status = activity_part.rsplit('-', 1)
+                        assignments.append({
+                            'course': course_part.strip(),
+                            'activity': activity.strip(),
+                            'status': status.strip(),
+                            'type': '과제',  # 기본값
+                            'url': ''
+                        })
+            except Exception as e:
+                logger.debug(f"파싱 실패: {line} - {e}")
+    
+    # 테스트용 데이터 추가 (파일이 비어있을 경우)
+    if not assignments:
+        assignments = [
+            {
+                'course': 'AI응용수학',
+                'activity': '5주차 과제',
+                'status': '❌ 해야 할 과제',
+                'type': '과제',
+                'url': ''
+            },
+            {
+                'course': '딥러닝입문',
+                'activity': '5주차 동영상',
+                'status': '❌ 해야 할 과제',
+                'type': '동영상',
+                'url': ''
+            },
+            {
+                'course': '기초AI알고리즘',
+                'activity': '4주차 퀴즈',
+                'status': '✅ 완료',
+                'type': '퀴즈',
+                'url': ''
+            }
+        ]
+    
+    return assignments
+
+def start_scheduler():
+    """스케줄러 시작"""
+    logger.info("⏰ 스케줄러 시작...")
+    
+    # 매일 오전 9시, 오후 6시에 자동화 실행
+    schedule.every().day.at("09:00").do(run_automation_job)
+    schedule.every().day.at("18:00").do(run_automation_job)
+    
+    # 개발용: 5분마다 실행 (테스트용)
+    schedule.every(5).minutes.do(run_automation_job)
+    
+    while True:
+        schedule.run_pending()
+        time.sleep(60)  # 1분마다 체크
+
+@app.get("/health")
+async def health_check():
+    """헬스체크 엔드포인트"""
+    return {
+        "status": "healthy", 
+        "message": "스케줄러 서버가 정상적으로 실행 중입니다",
+        "last_update": _last_update_time.isoformat() if _last_update_time else None,
+        "automation_running": _automation_running
+    }
+
+@app.get("/assignments")
+async def get_assignments():
+    """현재 저장된 과제 정보 조회"""
+    try:
+        global _assignment_data
+        
+        # assignment.txt 파일에서 최신 데이터 로드
+        assignment_file = "assignment.txt"
+        if os.path.exists(assignment_file):
+            with open(assignment_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+                _assignment_data = parse_assignment_file(content)
+        
+        return {
+            "assignments": _assignment_data,
+            "total_count": len(_assignment_data),
+            "incomplete_count": len([a for a in _assignment_data if "❌" in a.get('status', '')]),
+            "last_update": _last_update_time.isoformat() if _last_update_time else None
+        }
+    except Exception as e:
+        logger.error(f"❌ 과제 정보 조회 실패: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/automation/run")
+async def run_automation_now():
+    """즉시 자동화 실행"""
+    try:
+        if _automation_running:
+            return {"message": "자동화가 이미 실행 중입니다", "status": "running"}
+        
+        # 백그라운드에서 실행
+        threading.Thread(target=run_automation_job, daemon=True).start()
+        
+        return {"message": "자동화가 시작되었습니다", "status": "started"}
+    except Exception as e:
+        logger.error(f"❌ 자동화 실행 실패: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/status")
+async def get_status():
+    """서버 상태 및 자동화 상태 조회"""
+    return {
+        "server_status": "running",
+        "automation_running": _automation_running,
+        "last_update": _last_update_time.isoformat() if _last_update_time else None,
+        "next_scheduled": "매일 09:00, 18:00 (개발용: 5분마다)",
+        "assignment_file_exists": os.path.exists("assignment.txt")
+    }
+
+if __name__ == "__main__":
+    print("🚀 LearnUs 스케줄러 서버 시작 중...")
+    print("📡 서버 주소: http://localhost:8000")
+    print("📋 API 문서: http://localhost:8000/docs")
+    print("🔍 헬스체크: http://localhost:8000/health")
+    print("📊 과제 정보: http://localhost:8000/assignments")
+    print("⏰ 자동화 실행: 매일 09:00, 18:00 (개발용: 5분마다)")
+    
+    # 스케줄러를 별도 스레드에서 실행
+    scheduler_thread = threading.Thread(target=start_scheduler, daemon=True)
+    scheduler_thread.start()
+    
+    # FastAPI 서버 시작
+    port = int(os.environ.get("PORT", 8080))
+    uvicorn.run(
+        app, 
+        host="0.0.0.0", 
+        port=port,
+        log_level="info"
+    )

@@ -1,0 +1,17 @@
+# 환경 변수 설정 예시
+# 실제 사용 시 .env 파일로 복사하고 값들을 수정하세요
+
+# 서버 설정
+HOST=0.0.0.0
+PORT=8000
+RELOAD=true
+
+# 이메일 설정 (알림 발송용)
+EMAIL_ADDRESS=your-email@gmail.com
+EMAIL_PASSWORD=your-app-password
+
+# 데이터베이스 설정 (필요시)
+DATABASE_URL=sqlite:///./school_automation.db
+
+# 로깅 설정
+LOG_LEVEL=INFO

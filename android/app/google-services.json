@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "986202706020",
+    "project_id": "univlabs-ai",
+    "storage_bucket": "univlabs-ai.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:986202706020:android:b490c93bf54bbf2c574f71",
+        "android_client_info": {
+          "package_name": "com.example.univlabs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "986202706020-32k4smuau0li8dc26joebj9ra5seiikp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.univlabs",
+            "certificate_hash": "96d54f30fa1c388e5fb7a56f97260c176a7c3232"
+          }
+        },
+        {
+          "client_id": "986202706020-bqq7f5bmrj8ajanugj0n35c3170v42lv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARa9rnmCA3v-EEOvJs4d3NBO3XBYmTvAA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "986202706020-bqq7f5bmrj8ajanugj0n35c3170v42lv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

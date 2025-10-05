@@ -1,0 +1,9 @@
+# Firebase Admin SDK
+firebase-admin==6.2.0
+
+# 기존 requirements.txt에 추가할 패키지들
+google-cloud-firestore==2.11.1
+google-auth==2.23.4
+google-auth-oauthlib==1.1.0
+google-auth-httplib2==0.1.1
+

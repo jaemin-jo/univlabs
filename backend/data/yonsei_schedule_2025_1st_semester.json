@@ -1,0 +1,336 @@
+{
+  "university": "연세대학교",
+  "semester": "2025-1학기",
+  "schedule": [
+    {
+      "month": "2월",
+      "month_en": "February",
+      "events": [
+        {
+          "date": "03 (월)",
+          "event": "휴학 접수 시작",
+          "type": "휴학",
+          "priority": "high"
+        },
+        {
+          "date": "12 (수) ~ 18 (화)",
+          "event": "2025-1학기 수강신청",
+          "type": "수강신청",
+          "priority": "high"
+        },
+        {
+          "date": "21 (금) ~ 27 (목)",
+          "event": "2025-1학기 등록",
+          "type": "등록",
+          "priority": "high"
+        },
+        {
+          "date": "23 (일)",
+          "event": "졸업예배",
+          "type": "졸업",
+          "priority": "medium"
+        },
+        {
+          "date": "24 (월)",
+          "event": "복학 접수 마감, 학위수여식",
+          "type": "복학",
+          "priority": "high"
+        }
+      ]
+    },
+    {
+      "month": "3월",
+      "month_en": "March",
+      "events": [
+        {
+          "date": "01 (토)",
+          "event": "삼일절",
+          "type": "휴일",
+          "priority": "medium"
+        },
+        {
+          "date": "03 (월)",
+          "event": "대체휴일",
+          "type": "휴일",
+          "priority": "medium"
+        },
+        {
+          "date": "04 (화)",
+          "event": "개강",
+          "type": "개강",
+          "priority": "high"
+        },
+        {
+          "date": "06 (목)",
+          "event": "교무위원회",
+          "type": "행사",
+          "priority": "low"
+        },
+        {
+          "date": "06 (목) ~ 10 (월)",
+          "event": "수강신청 확인 및 변경",
+          "type": "수강신청",
+          "priority": "high"
+        },
+        {
+          "date": "12 (수) ~ 14 (금)",
+          "event": "2025-1학기 추가등록",
+          "type": "등록",
+          "priority": "high"
+        },
+        {
+          "date": "17 (월)",
+          "event": "미등록자 일반휴학 접수 마감",
+          "type": "휴학",
+          "priority": "high"
+        },
+        {
+          "date": "17 (월) ~ 21 (금)",
+          "event": "조기졸업 신청",
+          "type": "졸업",
+          "priority": "medium"
+        }
+      ]
+    },
+    {
+      "month": "4월",
+      "month_en": "April",
+      "events": [
+        {
+          "date": "03 (목)",
+          "event": "교무위원회",
+          "type": "행사",
+          "priority": "low"
+        },
+        {
+          "date": "09 (수)",
+          "event": "학기 1/3선",
+          "type": "학사",
+          "priority": "medium"
+        },
+        {
+          "date": "14 (월) ~ 19 (토)",
+          "event": "고난주간",
+          "type": "행사",
+          "priority": "low"
+        },
+        {
+          "date": "15 (화) ~ 17 (목)",
+          "event": "수강철회",
+          "type": "수강신청",
+          "priority": "high"
+        },
+        {
+          "date": "20 (일)",
+          "event": "부활절",
+          "type": "휴일",
+          "priority": "medium"
+        },
+        {
+          "date": "22 (화) ~ 28 (월)",
+          "event": "중간시험",
+          "type": "시험",
+          "priority": "high"
+        },
+        {
+          "date": "28 (월) ~ 02 (금)",
+          "event": "2025-2학기 캠퍼스내 소속변경 신청",
+          "type": "전과",
+          "priority": "medium"
+        },
+        {
+          "date": "29 (화) ~ 01 (목)",
+          "event": "S/U평가 신청",
+          "type": "성적",
+          "priority": "high"
+        }
+      ]
+    },
+    {
+      "month": "5월",
+      "month_en": "May",
+      "events": [
+        {
+          "date": "29 (화) ~ 01 (목)",
+          "event": "S/U평가 신청",
+          "type": "성적",
+          "priority": "high"
+        },
+        {
+          "date": "01 (목)",
+          "event": "근로자의날",
+          "type": "휴일",
+          "priority": "medium"
+        },
+        {
+          "date": "28 (월) ~ 02 (금)",
+          "event": "2025-2학기 캠퍼스내 소속변경 신청",
+          "type": "전과",
+          "priority": "medium"
+        },
+        {
+          "date": "05 (월)",
+          "event": "부처님 오신 날, 어린이날",
+          "type": "휴일",
+          "priority": "medium"
+        },
+        {
+          "date": "06 (화)",
+          "event": "대체휴일",
+          "type": "휴일",
+          "priority": "medium"
+        },
+        {
+          "date": "07 (수)",
+          "event": "은퇴교수의 날",
+          "type": "행사",
+          "priority": "low"
+        },
+        {
+          "date": "08 (목)",
+          "event": "교무위원회",
+          "type": "행사",
+          "priority": "low"
+        },
+        {
+          "date": "10 (토)",
+          "event": "창립기념일",
+          "type": "휴일",
+          "priority": "medium"
+        },
+        {
+          "date": "16 (금)",
+          "event": "학기 2/3선, 일반휴학 접수 마감",
+          "type": "휴학",
+          "priority": "high"
+        },
+        {
+          "date": "19 (월)",
+          "event": "질병휴학 접수시작",
+          "type": "휴학",
+          "priority": "medium"
+        }
+      ]
+    },
+    {
+      "month": "6월",
+      "month_en": "June",
+      "events": [
+        {
+          "date": "03 (화)",
+          "event": "질병휴학 접수마감",
+          "type": "휴학",
+          "priority": "high"
+        },
+        {
+          "date": "05 (목)",
+          "event": "교무위원회",
+          "type": "행사",
+          "priority": "low"
+        },
+        {
+          "date": "06 (금)",
+          "event": "현충일",
+          "type": "휴일",
+          "priority": "medium"
+        },
+        {
+          "date": "08 (일)",
+          "event": "성령강림절",
+          "type": "휴일",
+          "priority": "medium"
+        },
+        {
+          "date": "10 (화) ~ 16 (월)",
+          "event": "자율학습 및 보충수업 기간",
+          "type": "학사",
+          "priority": "medium"
+        },
+        {
+          "date": "17 (화) ~ 23 (월)",
+          "event": "학기말시험",
+          "type": "시험",
+          "priority": "high"
+        },
+        {
+          "date": "24 (화)",
+          "event": "여름방학 시작",
+          "type": "방학",
+          "priority": "medium"
+        },
+        {
+          "date": "24 (화) ~ 30 (월)",
+          "event": "2025-2학기 캠퍼스내 복수전공 · 연계전공 · 융합심화전공 신청",
+          "type": "전공",
+          "priority": "high"
+        },
+        {
+          "date": "30 (월)",
+          "event": "2025-1학기 성적제출 마감, 여름계절제 수업시작",
+          "type": "성적",
+          "priority": "high"
+        }
+      ]
+    },
+    {
+      "month": "7월",
+      "month_en": "July",
+      "events": [
+        {
+          "date": "14 (월)",
+          "event": "복학 접수 시작",
+          "type": "복학",
+          "priority": "high"
+        },
+        {
+          "date": "21 (월)",
+          "event": "여름계절제 수업종료",
+          "type": "계절제",
+          "priority": "medium"
+        }
+      ]
+    },
+    {
+      "month": "8월",
+      "month_en": "August",
+      "events": [
+        {
+          "date": "01 (금)",
+          "event": "휴학 접수 시작",
+          "type": "휴학",
+          "priority": "high"
+        },
+        {
+          "date": "11 (월) ~ 18 (월)",
+          "event": "2025-2학기 수강신청",
+          "type": "수강신청",
+          "priority": "high"
+        },
+        {
+          "date": "15 (금)",
+          "event": "광복절",
+          "type": "휴일",
+          "priority": "medium"
+        },
+        {
+          "date": "22 (금) ~ 28 (목)",
+          "event": "2025-2학기 등록",
+          "type": "등록",
+          "priority": "high"
+        },
+        {
+          "date": "25 (월)",
+          "event": "복학 접수 마감",
+          "type": "복학",
+          "priority": "high"
+        },
+        {
+          "date": "29 (금)",
+          "event": "학위수여식",
+          "type": "졸업",
+          "priority": "medium"
+        }
+      ]
+    }
+  ]
+}
