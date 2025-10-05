@@ -26,9 +26,8 @@ RUN apt-get update && apt-get install -y \
     && apt-get install -y google-chrome-stable \
     && rm -rf /var/lib/apt/lists/*
 
-# Chrome 드라이버 설치
-RUN CHROME_VERSION=$(google-chrome --version | cut -d " " -f3 | cut -d "." -f1) \
-    && CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}") \
+# Chrome 드라이버 설치 (안정화된 버전 사용)
+RUN CHROMEDRIVER_VERSION="114.0.5735.90" \
     && wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" \
     && unzip /tmp/chromedriver.zip -d /tmp/ \
     && mv /tmp/chromedriver /usr/bin/chromedriver \
