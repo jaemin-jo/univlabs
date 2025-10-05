@@ -88,18 +88,15 @@ async def startup_event():
     
     # Cloud Run 환경에 최적화된 스케줄러 시작
     try:
-        # 즉시 한 번 실행
-        print("🔄 초기 자동화 실행...")
-        run_automation_job()
-        
-        # 스케줄러를 별도 스레드에서 실행 (Cloud Run 최적화)
-        scheduler_thread = threading.Thread(target=start_scheduler_optimized, daemon=False)
+        # 백그라운드에서 스케줄러 시작 (서버 시작을 블로킹하지 않음)
+        scheduler_thread = threading.Thread(target=start_scheduler_optimized, daemon=True)
         scheduler_thread.start()
-        print("✅ Cloud Run 최적화 스케줄러 시작됨")
+        print("✅ Cloud Run 최적화 스케줄러 백그라운드 시작됨")
         
     except Exception as e:
         print(f"❌ 스케줄러 시작 실패: {e}")
         logger.error(f"스케줄러 시작 실패: {e}")
+        # 스케줄러 실패해도 서버는 계속 실행
 
 # CORS 설정
 app.add_middleware(
