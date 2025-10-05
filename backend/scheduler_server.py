@@ -35,8 +35,8 @@ def start_scheduler_auto():
     print("📊 과제 정보: http://0.0.0.0:8080/assignments")
     print("⏰ 자동화 실행: 매일 09:00, 18:00 (개발용: 5분마다)")
     
-    # 스케줄러를 별도 스레드에서 실행
-    scheduler_thread = threading.Thread(target=start_scheduler, daemon=True)
+    # 스케줄러를 별도 스레드에서 실행 (Cloud Run에서는 비데몬으로 설정)
+    scheduler_thread = threading.Thread(target=start_scheduler, daemon=False)
     scheduler_thread.start()
     print("✅ 스케줄러 스레드 시작됨")
 
@@ -225,6 +225,10 @@ def parse_assignment_file(content):
 def start_scheduler():
     """스케줄러 시작"""
     logger.info("⏰ 스케줄러 시작...")
+    
+    # 즉시 한 번 실행 (서버 시작 시)
+    logger.info("🚀 서버 시작 시 즉시 자동화 실행...")
+    run_automation_job()
     
     # 매일 오전 9시, 오후 6시에 자동화 실행
     schedule.every().day.at("09:00").do(run_automation_job)
