@@ -260,58 +260,23 @@ def setup_driver():
         
         chrome_options = Options()
         
-               # Cloud Run 환경을 위한 필수 옵션들 (DevToolsActivePort 오류 해결)
-               chrome_options.add_argument("--no-sandbox")  # 필수: 샌드박스 비활성화
-               chrome_options.add_argument("--disable-dev-shm-usage")  # 필수: 공유 메모리 비활성화
-               chrome_options.add_argument("--single-process")  # 필수: 단일 프로세스 모드
-               chrome_options.add_argument("--headless")  # 필수: 헤드리스 모드
-               chrome_options.add_argument("--disable-gpu")
-               chrome_options.add_argument("--disable-extensions")
-               chrome_options.add_argument("--disable-plugins")
-               chrome_options.add_argument("--disable-images")
-               chrome_options.add_argument("--disable-web-security")
-               chrome_options.add_argument("--disable-features=VizDisplayCompositor")
-               chrome_options.add_argument("--window-size=1920,1080")
-               chrome_options.add_argument("--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-               chrome_options.add_argument("--log-level=3")
-               chrome_options.add_argument("--disable-blink-features=AutomationControlled")
-               
-               # Cloud Run 환경에서 Chrome 실행을 위한 추가 옵션
-               chrome_options.add_argument("--no-zygote")
-               chrome_options.add_argument("--disable-background-timer-throttling")
-               chrome_options.add_argument("--disable-backgrounding-occluded-windows")
-               chrome_options.add_argument("--disable-renderer-backgrounding")
-               
-               # Cloud Run 메모리 최적화
-               chrome_options.add_argument("--memory-pressure-off")
-               chrome_options.add_argument("--max_old_space_size=4096")
-               chrome_options.add_argument("--disable-background-networking")
-               chrome_options.add_argument("--disable-default-apps")
-               chrome_options.add_argument("--disable-sync")
-               chrome_options.add_argument("--disable-translate")
-               chrome_options.add_argument("--hide-scrollbars")
-               chrome_options.add_argument("--mute-audio")
-               chrome_options.add_argument("--no-first-run")
-               chrome_options.add_argument("--disable-logging")
-               chrome_options.add_argument("--disable-permissions-api")
-               chrome_options.add_argument("--disable-popup-blocking")
-               chrome_options.add_argument("--disable-prompt-on-repost")
-               chrome_options.add_argument("--disable-hang-monitor")
-               chrome_options.add_argument("--disable-client-side-phishing-detection")
-               chrome_options.add_argument("--disable-component-update")
-               chrome_options.add_argument("--disable-domain-reliability")
-               chrome_options.add_argument("--disable-features=TranslateUI")
-               chrome_options.add_argument("--disable-ipc-flooding-protection")
-               
-               # DevToolsActivePort 오류 해결을 위한 추가 옵션
-               chrome_options.add_argument("--disable-dev-tools")
-               chrome_options.add_argument("--disable-software-rasterizer")
-               
-               chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-               chrome_options.add_experimental_option('useAutomationExtension', False)
+        # Cloud Run 환경을 위한 필수 옵션들 (DevToolsActivePort 오류 해결)
+        chrome_options.add_argument("--no-sandbox")  # 필수: 샌드박스 비활성화
+        chrome_options.add_argument("--disable-dev-shm-usage")  # 필수: 공유 메모리 비활성화
+        chrome_options.add_argument("--single-process")  # 필수: 단일 프로세스 모드
+        chrome_options.add_argument("--headless")  # 필수: 헤드리스 모드
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--disable-plugins")
+        chrome_options.add_argument("--disable-images")
+        chrome_options.add_argument("--disable-web-security")
+        chrome_options.add_argument("--disable-features=VizDisplayCompositor")
+        chrome_options.add_argument("--window-size=1920,1080")
+        chrome_options.add_argument("--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+        chrome_options.add_argument("--log-level=3")
+        chrome_options.add_argument("--disable-blink-features=AutomationControlled")
         
-        # Cloud Run에서 Chrome 실행을 위한 추가 옵션
-        chrome_options.add_argument("--single-process")
+        # Cloud Run 환경에서 Chrome 실행을 위한 추가 옵션
         chrome_options.add_argument("--no-zygote")
         chrome_options.add_argument("--disable-background-timer-throttling")
         chrome_options.add_argument("--disable-backgrounding-occluded-windows")
@@ -338,54 +303,61 @@ def setup_driver():
         chrome_options.add_argument("--disable-features=TranslateUI")
         chrome_options.add_argument("--disable-ipc-flooding-protection")
         
-               # Cloud Run 환경에서 Chrome 드라이버 설정
-               try:
-                   # Chrome 드라이버 경로 우선순위 설정
-                   chrome_driver_paths = [
-                       "/usr/bin/chromedriver",  # 설치된 chromedriver
-                       "/usr/bin/chromium-driver",  # chromium-driver
-                       "/usr/lib/chromium-browser/chromedriver",  # chromium 경로
-                   ]
-                   
-                   service = None
-                   for path in chrome_driver_paths:
-                       if os.path.exists(path):
-                           service = Service(path)
-                           logger.info(f"✅ Chrome 드라이버 사용: {path}")
-                           break
-                   
-                   if service is None:
-                       # WebDriver Manager 사용 (fallback)
-                       service = Service(ChromeDriverManager().install())
-                       logger.info("✅ WebDriver Manager로 Chrome 드라이버 설치")
+        # DevToolsActivePort 오류 해결을 위한 추가 옵션
+        chrome_options.add_argument("--disable-dev-tools")
+        chrome_options.add_argument("--disable-software-rasterizer")
+        
+        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        chrome_options.add_experimental_option('useAutomationExtension', False)
+        
+        # Cloud Run 환경에서 Chrome 드라이버 설정
+        try:
+            # Chrome 드라이버 경로 우선순위 설정
+            chrome_driver_paths = [
+                "/usr/bin/chromedriver",  # 설치된 chromedriver
+                "/usr/bin/chromium-driver",  # chromium-driver
+                "/usr/lib/chromium-browser/chromedriver",  # chromium 경로
+            ]
             
+            service = None
+            for path in chrome_driver_paths:
+                if os.path.exists(path):
+                    service = Service(path)
+                    logger.info(f"✅ Chrome 드라이버 사용: {path}")
+                    break
+            
+            if service is None:
+                # WebDriver Manager 사용 (fallback)
+                service = Service(ChromeDriverManager().install())
+                logger.info("✅ WebDriver Manager로 Chrome 드라이버 설치")
+        
             driver = webdriver.Chrome(service=service, options=chrome_options)
             
         except Exception as driver_error:
             logger.error(f"❌ Chrome 드라이버 초기화 실패: {driver_error}")
-               # Cloud Run 환경에서 Chrome 실행을 위한 추가 시도
-               try:
-                   # Chrome 실행 파일 경로 우선순위 설정
-                   chrome_bin_paths = [
-                       '/usr/bin/google-chrome',
-                       '/usr/bin/chromium-browser',
-                       '/usr/bin/chromium',
-                   ]
-                   
-                   for chrome_path in chrome_bin_paths:
-                       if os.path.exists(chrome_path):
-                           os.environ['CHROME_BIN'] = chrome_path
-                           logger.info(f"✅ Chrome 실행 파일 설정: {chrome_path}")
-                           break
-                   
-                   # 직접 경로로 재시도
-                   service = Service('/usr/bin/chromedriver')
-                   driver = webdriver.Chrome(service=service, options=chrome_options)
-                   logger.info("✅ 직접 경로로 Chrome 드라이버 초기화 성공")
-                   
-               except Exception as fallback_error:
-                   logger.error(f"❌ Chrome 드라이버 fallback 실패: {fallback_error}")
-                   return None
+            # Cloud Run 환경에서 Chrome 실행을 위한 추가 시도
+            try:
+                # Chrome 실행 파일 경로 우선순위 설정
+                chrome_bin_paths = [
+                    '/usr/bin/google-chrome',
+                    '/usr/bin/chromium-browser',
+                    '/usr/bin/chromium',
+                ]
+                
+                for chrome_path in chrome_bin_paths:
+                    if os.path.exists(chrome_path):
+                        os.environ['CHROME_BIN'] = chrome_path
+                        logger.info(f"✅ Chrome 실행 파일 설정: {chrome_path}")
+                        break
+                
+                # 직접 경로로 재시도
+                service = Service('/usr/bin/chromedriver')
+                driver = webdriver.Chrome(service=service, options=chrome_options)
+                logger.info("✅ 직접 경로로 Chrome 드라이버 초기화 성공")
+                
+            except Exception as fallback_error:
+                logger.error(f"❌ Chrome 드라이버 fallback 실패: {fallback_error}")
+                return None
         
         # 자동화 감지 방지
         driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
