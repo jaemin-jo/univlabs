@@ -45,9 +45,10 @@ def start_scheduler():
         schedule.run_pending()
         time.sleep(60)  # 1분마다 체크
 
-# Cloud Run에서 자동으로 스케줄러 시작
-def start_scheduler_auto():
-    """Cloud Run에서 자동으로 스케줄러 시작"""
+# FastAPI startup 이벤트로 스케줄러 시작
+@app.on_event("startup")
+async def startup_event():
+    """FastAPI 앱 시작 시 스케줄러 자동 시작"""
     print("🚀 LearnUs 스케줄러 서버 시작 중...")
     print("📡 서버 주소: http://0.0.0.0:8080")
     print("📋 API 문서: http://0.0.0.0:8080/docs")
@@ -59,9 +60,6 @@ def start_scheduler_auto():
     scheduler_thread = threading.Thread(target=start_scheduler, daemon=False)
     scheduler_thread.start()
     print("✅ 스케줄러 스레드 시작됨")
-
-# Cloud Run에서 자동 시작
-start_scheduler_auto()
 
 # CORS 설정
 app.add_middleware(
