@@ -253,19 +253,35 @@ def check_quiz_status(driver, quiz_url):
         return "❓ 상태 확인 불가"
 
 def setup_driver():
-    """Chrome 드라이버 설정 (기존 코드와 동일)"""
+    """Chrome 드라이버 설정 (Cloud Run 환경 최적화)"""
     try:
         logger.info("🔧 Chrome 드라이버 설정 중...")
         
         chrome_options = Options()
+        
+        # Cloud Run 환경을 위한 필수 옵션들
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--disable-plugins")
+        chrome_options.add_argument("--disable-images")
+        chrome_options.add_argument("--disable-web-security")
+        chrome_options.add_argument("--disable-features=VizDisplayCompositor")
+        chrome_options.add_argument("--headless")  # Cloud Run에서는 헤드리스 모드 필수
+        chrome_options.add_argument("--window-size=1920,1080")
+        chrome_options.add_argument("--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+        chrome_options.add_argument("--log-level=3")
         chrome_options.add_argument("--disable-blink-features=AutomationControlled")
         chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
         chrome_options.add_experimental_option('useAutomationExtension', False)
-        chrome_options.add_argument("--window-size=1920,1080")
-        chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-        chrome_options.add_argument("--log-level=3")
+        
+        # Cloud Run에서 Chrome 실행을 위한 추가 옵션
+        chrome_options.add_argument("--single-process")
+        chrome_options.add_argument("--no-zygote")
+        chrome_options.add_argument("--disable-background-timer-throttling")
+        chrome_options.add_argument("--disable-backgrounding-occluded-windows")
+        chrome_options.add_argument("--disable-renderer-backgrounding")
         
         service = Service(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service, options=chrome_options)
