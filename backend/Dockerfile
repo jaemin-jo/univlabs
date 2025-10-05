@@ -51,7 +51,7 @@ ENV DISPLAY=:99
 ENV DEBIAN_FRONTEND=noninteractive
 
 # 가상 디스플레이 시작 스크립트 생성 (DevToolsActivePort 오류 해결)
-RUN echo '#!/bin/bash\n# 가상 디스플레이 시작\nXvfb :99 -screen 0 1920x1080x24 -ac +extension GLX +render -noreset &\n# DISPLAY 환경변수 설정\nexport DISPLAY=:99\n# 잠시 대기 후 앱 실행\nsleep 2\nexec "$@"' > /start.sh && chmod +x /start.sh
+RUN echo '#!/bin/bash\n# 가상 디스플레이 시작\nXvfb :99 -screen 0 1920x1080x24 -ac +extension GLX +render -noreset &\n# DISPLAY 환경변수 설정\nexport DISPLAY=:99\n# Chrome이 디스플레이에 접근할 수 있도록 권한 설정\nxhost +local:docker\n# 잠시 대기 후 앱 실행\nsleep 3\nexec "$@"' > /start.sh && chmod +x /start.sh
 
 # 앱 실행 (가상 디스플레이와 함께)
 CMD ["/start.sh", "uvicorn", "scheduler_server:app", "--host", "0.0.0.0", "--port", "8080"]
