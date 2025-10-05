@@ -45,6 +45,36 @@ def start_scheduler():
         schedule.run_pending()
         time.sleep(60)  # 1분마다 체크
 
+def start_scheduler_optimized():
+    """Cloud Run 환경에 최적화된 스케줄러"""
+    print("🚀 Cloud Run 최적화 스케줄러 시작...")
+    logger.info("Cloud Run 최적화 스케줄러 시작")
+    
+    try:
+        # 개발용: 5분마다 실행
+        schedule.every(5).minutes.do(run_automation_job)
+        
+        # 운영용: 매일 09:00, 18:00 실행
+        # schedule.every().day.at("09:00").do(run_automation_job)
+        # schedule.every().day.at("18:00").do(run_automation_job)
+        
+        print("✅ 스케줄 등록 완료: 5분마다 자동화 실행")
+        logger.info("스케줄 등록 완료: 5분마다 자동화 실행")
+        
+        # Cloud Run 환경에서 안정적인 스케줄러 실행
+        while True:
+            try:
+                schedule.run_pending()
+                time.sleep(60)  # 1분마다 체크
+            except Exception as e:
+                logger.error(f"스케줄러 실행 중 오류: {e}")
+                print(f"⚠️ 스케줄러 실행 중 오류: {e}")
+                time.sleep(60)  # 오류 발생 시 1분 대기 후 재시도
+                
+    except Exception as e:
+        logger.error(f"Cloud Run 스케줄러 시작 실패: {e}")
+        print(f"❌ Cloud Run 스케줄러 시작 실패: {e}")
+
 # FastAPI startup 이벤트로 스케줄러 시작
 @app.on_event("startup")
 async def startup_event():
@@ -56,10 +86,20 @@ async def startup_event():
     print("📊 과제 정보: http://0.0.0.0:8080/assignments")
     print("⏰ 자동화 실행: 매일 09:00, 18:00 (개발용: 5분마다)")
     
-    # 스케줄러를 별도 스레드에서 실행 (Cloud Run에서는 비데몬으로 설정)
-    scheduler_thread = threading.Thread(target=start_scheduler, daemon=False)
-    scheduler_thread.start()
-    print("✅ 스케줄러 스레드 시작됨")
+    # Cloud Run 환경에 최적화된 스케줄러 시작
+    try:
+        # 즉시 한 번 실행
+        print("🔄 초기 자동화 실행...")
+        run_automation_job()
+        
+        # 스케줄러를 별도 스레드에서 실행 (Cloud Run 최적화)
+        scheduler_thread = threading.Thread(target=start_scheduler_optimized, daemon=False)
+        scheduler_thread.start()
+        print("✅ Cloud Run 최적화 스케줄러 시작됨")
+        
+    except Exception as e:
+        print(f"❌ 스케줄러 시작 실패: {e}")
+        logger.error(f"스케줄러 시작 실패: {e}")
 
 # CORS 설정
 app.add_middleware(
@@ -87,56 +127,106 @@ def run_automation_job():
         _automation_running = True
         logger.info("🤖 주기적 자동화 시작...")
         
-        # Firebase에서 활성화된 사용자 정보 가져오기
-        active_users = get_all_active_users()
-        
-        if not active_users:
-            logger.warning("⚠️ 활성화된 사용자가 없습니다. 실제 LearnUs 사용자 정보를 Firebase에 추가해주세요.")
-            # 사용자 데이터가 없으면 자동화 실행하지 않음
+        # Firebase 연결 상태 확인
+        logger.info("🔍 Firebase 연결 상태 확인 중...")
+        try:
+            # Firebase에서 활성화된 사용자 정보 가져오기
+            active_users = get_all_active_users()
+            logger.info(f"📊 Firebase에서 {len(active_users)}명의 활성화된 사용자 조회")
+            
+            if not active_users:
+                logger.warning("⚠️ 활성화된 사용자가 없습니다. 실제 LearnUs 사용자 정보를 Firebase에 추가해주세요.")
+                logger.info("💡 해결방법: Flutter 앱에서 LearnUs 정보를 설정하거나, add_real_user_manual.py를 실행하세요.")
+                
+                # 사용자 데이터가 없으면 자동화 실행하지 않음
+                result = {
+                    'assignments': [],
+                    'total_count': 0,
+                    'users_processed': 0,
+                    'message': '활성화된 사용자가 없습니다. Flutter 앱에서 LearnUs 정보를 설정해주세요.',
+                    'firebase_status': 'connected',
+                    'user_count': 0
+                }
+            else:
+                logger.info(f"✅ {len(active_users)}명의 활성화된 사용자 발견")
+                
+        except Exception as firebase_error:
+            logger.error(f"❌ Firebase 연결 실패: {firebase_error}")
             result = {
                 'assignments': [],
                 'total_count': 0,
                 'users_processed': 0,
-                'message': '활성화된 사용자가 없습니다. Flutter 앱에서 LearnUs 정보를 설정해주세요.'
+                'message': f'Firebase 연결 실패: {firebase_error}',
+                'firebase_status': 'disconnected',
+                'user_count': 0
             }
+            active_users = []
         else:
             logger.info(f"📊 {len(active_users)}명의 활성화된 사용자 발견")
             
             # 모든 사용자에 대해 자동화 실행
             all_assignments = []
+            successful_users = 0
+            failed_users = 0
+            
             for user in active_users:
                 try:
-                    logger.info(f"🔄 사용자 {user.get('username', 'Unknown')} 자동화 시작...")
+                    username = user.get('username', 'Unknown')
+                    university = user.get('university', '연세대학교')
+                    student_id = user.get('studentId', '')
                     
-                    # 사용자별 자동화 실행
+                    logger.info(f"🔄 사용자 {username} 자동화 시작...")
+                    logger.info(f"   대학교: {university}")
+                    logger.info(f"   학번: {student_id}")
+                    
+                    # 사용자별 자동화 실행 (타임아웃 설정)
                     user_result = test_direct_selenium(
-                        user.get('university', '연세대학교'),
-                        user.get('username', ''),
+                        university,
+                        username,
                         user.get('password', ''),
-                        user.get('studentId', '')
+                        student_id
                     )
                     
-                    if user_result:
+                    if user_result and user_result.get('assignments'):
                         # 사용자별 결과를 전체 결과에 추가
-                        all_assignments.extend(user_result.get('assignments', []))
+                        user_assignments = user_result.get('assignments', [])
+                        all_assignments.extend(user_assignments)
                         
                         # 마지막 사용 시간 업데이트
-                        update_user_last_used(user.get('uid', ''))
+                        try:
+                            update_user_last_used(user.get('uid', ''))
+                            logger.info(f"✅ 사용자 {username} 마지막 사용 시간 업데이트 완료")
+                        except Exception as update_error:
+                            logger.warning(f"⚠️ 사용자 {username} 마지막 사용 시간 업데이트 실패: {update_error}")
                         
-                        logger.info(f"✅ 사용자 {user.get('username')} 자동화 완료")
+                        successful_users += 1
+                        logger.info(f"✅ 사용자 {username} 자동화 완료: {len(user_assignments)}개 과제")
                     else:
-                        logger.warning(f"⚠️ 사용자 {user.get('username')} 자동화 결과 없음")
+                        failed_users += 1
+                        logger.warning(f"⚠️ 사용자 {username} 자동화 결과 없음")
                         
                 except Exception as user_error:
-                    logger.error(f"❌ 사용자 {user.get('username')} 자동화 실패: {user_error}")
+                    failed_users += 1
+                    logger.error(f"❌ 사용자 {user.get('username', 'Unknown')} 자동화 실패: {user_error}")
+                    logger.error(f"   오류 상세: {str(user_error)}")
                     continue
             
             # 모든 사용자의 결과를 통합
             result = {
                 'assignments': all_assignments,
                 'total_count': len(all_assignments),
-                'users_processed': len(active_users)
+                'users_processed': len(active_users),
+                'successful_users': successful_users,
+                'failed_users': failed_users,
+                'firebase_status': 'connected',
+                'user_count': len(active_users)
             }
+            
+            logger.info(f"📊 자동화 실행 결과:")
+            logger.info(f"   총 사용자: {len(active_users)}명")
+            logger.info(f"   성공: {successful_users}명")
+            logger.info(f"   실패: {failed_users}명")
+            logger.info(f"   총 과제: {len(all_assignments)}개")
         
         # 결과를 assignment.txt 파일에 저장
         save_assignment_data(result)
