@@ -12,6 +12,15 @@ class ScheduleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Null 안전성 검사
+    if (schedule.title.isEmpty) {
+      return _buildErrorCard(context, "일정 제목이 비어있습니다");
+    }
+    
+    if (schedule.date == null) {
+      return _buildErrorCard(context, "일정 날짜가 설정되지 않았습니다");
+    }
+
     return Card(
       child: InkWell(
         onTap: () {
@@ -95,7 +104,9 @@ class ScheduleCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    '${DateFormat('MM/dd').format(schedule.date)} - ${DateFormat('MM/dd').format(schedule.endDate!)}',
+                    schedule.endDate != null 
+                        ? '${DateFormat('MM/dd').format(schedule.date)} - ${DateFormat('MM/dd').format(schedule.endDate!)}'
+                        : DateFormat('MM/dd').format(schedule.date),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.grey[600],
                     ),
@@ -201,5 +212,83 @@ class ScheduleCard extends StatelessWidget {
       case ScheduleType.other:
         return Colors.grey;
     }
+  }
+
+  // 개발자 친화적인 에러 카드
+  Widget _buildErrorCard(BuildContext context, String errorMessage) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: LinearGradient(
+            colors: [
+              Colors.red.shade50,
+              Colors.orange.shade50,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          border: Border.all(color: Colors.red.shade200, width: 1),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.bug_report,
+                  color: Colors.red.shade600,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  "개발자 정보",
+                  style: TextStyle(
+                    color: Colors.red.shade700,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "🚨 Null 값이네요!",
+              style: TextStyle(
+                color: Colors.red.shade600,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              errorMessage,
+              style: TextStyle(
+                color: Colors.red.shade700,
+                fontSize: 12,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.red.shade100,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                "💡 해결방법: ScheduleItem 데이터를 확인하고 필수 필드를 설정해주세요.",
+                style: TextStyle(
+                  color: Colors.red.shade800,
+                  fontSize: 11,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
