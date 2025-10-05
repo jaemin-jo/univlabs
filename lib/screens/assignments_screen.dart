@@ -950,8 +950,15 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
     try {
       print('🔍 LearnUs 정보 자동 확인 중...');
       
+      // 현재 사용자 UID 가져오기
+      final user = FirebaseService.instance.auth.currentUser;
+      if (user == null) {
+        print('❌ 사용자가 로그인되지 않았습니다.');
+        return;
+      }
+      
       // Firebase에서 현재 사용자의 LearnUs 정보 조회
-      final credentials = await FirebaseService.getLearnUsCredentials();
+      final credentials = await FirebaseService.instance.getLearnUsCredentials(user.uid);
       
       if (credentials != null && credentials.isActive) {
         print('✅ LearnUs 정보 발견: ${credentials.username}');
