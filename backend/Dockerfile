@@ -46,6 +46,10 @@ EXPOSE 8080
 
 # 환경 변수 설정
 ENV DISPLAY=:99
+ENV DEBIAN_FRONTEND=noninteractive
 
-# 앱 실행
-CMD ["uvicorn", "scheduler_server:app", "--host", "0.0.0.0", "--port", "8080"]
+# 가상 디스플레이 시작 스크립트 생성
+RUN echo '#!/bin/bash\nXvfb :99 -screen 0 1920x1080x24 &\nexec "$@"' > /start.sh && chmod +x /start.sh
+
+# 앱 실행 (가상 디스플레이와 함께)
+CMD ["/start.sh", "uvicorn", "scheduler_server:app", "--host", "0.0.0.0", "--port", "8080"]
