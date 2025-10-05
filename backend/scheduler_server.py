@@ -25,6 +25,26 @@ logger = logging.getLogger(__name__)
 # FastAPI 앱 생성
 app = FastAPI(title="LearnUs Scheduler Server", version="1.0.0")
 
+# 스케줄러 함수 정의 (start_scheduler_auto보다 먼저 정의)
+def start_scheduler():
+    """스케줄러 시작"""
+    logger.info("⏰ 스케줄러 시작...")
+    
+    # 즉시 한 번 실행 (서버 시작 시)
+    logger.info("🚀 서버 시작 시 즉시 자동화 실행...")
+    run_automation_job()
+    
+    # 매일 오전 9시, 오후 6시에 자동화 실행
+    schedule.every().day.at("09:00").do(run_automation_job)
+    schedule.every().day.at("18:00").do(run_automation_job)
+    
+    # 개발용: 5분마다 실행 (테스트용)
+    schedule.every(5).minutes.do(run_automation_job)
+    
+    while True:
+        schedule.run_pending()
+        time.sleep(60)  # 1분마다 체크
+
 # Cloud Run에서 자동으로 스케줄러 시작
 def start_scheduler_auto():
     """Cloud Run에서 자동으로 스케줄러 시작"""
@@ -221,25 +241,6 @@ def parse_assignment_file(content):
         ]
     
     return assignments
-
-def start_scheduler():
-    """스케줄러 시작"""
-    logger.info("⏰ 스케줄러 시작...")
-    
-    # 즉시 한 번 실행 (서버 시작 시)
-    logger.info("🚀 서버 시작 시 즉시 자동화 실행...")
-    run_automation_job()
-    
-    # 매일 오전 9시, 오후 6시에 자동화 실행
-    schedule.every().day.at("09:00").do(run_automation_job)
-    schedule.every().day.at("18:00").do(run_automation_job)
-    
-    # 개발용: 5분마다 실행 (테스트용)
-    schedule.every(5).minutes.do(run_automation_job)
-    
-    while True:
-        schedule.run_pending()
-        time.sleep(60)  # 1분마다 체크
 
 @app.get("/health")
 async def health_check():
