@@ -302,31 +302,11 @@ def parse_assignment_file(content):
             except Exception as e:
                 logger.debug(f"파싱 실패: {line} - {e}")
     
-    # 테스트용 데이터 추가 (파일이 비어있을 경우)
+    # 파일이 비어있을 경우 빈 리스트 반환 (더미 데이터 제거)
     if not assignments:
-        assignments = [
-            {
-                'course': 'AI응용수학',
-                'activity': '5주차 과제',
-                'status': '❌ 해야 할 과제',
-                'type': '과제',
-                'url': ''
-            },
-            {
-                'course': '딥러닝입문',
-                'activity': '5주차 동영상',
-                'status': '❌ 해야 할 과제',
-                'type': '동영상',
-                'url': ''
-            },
-            {
-                'course': '기초AI알고리즘',
-                'activity': '4주차 퀴즈',
-                'status': '✅ 완료',
-                'type': '퀴즈',
-                'url': ''
-            }
-        ]
+        logger.warning("⚠️ assignment.txt 파일이 비어있거나 파싱할 수 없습니다.")
+        logger.info("💡 자동화가 실행되지 않았거나 실패했을 가능성이 있습니다.")
+        assignments = []
     
     return assignments
 

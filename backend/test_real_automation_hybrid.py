@@ -304,8 +304,36 @@ def setup_driver():
         chrome_options.add_argument("--disable-features=TranslateUI")
         chrome_options.add_argument("--disable-ipc-flooding-protection")
         
-        service = Service(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=chrome_options)
+        # Cloud Run 환경에서 Chrome 드라이버 설정
+        try:
+            # Chrome 드라이버 경로 직접 설정
+            chrome_driver_path = "/usr/bin/chromedriver"
+            if os.path.exists(chrome_driver_path):
+                service = Service(chrome_driver_path)
+                logger.info(f"✅ 시스템 Chrome 드라이버 사용: {chrome_driver_path}")
+            else:
+                # WebDriver Manager 사용 (fallback)
+                service = Service(ChromeDriverManager().install())
+                logger.info("✅ WebDriver Manager로 Chrome 드라이버 설치")
+            
+            driver = webdriver.Chrome(service=service, options=chrome_options)
+            
+        except Exception as driver_error:
+            logger.error(f"❌ Chrome 드라이버 초기화 실패: {driver_error}")
+            # Cloud Run 환경에서 Chrome 실행을 위한 추가 시도
+            try:
+                # 환경 변수 설정
+                os.environ['CHROME_BIN'] = '/usr/bin/google-chrome'
+                os.environ['CHROME_DRIVER_PATH'] = '/usr/bin/chromedriver'
+                
+                # 직접 경로로 재시도
+                service = Service('/usr/bin/chromedriver')
+                driver = webdriver.Chrome(service=service, options=chrome_options)
+                logger.info("✅ 직접 경로로 Chrome 드라이버 초기화 성공")
+                
+            except Exception as fallback_error:
+                logger.error(f"❌ Chrome 드라이버 fallback 실패: {fallback_error}")
+                return None
         
         # 자동화 감지 방지
         driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
