@@ -16,6 +16,7 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
   bool _isLoading = false;
   String? _error;
   List<Assignment> _assignments = [];
+  DateTime? _lastUpdated;
   late AnimationController _loadingController;
   late AnimationController _fadeController;
 
@@ -394,6 +395,7 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
             status: item['status'] ?? '❓ 상태 불명',
             url: item['url'] ?? '',
           )).toList();
+          _lastUpdated = DateTime.now(); // 업데이트 시간 기록
         });
         
         print('✅ 실제 LearnUs 데이터 표시 완료!');
@@ -518,6 +520,36 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
                     ],
                   ),
                   const SizedBox(height: 16),
+                  // 업데이트 시간 표시
+                  if (_lastUpdated != null) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.update,
+                            color: Colors.white70,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '마지막 업데이트: ${_formatDateTime(_lastUpdated!)}',
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                   if (_isLoading) ...[
                     const Text(
                       'assignment.txt 파일에서 과제정보를 불러오고 있어요..',
@@ -885,5 +917,21 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
         ),
       ),
     );
+  }
+
+  // 날짜/시간 포맷팅 함수
+  String _formatDateTime(DateTime dateTime) {
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+    
+    if (difference.inMinutes < 1) {
+      return '방금 전';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes}분 전';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours}시간 전';
+    } else {
+      return '${dateTime.month}/${dateTime.day} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+    }
   }
 }
