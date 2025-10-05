@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/assignment.dart';
+import '../services/firebase_service.dart';
+import '../models/learnus_credentials.dart';
 
 class AssignmentsScreen extends StatefulWidget {
   const AssignmentsScreen({super.key});
@@ -31,6 +33,9 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
+    
+    // LearnUs 정보 자동 확인
+    _checkLearnUsCredentials();
   }
 
   @override
@@ -937,6 +942,113 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
       return '${difference.inHours}시간 전';
     } else {
       return '${dateTime.month}/${dateTime.day} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+    }
+  }
+
+  // LearnUs 정보 자동 확인
+  Future<void> _checkLearnUsCredentials() async {
+    try {
+      print('🔍 LearnUs 정보 자동 확인 중...');
+      
+      // Firebase에서 현재 사용자의 LearnUs 정보 조회
+      final credentials = await FirebaseService.getLearnUsCredentials();
+      
+      if (credentials != null && credentials.isActive) {
+        print('✅ LearnUs 정보 발견: ${credentials.username}');
+        
+        // 자동으로 로그인 상태로 설정
+        setState(() {
+          _isLoggedIn = true;
+        });
+        
+        // 자동으로 과제 정보 로드
+        await _loadAssignments();
+        
+        print('🎉 LearnUs 정보로 자동 로그인 완료!');
+      } else {
+        print('ℹ️ LearnUs 정보가 없습니다. 수동 로그인이 필요합니다.');
+      }
+    } catch (e) {
+      print('❌ LearnUs 정보 확인 실패: $e');
+    }
+  }
+
+  // 과제 정보 자동 로드
+  Future<void> _loadAssignments() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    // 페이드 인 애니메이션
+    _fadeController.forward();
+
+    try {
+      // 여러 서버 URL 시도
+      final serverUrls = [
+        'https://learnus-backend-986202706020.asia-northeast3.run.app', // Cloud Run 서비스
+        'http://10.0.2.2:8000',  // 에뮬레이터용
+        'http://localhost:8000', // 로컬호스트
+        'http://127.0.0.1:8000', // 루프백
+      ];
+
+      bool success = false;
+      for (String serverUrl in serverUrls) {
+        try {
+          print('🔍 서버 연결 시도: $serverUrl');
+          
+          final response = await http.get(
+            Uri.parse('$serverUrl/assignments'),
+            headers: {'Content-Type': 'application/json'},
+          ).timeout(const Duration(seconds: 10));
+
+          if (response.statusCode == 200) {
+            print('✅ 서버 연결 성공: $serverUrl');
+            
+            final data = json.decode(response.body);
+            final assignmentsData = data['assignments'] as List;
+            final totalCount = data['total_count'] ?? 0;
+            final incompleteCount = data['incomplete_count'] ?? 0;
+            final lastUpdate = data['last_update'];
+            
+            print('📊 assignment.txt 파일에서 데이터 로드 완료:');
+            print('   총 과제: $totalCount개');
+            print('   미완료: $incompleteCount개');
+            print('   마지막 업데이트: $lastUpdate');
+            
+            setState(() {
+              _assignments = assignmentsData.map((item) => Assignment(
+                course: item['course'] ?? '',
+                activity: item['activity'] ?? '',
+                type: item['type'] ?? '과제',
+                status: item['status'] ?? '❓ 상태 불명',
+                url: item['url'] ?? '',
+              )).toList();
+              _lastUpdated = DateTime.now(); // 업데이트 시간 기록
+            });
+            
+            print('✅ 실제 LearnUs 데이터 표시 완료!');
+            success = true;
+            break;
+          }
+        } catch (e) {
+          print('❌ 서버 연결 실패: $serverUrl - $e');
+          continue;
+        }
+      }
+
+      if (!success) {
+        print('❌ 모든 서버 연결 실패, 시뮬레이션 모드로 실행');
+        await _runSimulation();
+      }
+    } catch (e) {
+      print('❌ 과제 정보 로드 실패: $e');
+      setState(() {
+        _error = '과제 정보를 불러오는데 실패했습니다: $e';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 }
