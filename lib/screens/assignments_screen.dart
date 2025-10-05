@@ -44,7 +44,12 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
-      body: _isLoggedIn ? _buildAssignmentsView() : _buildOnboardingView(),
+      body: PageView(
+        physics: const NeverScrollableScrollPhysics(), // 좌우 스와이프 비활성화
+        children: [
+          _isLoggedIn ? _buildAssignmentsView() : _buildOnboardingView(),
+        ],
+      ),
     );
   }
 
