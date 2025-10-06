@@ -72,34 +72,143 @@ class _MainScreenState extends State<MainScreen> {
         },
         children: _screens,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _currentIndex,
-        onTap: _onTabTapped,
-        selectedItemColor: Theme.of(context).colorScheme.primary,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '홈',
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFFF8FAFC), Color(0xFFF1F5F9)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: '일정',
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 20,
+              offset: const Offset(0, -4),
+            ),
+            BoxShadow(
+              color: Colors.white.withOpacity(0.8),
+              blurRadius: 1,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.assignment),
-            label: '과제',
+          child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            currentIndex: _currentIndex,
+            onTap: _onTabTapped,
+            selectedItemColor: const Color(0xFF1E40AF),
+            unselectedItemColor: const Color(0xFF64748B),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            selectedLabelStyle: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 12,
+              letterSpacing: 0.2,
+            ),
+            unselectedLabelStyle: const TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 11,
+              letterSpacing: 0.1,
+            ),
+            items: [
+              BottomNavigationBarItem(
+                icon: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    gradient: _currentIndex == 0
+                        ? const LinearGradient(
+                            colors: [Color(0xFF3B82F6), Color(0xFF1E40AF)],
+                          )
+                        : null,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    _currentIndex == 0 ? Icons.home_rounded : Icons.home_outlined,
+                    size: 24,
+                  ),
+                ),
+                label: '홈',
+              ),
+              BottomNavigationBarItem(
+                icon: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    gradient: _currentIndex == 1
+                        ? const LinearGradient(
+                            colors: [Color(0xFF3B82F6), Color(0xFF1E40AF)],
+                          )
+                        : null,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    _currentIndex == 1 ? Icons.calendar_today_rounded : Icons.calendar_today_outlined,
+                    size: 24,
+                  ),
+                ),
+                label: '일정',
+              ),
+              BottomNavigationBarItem(
+                icon: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    gradient: _currentIndex == 2
+                        ? const LinearGradient(
+                            colors: [Color(0xFF3B82F6), Color(0xFF1E40AF)],
+                          )
+                        : null,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    _currentIndex == 2 ? Icons.assignment_rounded : Icons.assignment_outlined,
+                    size: 24,
+                  ),
+                ),
+                label: '과제',
+              ),
+              BottomNavigationBarItem(
+                icon: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    gradient: _currentIndex == 3
+                        ? const LinearGradient(
+                            colors: [Color(0xFF3B82F6), Color(0xFF1E40AF)],
+                          )
+                        : null,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    _currentIndex == 3 ? Icons.schedule_rounded : Icons.schedule_outlined,
+                    size: 24,
+                  ),
+                ),
+                label: '시간표',
+              ),
+              BottomNavigationBarItem(
+                icon: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    gradient: _currentIndex == 4
+                        ? const LinearGradient(
+                            colors: [Color(0xFF3B82F6), Color(0xFF1E40AF)],
+                          )
+                        : null,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    _currentIndex == 4 ? Icons.person_rounded : Icons.person_outline,
+                    size: 24,
+                  ),
+                ),
+                label: '프로필',
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.schedule),
-            label: '시간표',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: '프로필',
-          ),
-        ],
+        ),
       ),
     );
   }

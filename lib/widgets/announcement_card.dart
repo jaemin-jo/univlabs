@@ -17,14 +17,18 @@ class AnnouncementCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               Row(
                 children: [
                   Container(
@@ -45,8 +49,9 @@ class AnnouncementCard extends StatelessWidget {
                       children: [
                         Text(
                           announcement.title,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -56,21 +61,24 @@ class AnnouncementCard extends StatelessWidget {
                           children: [
                             Text(
                               announcement.type.displayName,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              style: TextStyle(
                                 color: _getTypeColor(announcement.type),
                                 fontWeight: FontWeight.w500,
+                                fontSize: 12,
                               ),
                             ),
                             const SizedBox(width: 8),
                             Text(
                               '•',
-                              style: TextStyle(color: Colors.grey[400]),
+                              style: TextStyle(color: Colors.grey[400], fontSize: 12),
                             ),
                             const SizedBox(width: 8),
                             Text(
                               announcement.department ?? '부서 정보 없음',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              style: TextStyle(
                                 color: Colors.grey[600],
+                                fontWeight: FontWeight.w500,
+                                fontSize: 10,
                               ),
                             ),
                           ],
@@ -89,80 +97,77 @@ class AnnouncementCard extends StatelessWidget {
                         '중요',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 12,
+                          fontSize: 10,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               Text(
                 announcement.content,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: TextStyle(
+                  color: Colors.grey.shade600,
+                  fontSize: 12,
+                  height: 1.4,
+                ),
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
               if (announcement.tags.isNotEmpty) ...[
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 Wrap(
-                  spacing: 8,
+                  spacing: 6,
                   runSpacing: 4,
                   children: announcement.tags
                       .take(3)
                       .map((tag) => Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
                               color: Colors.grey[100],
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               '#$tag',
                               style: TextStyle(
                                 color: Colors.grey[700],
-                                fontSize: 12,
+                                fontSize: 10,
                               ),
                             ),
                           ))
                       .toList(),
                 ),
               ],
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(
-                    Icons.access_time,
-                    size: 16,
-                    color: Colors.grey[600],
-                  ),
-                  const SizedBox(width: 4),
                   Text(
-                    DateFormat('MM/dd HH:mm').format(announcement.publishDate),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
+                    DateFormat('yyyy.MM.dd', 'ko').format(announcement.publishDate),
+                    style: TextStyle(
+                      color: Colors.grey.shade500,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const Spacer(),
-                  IconButton(
-                    icon: Icon(
-                      announcement.isImportant ? Icons.star : Icons.star_border,
-                      color: announcement.isImportant ? Colors.amber : Colors.grey,
-                    ),
-                    onPressed: onToggleImportance,
-                  ),
-                  if (announcement.link != null)
+                  if (announcement.link?.isNotEmpty == true)
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
+                        color: _getTypeColor(announcement.type).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: _getTypeColor(announcement.type).withOpacity(0.3),
+                          width: 1,
+                        ),
                       ),
                       child: Text(
                         '링크',
                         style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
+                          color: _getTypeColor(announcement.type),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
@@ -194,3 +199,4 @@ class AnnouncementCard extends StatelessWidget {
     }
   }
 }
+

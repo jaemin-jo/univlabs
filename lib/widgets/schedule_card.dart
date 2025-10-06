@@ -22,16 +22,20 @@ class ScheduleCard extends StatelessWidget {
     }
 
     return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: InkWell(
         onTap: () {
-          // 일정 상세 화면으로 이동
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            // 일정 상세 화면으로 이동
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               Row(
                 children: [
                   Container(
@@ -52,18 +56,20 @@ class ScheduleCard extends StatelessWidget {
                       children: [
                         Text(
                           schedule.title,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
                           ),
-                          maxLines: 1,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 4),
                         Text(
                           schedule.type.displayName,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          style: TextStyle(
                             color: _getTypeColor(schedule.type),
                             fontWeight: FontWeight.w500,
+                            fontSize: 12,
                           ),
                         ),
                       ],

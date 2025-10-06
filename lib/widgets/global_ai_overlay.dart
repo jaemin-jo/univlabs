@@ -176,30 +176,41 @@ class _GlobalAIOverlayState extends State<GlobalAIOverlay>
                         ),
                         child: Stack(
                           children: [
-                            // 로봇 헤드 아이콘 (동그라미 클리핑)
+                            // AI 서클 (uiverse.io 스타일 적용)
                             Center(
-                              child: ClipOval(
-                                child: Image.asset(
-                                  'assets/robot_head_icon.png',
-                                  width: 65,
-                                  height: 65,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    // 이미지가 없을 경우 아이콘으로 대체
-                                    return Container(
-                                      width: 65,
-                                      height: 65,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.2),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Icon(
-                                        Icons.psychology,
-                                        color: Colors.white,
-                                        size: 40,
-                                      ),
-                                    );
-                                  },
+                              child: Container(
+                                width: 65,
+                                height: 65,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  gradient: LinearGradient(
+                                    colors: hasUrgentSchedules
+                                        ? [Color(0xFFFF6B6B), Color(0xFFEE5A52)]
+                                        : [Color(0xFF667eea), Color(0xFF764ba2)],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  boxShadow: [
+                                    // 외부 그림자
+                                    BoxShadow(
+                                      color: (hasUrgentSchedules ? Color(0xFFFF6B6B) : Color(0xFF667eea)).withOpacity(0.4),
+                                      blurRadius: 20,
+                                      offset: const Offset(0, 8),
+                                    ),
+                                    // 내부 그림자
+                                    BoxShadow(
+                                      color: Colors.white.withOpacity(0.2),
+                                      blurRadius: 1,
+                                      offset: const Offset(0, 1),
+                                    ),
+                                  ],
+                                ),
+                                child: Center(
+                                  child: Icon(
+                                    hasUrgentSchedules ? Icons.warning_rounded : Icons.psychology_rounded,
+                                    color: Colors.white,
+                                    size: 32,
+                                  ),
                                 ),
                               ),
                             ),

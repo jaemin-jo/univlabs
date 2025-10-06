@@ -2,8 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/schedule_provider.dart';
 
-class AIRecommendationCard extends StatelessWidget {
+class AIRecommendationCard extends StatefulWidget {
   const AIRecommendationCard({super.key});
+
+  @override
+  State<AIRecommendationCard> createState() => _AIRecommendationCardState();
+}
+
+class _AIRecommendationCardState extends State<AIRecommendationCard> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,17 +52,52 @@ class AIRecommendationCard extends StatelessWidget {
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(8),
+                      width: 48,
+                      height: 48,
                       decoration: BoxDecoration(
-                        color: hasUrgentSchedules 
-                            ? Colors.red.withOpacity(0.2)
-                            : Colors.purple.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(8),
+                        gradient: LinearGradient(
+                          colors: hasUrgentSchedules 
+                              ? [Colors.red.shade400, Colors.red.shade600]
+                              : [Colors.purple.shade400, Colors.blue.shade600],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: (hasUrgentSchedules ? Colors.red : Colors.purple).withOpacity(0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                      child: Icon(
-                        hasUrgentSchedules ? Icons.warning : Icons.psychology,
-                        color: hasUrgentSchedules ? Colors.red : Colors.purple,
-                        size: 24,
+                      child: Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: hasUrgentSchedules 
+                                ? [Colors.red.shade400, Colors.red.shade600]
+                                : [Colors.purple.shade400, Colors.blue.shade600],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color: (hasUrgentSchedules ? Colors.red : Colors.purple).withOpacity(0.3),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Icon(
+                            hasUrgentSchedules ? Icons.warning_rounded : Icons.psychology_rounded,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
