@@ -285,17 +285,21 @@ def setup_driver():
         logger.info("🔍 2단계: Chrome 옵션 설정 중...")
         chrome_options = Options()
         
-        # 🔥 DevToolsActivePort 오류 해결 (Playwright 분석 결과 기반)
-        chrome_options.add_argument("--remote-debugging-port=9222")  # 핵심: 디버깅 포트 활성화
+        # 🔥 DevToolsActivePort 오류 해결을 위한 핵심 옵션들 (Cloud Run 최적화)
         chrome_options.add_argument("--no-sandbox")  # 필수: 샌드박스 비활성화
         chrome_options.add_argument("--disable-dev-shm-usage")  # 필수: 공유 메모리 비활성화
+        chrome_options.add_argument("--disable-setuid-sandbox")  # 필수: setuid 샌드박스 비활성화
+        chrome_options.add_argument("--disable-gpu")  # 필수: GPU 비활성화
+        chrome_options.add_argument("--headless")  # 필수: 헤드리스 모드
+        chrome_options.add_argument("--disable-web-security")  # 필수: 웹 보안 비활성화
+        chrome_options.add_argument("--disable-features=VizDisplayCompositor")  # 필수: Viz 디스플레이 컴포저 비활성화
         
         # 🔥 자동화 감지 우회 핵심 옵션들 (Playwright 분석 결과 기반)
         chrome_options.add_argument("--disable-blink-features=AutomationControlled")
         chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
         chrome_options.add_experimental_option('useAutomationExtension', False)
         
-        # 🔥 Playwright 분석 결과 기반 추가 안정성 옵션들
+        # 🔥 Cloud Run 환경 최적화 옵션들 (중복 제거)
         chrome_options.add_argument("--disable-background-timer-throttling")
         chrome_options.add_argument("--disable-backgrounding-occluded-windows")
         chrome_options.add_argument("--disable-renderer-backgrounding")
@@ -319,21 +323,16 @@ def setup_driver():
         chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36")
         chrome_options.add_argument("--accept-lang=ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7")
         
-        # Cloud Run 환경을 위한 필수 옵션들
-        chrome_options.add_argument("--headless")  # 필수: 헤드리스 모드
+        # Cloud Run 환경을 위한 필수 옵션들 (중복 제거)
         chrome_options.add_argument("--no-first-run")  # 첫 실행 비활성화
         chrome_options.add_argument("--disable-default-apps")  # 기본 앱 비활성화
         chrome_options.add_argument("--disable-background-mode")  # 백그라운드 모드 비활성화
-        chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--disable-extensions")
         chrome_options.add_argument("--disable-plugins")
         chrome_options.add_argument("--disable-images")
-        chrome_options.add_argument("--disable-web-security")
-        chrome_options.add_argument("--disable-features=VizDisplayCompositor")
         chrome_options.add_argument("--window-size=1920,1080")
         chrome_options.add_argument("--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
         chrome_options.add_argument("--log-level=3")
-        chrome_options.add_argument("--disable-blink-features=AutomationControlled")
         
         # Cloud Run 환경 최적화 (충돌 옵션 제거)
         chrome_options.add_argument("--disable-background-timer-throttling")
@@ -355,61 +354,23 @@ def setup_driver():
         chrome_options.add_argument("--disable-add-to-shelf")
         chrome_options.add_argument("--disable-client-side-phishing-detection")
         
-        # Cloud Run 환경에서 Chrome 실행을 위한 추가 옵션
+        # Cloud Run 환경에서 Chrome 실행을 위한 추가 옵션 (중복 제거)
         chrome_options.add_argument("--no-zygote")
-        
-        # Cloud Run 메모리 최적화
         chrome_options.add_argument("--memory-pressure-off")
         chrome_options.add_argument("--max_old_space_size=4096")
-        chrome_options.add_argument("--disable-background-networking")
-        chrome_options.add_argument("--disable-default-apps")
-        chrome_options.add_argument("--disable-sync")
-        chrome_options.add_argument("--disable-translate")
         chrome_options.add_argument("--hide-scrollbars")
         chrome_options.add_argument("--mute-audio")
-        chrome_options.add_argument("--no-first-run")
         chrome_options.add_argument("--disable-logging")
         chrome_options.add_argument("--disable-permissions-api")
         chrome_options.add_argument("--disable-popup-blocking")
-        chrome_options.add_argument("--disable-prompt-on-repost")
-        chrome_options.add_argument("--disable-hang-monitor")
-        chrome_options.add_argument("--disable-client-side-phishing-detection")
         chrome_options.add_argument("--disable-component-update")
-        chrome_options.add_argument("--disable-domain-reliability")
-        chrome_options.add_argument("--disable-features=TranslateUI")
-        chrome_options.add_argument("--disable-ipc-flooding-protection")
         
-        # DevToolsActivePort 오류 해결을 위한 핵심 옵션들
+        # DevToolsActivePort 오류 해결을 위한 핵심 옵션들 (중복 제거)
         chrome_options.add_argument("--disable-dev-tools")
-        chrome_options.add_argument("--disable-software-rasterizer")
         chrome_options.add_argument("--disable-gpu-sandbox")
-        chrome_options.add_argument("--disable-background-timer-throttling")
-        chrome_options.add_argument("--disable-backgrounding-occluded-windows")
-        chrome_options.add_argument("--disable-renderer-backgrounding")
-        chrome_options.add_argument("--disable-features=TranslateUI")
-        chrome_options.add_argument("--disable-ipc-flooding-protection")
-        chrome_options.add_argument("--disable-hang-monitor")
-        chrome_options.add_argument("--disable-prompt-on-repost")
-        chrome_options.add_argument("--disable-client-side-phishing-detection")
-        chrome_options.add_argument("--disable-component-update")
-        chrome_options.add_argument("--disable-domain-reliability")
-        chrome_options.add_argument("--disable-features=VizDisplayCompositor")
-        chrome_options.add_argument("--disable-background-networking")
-        chrome_options.add_argument("--disable-default-apps")
-        chrome_options.add_argument("--disable-sync")
-        chrome_options.add_argument("--disable-translate")
-        chrome_options.add_argument("--hide-scrollbars")
-        chrome_options.add_argument("--mute-audio")
-        chrome_options.add_argument("--no-first-run")
-        chrome_options.add_argument("--disable-logging")
-        chrome_options.add_argument("--disable-permissions-api")
-        chrome_options.add_argument("--disable-popup-blocking")
         
-        # 🔥 DevToolsActivePort 오류 해결을 위한 핵심 옵션들
+        # 🔥 DevToolsActivePort 오류 해결을 위한 핵심 옵션들 (중복 제거)
         chrome_options.add_argument("--remote-debugging-port=0")  # 핵심: 디버깅 포트 비활성화
-        chrome_options.add_argument("--disable-dev-shm-usage")  # 핵심: 공유 메모리 비활성화
-        chrome_options.add_argument("--no-zygote")  # 핵심: zygote 프로세스 비활성화
-        chrome_options.add_argument("--disable-setuid-sandbox")  # 핵심: setuid 샌드박스 비활성화
         chrome_options.add_argument("--disable-accelerated-2d-canvas")  # 2D 가속 비활성화
         chrome_options.add_argument("--disable-accelerated-jpeg-decoding")  # JPEG 디코딩 가속 비활성화
         chrome_options.add_argument("--disable-accelerated-mjpeg-decode")  # MJPEG 디코딩 가속 비활성화
@@ -418,31 +379,8 @@ def setup_driver():
         chrome_options.add_argument("--disable-gpu-memory-buffer-video-frames")  # GPU 비디오 프레임 비활성화
         chrome_options.add_argument("--disable-gpu-rasterization")  # GPU 래스터화 비활성화
         chrome_options.add_argument("--disable-zero-copy")  # 제로 카피 비활성화
-        chrome_options.add_argument("--disable-gpu-sandbox")  # GPU 샌드박스 비활성화
-        chrome_options.add_argument("--disable-software-rasterizer")  # 소프트웨어 래스터화 비활성화
-        chrome_options.add_argument("--disable-background-timer-throttling")  # 백그라운드 타이머 스로틀링 비활성화
-        chrome_options.add_argument("--disable-backgrounding-occluded-windows")  # 가려진 창 백그라운드 처리 비활성화
-        chrome_options.add_argument("--disable-renderer-backgrounding")  # 렌더러 백그라운드 처리 비활성화
-        chrome_options.add_argument("--disable-features=TranslateUI")  # 번역 UI 비활성화
-        chrome_options.add_argument("--disable-ipc-flooding-protection")  # IPC 플러딩 보호 비활성화
-        chrome_options.add_argument("--disable-hang-monitor")  # 행 모니터 비활성화
-        chrome_options.add_argument("--disable-prompt-on-repost")  # 재전송 프롬프트 비활성화
-        chrome_options.add_argument("--disable-client-side-phishing-detection")  # 클라이언트 사이드 피싱 탐지 비활성화
-        chrome_options.add_argument("--disable-component-update")  # 컴포넌트 업데이트 비활성화
-        chrome_options.add_argument("--disable-domain-reliability")  # 도메인 신뢰성 비활성화
-        chrome_options.add_argument("--disable-features=VizDisplayCompositor")  # Viz 디스플레이 컴포저 비활성화
-        chrome_options.add_argument("--disable-background-networking")  # 백그라운드 네트워킹 비활성화
-        chrome_options.add_argument("--disable-default-apps")  # 기본 앱 비활성화
-        chrome_options.add_argument("--disable-sync")  # 동기화 비활성화
-        chrome_options.add_argument("--disable-translate")  # 번역 비활성화
-        chrome_options.add_argument("--hide-scrollbars")  # 스크롤바 숨기기
-        chrome_options.add_argument("--mute-audio")  # 오디오 음소거
-        chrome_options.add_argument("--no-first-run")  # 첫 실행 비활성화
-        chrome_options.add_argument("--disable-logging")  # 로깅 비활성화
-        chrome_options.add_argument("--disable-permissions-api")  # 권한 API 비활성화
-        chrome_options.add_argument("--disable-popup-blocking")  # 팝업 차단 비활성화
         
-        # 🔥 Cloud Run 환경에서 Chrome 실행을 위한 추가 옵션들
+        # 🔥 Cloud Run 환경에서 Chrome 실행을 위한 추가 옵션들 (중복 제거)
         chrome_options.add_argument("--disable-web-security")  # 웹 보안 비활성화
         chrome_options.add_argument("--disable-features=VizDisplayCompositor")  # Viz 디스플레이 컴포저 비활성화
         chrome_options.add_argument("--disable-ipc-flooding-protection")  # IPC 플러딩 보호 비활성화
@@ -451,7 +389,6 @@ def setup_driver():
         chrome_options.add_argument("--disable-client-side-phishing-detection")  # 클라이언트 사이드 피싱 탐지 비활성화
         chrome_options.add_argument("--disable-component-update")  # 컴포넌트 업데이트 비활성화
         chrome_options.add_argument("--disable-domain-reliability")  # 도메인 신뢰성 비활성화
-        chrome_options.add_argument("--disable-features=VizDisplayCompositor")  # Viz 디스플레이 컴포저 비활성화
         chrome_options.add_argument("--disable-background-networking")  # 백그라운드 네트워킹 비활성화
         chrome_options.add_argument("--disable-default-apps")  # 기본 앱 비활성화
         chrome_options.add_argument("--disable-sync")  # 동기화 비활성화
