@@ -60,7 +60,7 @@ def safe_mouse_move(driver, x_offset=0, y_offset=0):
         logger.debug(f"마우스 이동 실패: {e}")
 
 def setup_driver():
-    """Chrome 드라이버 설정 (하이브리드 백업 버전)"""
+    """Chrome 드라이버 설정 (하이브리드 백업 버전) - 강화된 오류 처리"""
     try:
         logger.info("🔧 Chrome 드라이버 설정 중...")
         
@@ -76,10 +76,63 @@ def setup_driver():
         chrome_options.add_argument("--disable-web-security")
         chrome_options.add_argument("--remote-debugging-port=0")
         
+        # 추가 안정성 옵션들
+        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--disable-plugins")
+        chrome_options.add_argument("--disable-images")
+        chrome_options.add_argument("--disable-javascript")
+        chrome_options.add_argument("--disable-css")
+        chrome_options.add_argument("--disable-logging")
+        chrome_options.add_argument("--disable-permissions-api")
+        chrome_options.add_argument("--disable-popup-blocking")
+        chrome_options.add_argument("--disable-background-timer-throttling")
+        chrome_options.add_argument("--disable-backgrounding-occluded-windows")
+        chrome_options.add_argument("--disable-renderer-backgrounding")
+        chrome_options.add_argument("--disable-features=TranslateUI")
+        chrome_options.add_argument("--disable-ipc-flooding-protection")
+        chrome_options.add_argument("--disable-software-rasterizer")
+        chrome_options.add_argument("--disable-background-networking")
+        chrome_options.add_argument("--disable-sync")
+        chrome_options.add_argument("--disable-translate")
+        chrome_options.add_argument("--disable-plugins-discovery")
+        chrome_options.add_argument("--disable-preconnect")
+        chrome_options.add_argument("--disable-hang-monitor")
+        chrome_options.add_argument("--disable-prompt-on-repost")
+        chrome_options.add_argument("--disable-domain-reliability")
+        chrome_options.add_argument("--disable-component-extensions-with-background-pages")
+        chrome_options.add_argument("--disable-background-downloads")
+        chrome_options.add_argument("--disable-add-to-shelf")
+        chrome_options.add_argument("--disable-client-side-phishing-detection")
+        chrome_options.add_argument("--disable-component-update")
+        chrome_options.add_argument("--disable-default-apps")
+        chrome_options.add_argument("--no-first-run")
+        chrome_options.add_argument("--disable-background-mode")
+        chrome_options.add_argument("--disable-features=VizDisplayCompositor")
+        chrome_options.add_argument("--disable-dev-tools")
+        chrome_options.add_argument("--disable-gpu-sandbox")
+        chrome_options.add_argument("--disable-accelerated-2d-canvas")
+        chrome_options.add_argument("--disable-accelerated-jpeg-decoding")
+        chrome_options.add_argument("--disable-accelerated-mjpeg-decode")
+        chrome_options.add_argument("--disable-accelerated-video-decode")
+        chrome_options.add_argument("--disable-gpu-memory-buffer-compositor-resources")
+        chrome_options.add_argument("--disable-gpu-memory-buffer-video-frames")
+        chrome_options.add_argument("--disable-gpu-rasterization")
+        chrome_options.add_argument("--disable-zero-copy")
+        chrome_options.add_argument("--no-zygote")
+        chrome_options.add_argument("--memory-pressure-off")
+        chrome_options.add_argument("--max_old_space_size=4096")
+        chrome_options.add_argument("--hide-scrollbars")
+        chrome_options.add_argument("--mute-audio")
+        chrome_options.add_argument("--log-level=3")
+        
         # 자동화 감지 우회
         chrome_options.add_argument("--disable-blink-features=AutomationControlled")
         chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
         chrome_options.add_experimental_option('useAutomationExtension', False)
+        
+        # 사용자 에이전트 설정
+        chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+        chrome_options.add_argument("--accept-lang=ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7")
         
         driver = webdriver.Chrome(options=chrome_options)
         driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
@@ -89,51 +142,178 @@ def setup_driver():
         
     except Exception as e:
         logger.error(f"❌ Chrome 드라이버 설정 실패: {e}")
+        logger.error(f"❌ 오류 상세: {str(e)}")
+        import traceback
+        logger.error(f"❌ 스택 트레이스: {traceback.format_exc()}")
         return None
 
 def login_to_learnus(driver, university, username, password):
-    """LearnUs 로그인 (하이브리드 백업 버전)"""
+    """LearnUs 로그인 (하이브리드 백업 버전) - 강화된 오류 처리"""
     try:
         logger.info(f"🔐 LearnUs 로그인 시작: {university}")
         
         # LearnUs 메인 페이지로 이동
+        logger.info("🌐 LearnUs 메인 페이지로 이동...")
         driver.get("https://ys.learnus.org/")
-        time.sleep(2)
-        
-        # 로그인 버튼 클릭
-        login_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "a[href*='login']"))
-        )
-        login_button.click()
-        time.sleep(2)
-        
-        # 사용자명 입력
-        username_field = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.NAME, "username"))
-        )
-        username_field.clear()
-        username_field.send_keys(username)
-        
-        # 비밀번호 입력
-        password_field = driver.find_element(By.NAME, "password")
-        password_field.clear()
-        password_field.send_keys(password)
-        
-        # 로그인 버튼 클릭
-        submit_button = driver.find_element(By.CSS_SELECTOR, "input[type='submit']")
-        submit_button.click()
         time.sleep(3)
         
+        # 현재 URL 확인
+        current_url = driver.current_url
+        logger.info(f"📍 현재 URL: {current_url}")
+        
+        # 페이지 제목 확인
+        try:
+            page_title = driver.title
+            logger.info(f"📄 페이지 제목: {page_title}")
+        except Exception as title_error:
+            logger.warning(f"⚠️ 페이지 제목 확인 실패: {title_error}")
+        
+        # 로그인 버튼 찾기 (다양한 선택자 시도)
+        logger.info("🔍 로그인 버튼 찾기...")
+        login_button = None
+        login_selectors = [
+            "a[href*='login']",
+            "a[href*='Login']", 
+            ".login-link",
+            ".btn-login",
+            "a:contains('로그인')",
+            "a:contains('Login')"
+        ]
+        
+        for selector in login_selectors:
+            try:
+                login_button = WebDriverWait(driver, 5).until(
+                    EC.element_to_be_clickable((By.CSS_SELECTOR, selector))
+                )
+                logger.info(f"✅ 로그인 버튼 발견: {selector}")
+                break
+            except:
+                continue
+        
+        if not login_button:
+            logger.error("❌ 로그인 버튼을 찾을 수 없음")
+            return False
+        
+        # 로그인 버튼 클릭
+        logger.info("🖱️ 로그인 버튼 클릭...")
+        login_button.click()
+        time.sleep(3)
+        
+        # 로그인 페이지 로딩 확인
+        logger.info("⏳ 로그인 페이지 로딩 대기...")
+        time.sleep(2)
+        
+        # 현재 URL 재확인
+        login_url = driver.current_url
+        logger.info(f"📍 로그인 페이지 URL: {login_url}")
+        
+        # 사용자명 입력 필드 찾기
+        logger.info("🔍 사용자명 입력 필드 찾기...")
+        username_field = None
+        username_selectors = [
+            "input[name='username']",
+            "input[name='userid']",
+            "input[name='id']",
+            "input[type='text']",
+            "#username",
+            "#userid",
+            "#id"
+        ]
+        
+        for selector in username_selectors:
+            try:
+                username_field = WebDriverWait(driver, 5).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, selector))
+                )
+                logger.info(f"✅ 사용자명 필드 발견: {selector}")
+                break
+            except:
+                continue
+        
+        if not username_field:
+            logger.error("❌ 사용자명 입력 필드를 찾을 수 없음")
+            return False
+        
+        # 사용자명 입력
+        logger.info(f"⌨️ 사용자명 입력: {username}")
+        username_field.clear()
+        username_field.send_keys(username)
+        time.sleep(1)
+        
+        # 비밀번호 입력 필드 찾기
+        logger.info("🔍 비밀번호 입력 필드 찾기...")
+        password_field = None
+        password_selectors = [
+            "input[name='password']",
+            "input[name='passwd']",
+            "input[type='password']",
+            "#password",
+            "#passwd"
+        ]
+        
+        for selector in password_selectors:
+            try:
+                password_field = driver.find_element(By.CSS_SELECTOR, selector)
+                logger.info(f"✅ 비밀번호 필드 발견: {selector}")
+                break
+            except:
+                continue
+        
+        if not password_field:
+            logger.error("❌ 비밀번호 입력 필드를 찾을 수 없음")
+            return False
+        
+        # 비밀번호 입력
+        logger.info("⌨️ 비밀번호 입력...")
+        password_field.clear()
+        password_field.send_keys(password)
+        time.sleep(1)
+        
+        # 로그인 버튼 찾기 및 클릭
+        logger.info("🔍 로그인 제출 버튼 찾기...")
+        submit_button = None
+        submit_selectors = [
+            "input[type='submit']",
+            "button[type='submit']",
+            ".btn-login",
+            ".btn-submit",
+            "button:contains('로그인')",
+            "button:contains('Login')"
+        ]
+        
+        for selector in submit_selectors:
+            try:
+                submit_button = driver.find_element(By.CSS_SELECTOR, selector)
+                logger.info(f"✅ 로그인 제출 버튼 발견: {selector}")
+                break
+            except:
+                continue
+        
+        if not submit_button:
+            logger.error("❌ 로그인 제출 버튼을 찾을 수 없음")
+            return False
+        
+        # 로그인 제출
+        logger.info("🖱️ 로그인 제출...")
+        submit_button.click()
+        time.sleep(5)
+        
         # 로그인 성공 확인
-        if "learnus.org" in driver.current_url and "login" not in driver.current_url:
+        final_url = driver.current_url
+        logger.info(f"📍 로그인 후 URL: {final_url}")
+        
+        if "learnus.org" in final_url and "login" not in final_url:
             logger.info("✅ 로그인 성공")
             return True
         else:
-            logger.error("❌ 로그인 실패")
+            logger.error("❌ 로그인 실패 - URL 확인")
             return False
             
     except Exception as e:
         logger.error(f"❌ 로그인 중 오류: {e}")
+        logger.error(f"❌ 오류 상세: {str(e)}")
+        import traceback
+        logger.error(f"❌ 스택 트레이스: {traceback.format_exc()}")
         return False
 
 def collect_this_week_lectures_hybrid(driver, university, username, password):
