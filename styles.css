@@ -1082,6 +1082,31 @@ body {
     font-size: 0.9rem;
 }
 
+.tech-stack {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.tech-stack p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.8rem;
+    margin: 0;
+}
+
+.flutter-logo {
+    width: 24px;
+    height: 24px;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.flutter-logo:hover {
+    opacity: 1;
+}
+
 /* Contact Section */
 .contact {
     padding: 6rem 0;
