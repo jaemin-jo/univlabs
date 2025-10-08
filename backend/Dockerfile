@@ -89,6 +89,7 @@ ENV DISPLAY=:99
 ENV DEBIAN_FRONTEND=noninteractive
 ENV CHROME_BIN=/usr/bin/google-chrome
 ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
+ENV PORT=8080
 
 # 🔥 Cloud Run 환경에서 Chrome 실행을 위한 스크립트 생성
 RUN echo '#!/bin/bash\n\
