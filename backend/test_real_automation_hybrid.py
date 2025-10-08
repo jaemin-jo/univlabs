@@ -507,10 +507,60 @@ def test_direct_selenium(university, username, password, student_id):
         logger.info("=" * 80)
         
         logger.info("🔧 Chrome 드라이버 초기화 중...")
-        driver = setup_driver()
-        if not driver:
-            logger.error("❌ Chrome 드라이버 초기화 실패")
-            return False
+        try:
+            driver = setup_driver()
+            if not driver:
+                logger.error("❌ Chrome 드라이버 초기화 실패")
+                return False
+            logger.info("✅ Chrome 드라이버 초기화 성공")
+        except Exception as driver_error:
+            logger.error(f"❌ Chrome 드라이버 초기화 중 예외 발생: {driver_error}")
+            logger.error(f"❌ 오류 타입: {type(driver_error).__name__}")
+            import traceback
+            logger.error(f"❌ 스택 트레이스: {traceback.format_exc()}")
+            
+            # 🔧 Chrome 드라이버 초기화 실패 시 대안 방법 시도
+            logger.info("🔧 Chrome 드라이버 초기화 실패 시 대안 방법 시도...")
+            try:
+                # 대안 1: 최소한의 Chrome 옵션으로 재시도
+                logger.info("🔧 대안 1: 최소한의 Chrome 옵션으로 재시도...")
+                from selenium.webdriver.chrome.options import Options
+                from selenium.webdriver.chrome.service import Service
+                
+                chrome_options = Options()
+                chrome_options.add_argument("--no-sandbox")
+                chrome_options.add_argument("--disable-dev-shm-usage")
+                chrome_options.add_argument("--headless")
+                chrome_options.add_argument("--disable-gpu")
+                chrome_options.add_argument("--disable-web-security")
+                chrome_options.add_argument("--remote-debugging-port=0")
+                
+                service = Service("/usr/bin/chromedriver")
+                driver = webdriver.Chrome(service=service, options=chrome_options)
+                logger.info("✅ 대안 1: 최소한의 Chrome 옵션으로 초기화 성공")
+                
+            except Exception as fallback_error:
+                logger.error(f"❌ 대안 1 실패: {fallback_error}")
+                
+                # 대안 2: WebDriver Manager 사용
+                try:
+                    logger.info("🔧 대안 2: WebDriver Manager 사용...")
+                    from webdriver_manager.chrome import ChromeDriverManager
+                    
+                    chrome_options = Options()
+                    chrome_options.add_argument("--no-sandbox")
+                    chrome_options.add_argument("--disable-dev-shm-usage")
+                    chrome_options.add_argument("--headless")
+                    chrome_options.add_argument("--disable-gpu")
+                    
+                    service = Service(ChromeDriverManager().install())
+                    driver = webdriver.Chrome(service=service, options=chrome_options)
+                    logger.info("✅ 대안 2: WebDriver Manager로 초기화 성공")
+                    
+                except Exception as wdm_error:
+                    logger.error(f"❌ 대안 2 실패: {wdm_error}")
+                    logger.error("❌ 모든 Chrome 드라이버 초기화 방법 실패")
+                    return False
         
         # 🔥 자동화 감지 우회 JavaScript 실행
         logger.info("🔧 자동화 감지 우회 JavaScript 실행...")
