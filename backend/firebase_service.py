@@ -27,6 +27,18 @@ class FirebaseService:
             logger.info(f"🔍 현재 작업 디렉토리: {os.getcwd()}")
             logger.info(f"🔍 사용 가능한 파일: {os.listdir('.')[:10]}")
             
+            # 🔍 환경 변수 상세 확인
+            logger.info("🔍 Firebase 관련 환경 변수 확인:")
+            firebase_project_id = os.getenv("FIREBASE_PROJECT_ID")
+            firebase_private_key = os.getenv("FIREBASE_PRIVATE_KEY")
+            firebase_client_email = os.getenv("FIREBASE_CLIENT_EMAIL")
+            google_application_credentials = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+            
+            logger.info(f"   FIREBASE_PROJECT_ID: {firebase_project_id}")
+            logger.info(f"   FIREBASE_PRIVATE_KEY: {'설정됨' if firebase_private_key else 'NOT SET'}")
+            logger.info(f"   FIREBASE_CLIENT_EMAIL: {firebase_client_email}")
+            logger.info(f"   GOOGLE_APPLICATION_CREDENTIALS: {google_application_credentials}")
+            
             # Firebase Admin SDK 자격 증명 설정
             # 방법 1: 서비스 계정 키 파일 사용
             service_account_path = "firebase_service_account.json"
@@ -34,19 +46,24 @@ class FirebaseService:
             
             if os.path.exists(service_account_path):
                 logger.info("✅ 서비스 계정 키 파일 발견")
-                cred = credentials.Certificate(service_account_path)
-                firebase_admin.initialize_app(cred)
-                logger.info("✅ Firebase Admin SDK 초기화 완료 (서비스 계정 키)")
+                try:
+                    cred = credentials.Certificate(service_account_path)
+                    firebase_admin.initialize_app(cred)
+                    logger.info("✅ Firebase Admin SDK 초기화 완료 (서비스 계정 키)")
+                except Exception as file_error:
+                    logger.error(f"❌ 서비스 계정 키 파일 초기화 실패: {file_error}")
+                    raise file_error
             else:
                 logger.warning("⚠️ 서비스 계정 키 파일을 찾을 수 없음")
                 # 방법 2: 환경 변수 사용 (클라우드 배포시)
-                firebase_project_id = os.getenv("FIREBASE_PROJECT_ID")
-                logger.info(f"🔍 FIREBASE_PROJECT_ID 환경 변수: {firebase_project_id}")
-                
                 if firebase_project_id:
                     logger.info("✅ FIREBASE_PROJECT_ID 환경 변수 발견")
-                    firebase_admin.initialize_app()
-                    logger.info("✅ Firebase Admin SDK 초기화 완료 (환경 변수)")
+                    try:
+                        firebase_admin.initialize_app()
+                        logger.info("✅ Firebase Admin SDK 초기화 완료 (환경 변수)")
+                    except Exception as env_error:
+                        logger.error(f"❌ 환경 변수 초기화 실패: {env_error}")
+                        raise env_error
                 else:
                     logger.warning("⚠️ Firebase 설정 파일과 환경 변수를 찾을 수 없습니다.")
                     logger.info("🔧 테스트 모드로 실행합니다.")
@@ -60,9 +77,62 @@ class FirebaseService:
         except Exception as e:
             logger.error(f"❌ Firebase 초기화 실패: {e}")
             logger.error(f"❌ 오류 상세: {str(e)}")
+            logger.error(f"❌ 오류 타입: {type(e).__name__}")
             import traceback
             logger.error(f"❌ 스택 트레이스: {traceback.format_exc()}")
-            logger.warning("🔧 테스트 모드로 실행합니다.")
+            
+            # 🔍 추가 디버깅 정보
+            logger.info("🔍 추가 디버깅 정보:")
+            logger.info(f"   현재 작업 디렉토리: {os.getcwd()}")
+            logger.info(f"   Python 버전: {os.sys.version}")
+            logger.info(f"   사용 가능한 환경 변수: {list(os.environ.keys())}")
+            
+            # Firebase 관련 환경 변수 재확인
+            firebase_vars = ['FIREBASE_PROJECT_ID', 'FIREBASE_PRIVATE_KEY', 'FIREBASE_CLIENT_EMAIL', 'GOOGLE_APPLICATION_CREDENTIALS']
+            for var in firebase_vars:
+                value = os.getenv(var)
+                logger.info(f"   {var}: {'설정됨' if value else 'NOT SET'}")
+            
+            # 🔧 Firebase 초기화 실패 시 대안 방법 시도
+            logger.info("🔧 Firebase 초기화 실패 시 대안 방법 시도...")
+            
+            # 방법 3: Google Cloud 기본 인증 사용
+            try:
+                logger.info("🔧 Google Cloud 기본 인증 시도...")
+                firebase_admin.initialize_app()
+                self.db = firestore.client()
+                logger.info("✅ Google Cloud 기본 인증으로 Firebase 초기화 성공")
+                return
+            except Exception as gcp_error:
+                logger.warning(f"⚠️ Google Cloud 기본 인증 실패: {gcp_error}")
+            
+            # 방법 4: 환경 변수에서 직접 인증 정보 구성
+            try:
+                if firebase_project_id and firebase_private_key and firebase_client_email:
+                    logger.info("🔧 환경 변수에서 직접 인증 정보 구성 시도...")
+                    import json
+                    service_account_info = {
+                        "type": "service_account",
+                        "project_id": firebase_project_id,
+                        "private_key_id": "dummy",
+                        "private_key": firebase_private_key,
+                        "client_email": firebase_client_email,
+                        "client_id": "dummy",
+                        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                        "token_uri": "https://oauth2.googleapis.com/token",
+                        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+                        "client_x509_cert_url": f"https://www.googleapis.com/robot/v1/metadata/x509/{firebase_client_email}"
+                    }
+                    
+                    cred = credentials.Certificate(service_account_info)
+                    firebase_admin.initialize_app(cred)
+                    self.db = firestore.client()
+                    logger.info("✅ 환경 변수에서 직접 인증 정보 구성으로 Firebase 초기화 성공")
+                    return
+            except Exception as env_auth_error:
+                logger.warning(f"⚠️ 환경 변수 인증 정보 구성 실패: {env_auth_error}")
+            
+            logger.warning("🔧 모든 Firebase 초기화 방법 실패, 테스트 모드로 실행합니다.")
             self.db = None
     
     def get_all_active_learnus_credentials(self) -> List[Dict]:
