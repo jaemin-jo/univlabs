@@ -1654,24 +1654,42 @@ def collect_this_week_lectures_hybrid(driver):
                 current_course_index += 1
                 logger.info(f"   ✅ {course_name} 처리 완료, 다음 과목으로 이동 (인덱스: {current_course_index})")
                 
-                # 🔧 다음 과목 처리 전 안정성 확인
-                logger.info(f"   🔧 {course_name} 다음 과목 처리 전 안정성 확인...")
-                try:
-                    # 현재 URL 확인
-                    current_url = driver.current_url
-                    logger.info(f"   📍 현재 URL: {current_url}")
+                # 🔧 다음 과목 처리 전 웹브라우저 재초기화 (Stale Element 문제 완전 해결)
+                # 선택적 재초기화: 3개 과목마다 또는 마지막 과목이 아닐 때만 재초기화
+                should_reinitialize = (current_course_index % 3 == 0) or (current_course_index < len(course_elements) - 1)
+                
+                if should_reinitialize:
+                    logger.info(f"   🔧 {course_name} 다음 과목 처리 전 웹브라우저 재초기화...")
+                    try:
+                    # 현재 드라이버 종료
+                    logger.info(f"   🔄 {course_name} 현재 드라이버 종료...")
+                    driver.quit()
+                    logger.info(f"   ✅ {course_name} 현재 드라이버 종료 완료")
                     
-                    # 메인 페이지인지 확인
-                    if "learnus.org" in current_url and "course" not in current_url:
-                        logger.info(f"   ✅ {course_name} 메인 페이지에 정상적으로 위치")
-                    else:
-                        logger.warning(f"   ⚠️ {course_name} 메인 페이지가 아님, 메인 페이지로 이동...")
-                        driver.get("https://ys.learnus.org/")
-                        time.sleep(2)
-                        logger.info(f"   ✅ {course_name} 메인 페이지로 이동 완료")
+                    # 새로운 드라이버 초기화
+                    logger.info(f"   🔄 {course_name} 새로운 드라이버 초기화...")
+                    driver = setup_driver()
+                    if not driver:
+                        logger.error(f"   ❌ {course_name} 새로운 드라이버 초기화 실패")
+                        return False
+                    logger.info(f"   ✅ {course_name} 새로운 드라이버 초기화 성공")
                     
-                    # 과목 목록 재확인
-                    logger.info(f"   🔍 {course_name} 과목 목록 재확인...")
+                    # 로그인 재실행
+                    logger.info(f"   🔄 {course_name} 로그인 재실행...")
+                    login_success = login_to_learnus(driver, university, username, password)
+                    if not login_success:
+                        logger.error(f"   ❌ {course_name} 로그인 재실행 실패")
+                        return False
+                    logger.info(f"   ✅ {course_name} 로그인 재실행 성공")
+                    
+                    # 메인 페이지로 이동
+                    logger.info(f"   🔄 {course_name} 메인 페이지로 이동...")
+                    driver.get("https://ys.learnus.org/")
+                    time.sleep(2)
+                    logger.info(f"   ✅ {course_name} 메인 페이지로 이동 완료")
+                    
+                    # 새로운 과목 목록 찾기
+                    logger.info(f"   🔍 {course_name} 새로운 과목 목록 찾기...")
                     fresh_course_elements = driver.find_elements(By.CSS_SELECTOR, ".course-title h3")
                     if len(fresh_course_elements) == 0:
                         # 다른 선택자들로 재시도
@@ -1687,15 +1705,21 @@ def collect_this_week_lectures_hybrid(driver):
                                 break
                     
                     if len(fresh_course_elements) > 0:
-                        logger.info(f"   ✅ {course_name} 과목 목록 재확인 완료: {len(fresh_course_elements)}개 과목")
+                        logger.info(f"   ✅ {course_name} 새로운 과목 목록 발견: {len(fresh_course_elements)}개 과목")
                         # course_elements 업데이트
                         course_elements = fresh_course_elements
+                        logger.info(f"   ✅ {course_name} 웹브라우저 재초기화 완료 - Stale Element 문제 해결")
                     else:
-                        logger.warning(f"   ⚠️ {course_name} 과목 목록을 찾을 수 없음")
+                        logger.warning(f"   ⚠️ {course_name} 새로운 과목 목록을 찾을 수 없음")
                         
-                except Exception as stability_error:
-                    logger.warning(f"   ⚠️ {course_name} 안정성 확인 실패: {stability_error}")
-                    # 안정성 확인 실패해도 계속 진행
+                    except Exception as reinit_error:
+                        logger.error(f"   ❌ {course_name} 웹브라우저 재초기화 실패: {reinit_error}")
+                        logger.error(f"   ❌ 오류 상세: {str(reinit_error)}")
+                        import traceback
+                        logger.error(f"   ❌ 스택 트레이스: {traceback.format_exc()}")
+                        return False
+                else:
+                    logger.info(f"   ⏭️ {course_name} 웹브라우저 재초기화 건너뜀 (선택적 재초기화)")
                     
             except Exception as e:
                 logger.error(f"❌ 과목 {current_course_index+1} 처리 실패: {e}")
