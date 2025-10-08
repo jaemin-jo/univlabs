@@ -15,7 +15,7 @@ import threading
 import json
 import os
 from datetime import datetime
-from test_real_automation_simple import test_simple_automation
+from test_real_automation_hybrid_fixed import test_direct_selenium_fixed
 from firebase_service import get_all_active_users, update_user_last_used
 
 # 로깅 설정
@@ -210,21 +210,21 @@ def run_automation_job():
                     logger.info(f"   XDG_SESSION_TYPE: {os.environ.get('XDG_SESSION_TYPE', 'NOT SET')}")
                     
                     # 사용자별 자동화 실행 (타임아웃 설정)
-                    logger.info("🚀 test_simple_automation 함수 호출 시작...")
+                    logger.info("🚀 test_direct_selenium_fixed 함수 호출 시작...")
                     logger.info(f"   매개변수: university={university}, username={username}, student_id={student_id}")
                     
                     try:
-                        user_result = test_simple_automation(
+                        user_result = test_direct_selenium_fixed(
                             university,
                             username,
                             user.get('password', ''),
                             student_id
                         )
-                        logger.info("✅ test_simple_automation 함수 호출 완료")
+                        logger.info("✅ test_direct_selenium_fixed 함수 호출 완료")
                         logger.info(f"🔍 user_result 타입: {type(user_result)}")
                         logger.info(f"🔍 user_result 내용: {user_result}")
                     except Exception as selenium_error:
-                        logger.error(f"❌ test_simple_automation 함수 호출 실패: {selenium_error}")
+                        logger.error(f"❌ test_direct_selenium_fixed 함수 호출 실패: {selenium_error}")
                         logger.error(f"❌ 오류 상세: {str(selenium_error)}")
                         import traceback
                         logger.error(f"❌ 스택 트레이스: {traceback.format_exc()}")
