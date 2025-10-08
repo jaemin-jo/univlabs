@@ -69,13 +69,13 @@ class FirebaseService:
         """활성화된 모든 LearnUs 인증 정보 가져오기"""
         if not self.db:
             logger.warning("Firebase가 초기화되지 않았습니다. 테스트용 더미 데이터를 사용합니다.")
-            # 테스트용 더미 데이터 반환
+            # 테스트용 더미 데이터 반환 (실제 Firebase 데이터와 동일하게 설정)
             return [{
-                'uid': 'test_user_1',
+                'uid': 'gNnogdUW3Wc6Bb9IdyciicycKB42',
                 'student_id': '2024248012',
                 'university': '연세대학교',
-                'username': 'test_user',
-                'password': 'test_password',
+                'username': '2024248012',
+                'password': 'cjm9887@',
                 'isActive': True
             }]
         
