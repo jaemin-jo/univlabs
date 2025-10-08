@@ -1661,57 +1661,57 @@ def collect_this_week_lectures_hybrid(driver):
                 if should_reinitialize:
                     logger.info(f"   🔧 {course_name} 다음 과목 처리 전 웹브라우저 재초기화...")
                     try:
-                    # 현재 드라이버 종료
-                    logger.info(f"   🔄 {course_name} 현재 드라이버 종료...")
-                    driver.quit()
-                    logger.info(f"   ✅ {course_name} 현재 드라이버 종료 완료")
-                    
-                    # 새로운 드라이버 초기화
-                    logger.info(f"   🔄 {course_name} 새로운 드라이버 초기화...")
-                    driver = setup_driver()
-                    if not driver:
-                        logger.error(f"   ❌ {course_name} 새로운 드라이버 초기화 실패")
-                        return False
-                    logger.info(f"   ✅ {course_name} 새로운 드라이버 초기화 성공")
-                    
-                    # 로그인 재실행
-                    logger.info(f"   🔄 {course_name} 로그인 재실행...")
-                    login_success = login_to_learnus(driver, university, username, password)
-                    if not login_success:
-                        logger.error(f"   ❌ {course_name} 로그인 재실행 실패")
-                        return False
-                    logger.info(f"   ✅ {course_name} 로그인 재실행 성공")
-                    
-                    # 메인 페이지로 이동
-                    logger.info(f"   🔄 {course_name} 메인 페이지로 이동...")
-                    driver.get("https://ys.learnus.org/")
-                    time.sleep(2)
-                    logger.info(f"   ✅ {course_name} 메인 페이지로 이동 완료")
-                    
-                    # 새로운 과목 목록 찾기
-                    logger.info(f"   🔍 {course_name} 새로운 과목 목록 찾기...")
-                    fresh_course_elements = driver.find_elements(By.CSS_SELECTOR, ".course-title h3")
-                    if len(fresh_course_elements) == 0:
-                        # 다른 선택자들로 재시도
-                        alternative_selectors = [
-                            "h3", ".course-box h3", ".course-name h3",
-                            "a[href*='course/view.php'] h3", ".my-course-lists h3",
-                            "a[href*='course']", ".card a", ".course-card a"
-                        ]
-                        for selector in alternative_selectors:
-                            fresh_course_elements = driver.find_elements(By.CSS_SELECTOR, selector)
-                            if len(fresh_course_elements) > 0:
-                                logger.info(f"   ✅ {course_name} {selector} 선택자로 {len(fresh_course_elements)}개 과목 재발견")
-                                break
-                    
-                    if len(fresh_course_elements) > 0:
-                        logger.info(f"   ✅ {course_name} 새로운 과목 목록 발견: {len(fresh_course_elements)}개 과목")
-                        # course_elements 업데이트
-                        course_elements = fresh_course_elements
-                        logger.info(f"   ✅ {course_name} 웹브라우저 재초기화 완료 - Stale Element 문제 해결")
-                    else:
-                        logger.warning(f"   ⚠️ {course_name} 새로운 과목 목록을 찾을 수 없음")
+                        # 현재 드라이버 종료
+                        logger.info(f"   🔄 {course_name} 현재 드라이버 종료...")
+                        driver.quit()
+                        logger.info(f"   ✅ {course_name} 현재 드라이버 종료 완료")
                         
+                        # 새로운 드라이버 초기화
+                        logger.info(f"   🔄 {course_name} 새로운 드라이버 초기화...")
+                        driver = setup_driver()
+                        if not driver:
+                            logger.error(f"   ❌ {course_name} 새로운 드라이버 초기화 실패")
+                            return False
+                        logger.info(f"   ✅ {course_name} 새로운 드라이버 초기화 성공")
+                        
+                        # 로그인 재실행
+                        logger.info(f"   🔄 {course_name} 로그인 재실행...")
+                        login_success = login_to_learnus(driver, university, username, password)
+                        if not login_success:
+                            logger.error(f"   ❌ {course_name} 로그인 재실행 실패")
+                            return False
+                        logger.info(f"   ✅ {course_name} 로그인 재실행 성공")
+                        
+                        # 메인 페이지로 이동
+                        logger.info(f"   🔄 {course_name} 메인 페이지로 이동...")
+                        driver.get("https://ys.learnus.org/")
+                        time.sleep(2)
+                        logger.info(f"   ✅ {course_name} 메인 페이지로 이동 완료")
+                        
+                        # 새로운 과목 목록 찾기
+                        logger.info(f"   🔍 {course_name} 새로운 과목 목록 찾기...")
+                        fresh_course_elements = driver.find_elements(By.CSS_SELECTOR, ".course-title h3")
+                        if len(fresh_course_elements) == 0:
+                            # 다른 선택자들로 재시도
+                            alternative_selectors = [
+                                "h3", ".course-box h3", ".course-name h3",
+                                "a[href*='course/view.php'] h3", ".my-course-lists h3",
+                                "a[href*='course']", ".card a", ".course-card a"
+                            ]
+                            for selector in alternative_selectors:
+                                fresh_course_elements = driver.find_elements(By.CSS_SELECTOR, selector)
+                                if len(fresh_course_elements) > 0:
+                                    logger.info(f"   ✅ {course_name} {selector} 선택자로 {len(fresh_course_elements)}개 과목 재발견")
+                                    break
+                        
+                        if len(fresh_course_elements) > 0:
+                            logger.info(f"   ✅ {course_name} 새로운 과목 목록 발견: {len(fresh_course_elements)}개 과목")
+                            # course_elements 업데이트
+                            course_elements = fresh_course_elements
+                            logger.info(f"   ✅ {course_name} 웹브라우저 재초기화 완료 - Stale Element 문제 해결")
+                        else:
+                            logger.warning(f"   ⚠️ {course_name} 새로운 과목 목록을 찾을 수 없음")
+                            
                     except Exception as reinit_error:
                         logger.error(f"   ❌ {course_name} 웹브라우저 재초기화 실패: {reinit_error}")
                         logger.error(f"   ❌ 오류 상세: {str(reinit_error)}")
