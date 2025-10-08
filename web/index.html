@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>유니버 - 대학생활 AI 어시스턴트</title>
+    <meta name="description" content="유니버는 대학생의 학사일정 관리와 AI 기반 추천 서비스를 제공하는 혁신적인 앱입니다.">
+    <meta name="keywords" content="대학생, AI, 학사일정, 과제관리, 대학교, 어시스턴트">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="유니버 - 대학생활 AI 어시스턴트">
+    <meta property="og:description" content="대학생의 학사일정 관리와 AI 기반 추천 서비스를 제공하는 혁신적인 앱">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://univer.ai">
+    <meta property="og:image" content="https://univer.ai/assets/og-image.jpg">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="유니버 - 대학생활 AI 어시스턴트">
+    <meta name="twitter:description" content="대학생의 학사일정 관리와 AI 기반 추천 서비스를 제공하는 혁신적인 앱">
+    <meta name="twitter:image" content="https://univer.ai/assets/og-image.jpg">
+
+  <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="icons/icon-192.png" alt="유니버 로고" class="logo-img">
+                <span class="logo-text">유니버</span>
+            </div>
+            <div class="nav-menu" id="nav-menu">
+                <a href="#home" class="nav-link">홈</a>
+                <a href="#features" class="nav-link">기능</a>
+                <a href="#about" class="nav-link">소개</a>
+                <a href="#download" class="nav-link">다운로드</a>
+                <a href="#contact" class="nav-link">문의</a>
+            </div>
+            <div class="nav-toggle" id="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-background">
+            <div class="gradient-overlay"></div>
+            <div class="floating-elements">
+                <div class="floating-element element-1"></div>
+                <div class="floating-element element-2"></div>
+                <div class="floating-element element-3"></div>
+                <div class="floating-element element-4"></div>
+            </div>
+        </div>
+        <div class="hero-container">
+            <div class="hero-content" data-aos="fade-up" data-aos-duration="1000">
+                <div class="hero-slogan" data-aos="fade-up" data-aos-delay="100">
+                    <span class="slogan-text">대학생들의 새로운 AI유니버스: 유니버</span>
+                </div>
+                <h1 class="hero-title">
+                    <span class="gradient-text">유니버</span>와 함께하는<br>
+                    스마트한 대학생활
+                </h1>
+                <p class="hero-subtitle">
+                    AI가 도와주는 학사일정 관리부터 과제 알림까지<br>
+                    모든 것을 한 번에 해결하세요
+                </p>
+                <div class="hero-buttons">
+                    <a href="#download" class="btn-primary" data-aos="fade-up" data-aos-delay="200">
+                        <span>지금 다운로드</span>
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                        </svg>
+                    </a>
+                    <a href="#features" class="btn-secondary" data-aos="fade-up" data-aos-delay="400">
+                        <span>기능 살펴보기</span>
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M9 18l6-6-6-6"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div class="hero-image" data-aos="fade-left" data-aos-duration="1200" data-aos-delay="300">
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                            <div class="app-interface">
+                                <div class="app-header">
+                                    <div class="header-left">
+                                        <div class="app-title">유니버</div>
+                                        <div class="app-subtitle">AI 어시스턴트</div>
+                                    </div>
+                                    <div class="app-status">
+                                        <div class="status-dot"></div>
+                                        <span>온라인</span>
+                                    </div>
+                                </div>
+                                <div class="app-body">
+                                <div class="assignment-section">
+                                    <div class="assignment-header">
+                                        <h4>과제 현황</h4>
+                                        <div class="progress-indicator">
+                                            <span class="progress-text">3/5 완료</span>
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" style="width: 60%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="assignment-list">
+                                        <div class="assignment-item completed">
+                                            <div class="assignment-icon">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                    <path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                            </div>
+                                            <div class="assignment-info">
+                                                <div class="assignment-title">데이터베이스 프로젝트</div>
+                                                <div class="assignment-status completed">완료</div>
+                                            </div>
+                                        </div>
+                                        <div class="assignment-item pending">
+                                            <div class="assignment-icon">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                    <circle cx="12" cy="12" r="10"/>
+                                                    <polyline points="12,6 12,12 16,14"/>
+                                                </svg>
+                                            </div>
+                                            <div class="assignment-info">
+                                                <div class="assignment-title">알고리즘 과제</div>
+                                                <div class="assignment-status pending">진행중</div>
+                                            </div>
+                                        </div>
+                                        <div class="assignment-item urgent">
+                                            <div class="assignment-icon">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                                </svg>
+                                            </div>
+                                            <div class="assignment-info">
+                                                <div class="assignment-title">웹개발 포트폴리오</div>
+                                                <div class="assignment-status urgent">긴급</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="app-bottom-tab">
+                                    <div class="tab-item active">
+                                        <div class="tab-icon">🏠</div>
+                                        <div class="tab-label">홈</div>
+                                    </div>
+                                    <div class="tab-item">
+                                        <div class="tab-icon">📅</div>
+                                        <div class="tab-label">일정</div>
+                                    </div>
+                                    <div class="tab-item">
+                                        <div class="tab-icon">🤖</div>
+                                        <div class="tab-label">AI</div>
+                                    </div>
+                                    <div class="tab-item">
+                                        <div class="tab-icon">⚙️</div>
+                                        <div class="tab-label">설정</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="features-bg-animation">
+            <img src="assets/ai_circle.gif" alt="AI 배경 애니메이션" class="features-bg-gif">
+        </div>
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2 class="section-title">핵심 기능</h2>
+                <p class="section-subtitle">유니버가 제공하는 혁신적인 기능들을 만나보세요</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-icon ai-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">스마트 학사일정 관리</h3>
+                    <p class="feature-description">
+                        상위 30개 대학교의 학사일정을 자동으로 크롤링하여 
+                        실시간으로 업데이트되는 정확한 일정 정보를 제공합니다.
+                    </p>
+                </div>
+
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-icon ai-icon">
+                        <img src="assets/robot_head_icon.png" alt="AI 로봇" class="ai-robot-icon">
+                    </div>
+                    <h3 class="feature-title">AI 어시스턴트</h3>
+                    <p class="feature-description">
+                        Google Gemini AI를 활용한 지능형 어시스턴트가 
+                        대학생활 전반에 대한 조언과 추천을 제공합니다.
+                    </p>
+                </div>
+
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-icon ai-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">개인화된 일정 관리</h3>
+                    <p class="feature-description">
+                        개인 일정과 과제를 체계적으로 관리하고, 
+                        중요한 일정에 대한 맞춤형 알림을 받아보세요.
+                    </p>
+                </div>
+
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+                    <div class="feature-icon ai-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">대학교 자동완성</h3>
+                    <p class="feature-description">
+                        상위 30개 대학교 중에서 자신의 학교를 쉽게 선택하고, 
+                        해당 학교의 맞춤형 서비스를 이용할 수 있습니다.
+                    </p>
+                </div>
+
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="500">
+                    <div class="feature-icon ai-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M15 17h5l-5 5-5-5h5v-5a7.5 7.5 0 0 0-15 0v5h5l-5 5-5-5h5v-5a7.5 7.5 0 0 1 15 0v5z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">실시간 알림</h3>
+                    <p class="feature-description">
+                        중요한 학사일정과 공지사항을 놓치지 않도록 
+                        실시간 푸시 알림으로 안전하게 관리해드립니다.
+                    </p>
+                </div>
+
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="600">
+                    <div class="feature-icon ai-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/>
+                            <path d="M12 6v6l4 2"/>
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">과제 관리</h3>
+                    <p class="feature-description">
+                        과제 마감일과 우선순위를 체계적으로 관리하고, 
+                        AI가 추천하는 효율적인 학습 계획을 세워보세요.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text" data-aos="fade-right">
+                    <h2 class="section-title">유니버와 함께하는<br>스마트한 대학생활</h2>
+                    <p class="about-description">
+                        유니버는 대학생의 학사일정 관리와 AI 기반 추천 서비스를 제공하는 
+                        혁신적인 Flutter 앱입니다.<br>
+                        복잡한 대학생활을 더욱 체계적이고 효율적으로 만들어드립니다.
+                    </p>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-number">30+</div>
+                            <div class="stat-label">지원 대학교</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">AI</div>
+                            <div class="stat-label">지능형 추천</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">24/7</div>
+                            <div class="stat-label">실시간 알림</div>
+                        </div>
+                    </div>
+                    <div class="university-carousel">
+                        <div class="university-track">
+                            <div class="university-item">서울대학교</div>
+                            <div class="university-item">연세대학교</div>
+                            <div class="university-item">고려대학교</div>
+                            <div class="university-item">성균관대학교</div>
+                            <div class="university-item">한양대학교</div>
+                            <div class="university-item">중앙대학교</div>
+                            <div class="university-item">경희대학교</div>
+                            <div class="university-item">동국대학교</div>
+                            <div class="university-item">홍익대학교</div>
+                            <div class="university-item">국민대학교</div>
+                        </div>
+                    </div>
+                </div>
+            <div class="about-image" data-aos="fade-left">
+                <div class="app-showcase">
+                    <div class="showcase-phone">
+                        <div class="phone-screen">
+                            <div class="app-interface">
+                                <div class="app-header">
+                                    <div class="app-title">유니버</div>
+                                    <div class="app-status">
+                                        <div class="status-dot active"></div>
+                                        <span>온라인</span>
+                                    </div>
+                                </div>
+                                <div class="app-content">
+                                    <div class="schedule-item">
+                                        <div class="schedule-time">09:00</div>
+                                        <div class="schedule-title">수업: 데이터베이스</div>
+                                    </div>
+                                    <div class="schedule-item urgent">
+                                        <div class="schedule-time">14:00</div>
+                                        <div class="schedule-title">과제 마감: 프로젝트</div>
+                                    </div>
+                                    <div class="schedule-item">
+                                        <div class="schedule-time">16:00</div>
+                                        <div class="schedule-title">시험: 알고리즘</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Download Section -->
+    <section id="download" class="download">
+        <div class="container">
+            <div class="download-content" data-aos="fade-up">
+                <h2 class="section-title">지금 바로 시작하세요</h2>
+                <p class="section-subtitle">
+                    유니버와 함께 더 스마트한 대학생활을 경험해보세요
+                </p>
+                <div class="download-buttons">
+                    <a href="#" class="download-btn android">
+                        <div class="btn-content">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993.0001.5511-.4482.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993 0 .5511-.4482.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.2439 13.8533 7.8508 12 7.8508s-3.5902.3931-5.1367 1.1359L4.841 5.4837a.416.416 0 00-.5676-.1521.416.416 0 00-.1521.5676l1.9973 3.4592C2.6889 9.1867.3432 11.6589 0 14.761h24c-.3432-3.1021-2.6889-5.5743-6.1185-6.4396"/>
+                            </svg>
+                            <div class="btn-text">
+                                <div class="btn-label">Android에서 다운로드</div>
+                                <div class="btn-subtitle">Google Play Store</div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" class="download-btn ios">
+                        <div class="btn-content">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                            </svg>
+                            <div class="btn-text">
+                                <div class="btn-label">iOS에서 다운로드</div>
+                                <div class="btn-subtitle">App Store</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="download-info">
+                    <p>현재 Android 버전이 출시되었습니다. iOS 버전은 곧 출시 예정입니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="contact-content">
+                <div class="contact-info" data-aos="fade-right">
+                    <h2 class="section-title">문의하기</h2>
+                    <p class="contact-description">
+                        유니버에 대한 문의사항이나 제안사항이 있으시면 언제든지 연락해주세요.
+                    </p>
+                    <div class="contact-methods">
+                        <div class="contact-method">
+                            <div class="method-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                    <polyline points="22,6 12,13 2,6"/>
+                                </svg>
+                            </div>
+                            <div class="method-content">
+                                <h4>이메일</h4>
+                                <p>contact@univer.ai</p>
+                            </div>
+                        </div>
+                        <div class="contact-method">
+                            <div class="method-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                </svg>
+                            </div>
+                            <div class="method-content">
+                                <h4>전화</h4>
+                                <p>+82-2-1234-5678</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form" data-aos="fade-left">
+                    <form class="form">
+                        <div class="form-group">
+                            <input type="text" id="name" name="name" placeholder="이름" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="email" name="email" placeholder="이메일" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="subject" name="subject" placeholder="제목" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="message" name="message" placeholder="메시지" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">
+                            <span>메시지 보내기</span>
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22,2 15,22 11,13 2,9 22,2"></polygon>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Company Info Section -->
+    <section class="company-info">
+        <div class="container">
+            <div class="company-content" data-aos="fade-up">
+                <div class="company-header">
+                    <h2 class="section-title">기업 정보</h2>
+                    <p class="section-subtitle">혁신적인 AI 기술로 대학생활을 혁신하는 기업</p>
+                </div>
+                <div class="company-details">
+                    <div class="company-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="company-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
+                            </svg>
+                        </div>
+                        <h3>회사명</h3>
+                        <p>(주)유니버</p>
+                    </div>
+                    <div class="company-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="company-icon">
+                            <img src="assets/robot_head_icon.png" alt="대표이사" class="ceo-robot-icon">
+                        </div>
+                        <h3>대표이사</h3>
+                        <p>조재민</p>
+                    </div>
+                    <div class="company-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="company-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
+                            </svg>
+                        </div>
+                        <h3>설립연도</h3>
+                        <p>2024년</p>
+                    </div>
+                    <div class="company-card" data-aos="fade-up" data-aos-delay="400">
+                        <div class="company-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
+                            </svg>
+                        </div>
+                        <h3>사업분야</h3>
+                        <p>AI 기반 교육 플랫폼</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="icons/icon-192.png" alt="유니버 로고" class="logo-img">
+                    <span class="logo-text">(주)유니버</span>
+                </div>
+                <div class="footer-links">
+                    <a href="#home">홈</a>
+                    <a href="#features">기능</a>
+                    <a href="#about">소개</a>
+                    <a href="#download">다운로드</a>
+                    <a href="#contact">문의</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#" class="social-link">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="social-link">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="social-link">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.746-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001 12.017.001z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 (주)유니버. 대표: 조재민. 모든 권리 보유.</p>
+                <div class="footer-legal">
+                    <a href="#">개인정보처리방침</a>
+                    <a href="#">이용약관</a>
+                    <a href="#">쿠키 정책</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
