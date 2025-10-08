@@ -1653,6 +1653,49 @@ def collect_this_week_lectures_hybrid(driver):
                 # 과목 처리 완료 후 인덱스 증가
                 current_course_index += 1
                 logger.info(f"   ✅ {course_name} 처리 완료, 다음 과목으로 이동 (인덱스: {current_course_index})")
+                
+                # 🔧 다음 과목 처리 전 안정성 확인
+                logger.info(f"   🔧 {course_name} 다음 과목 처리 전 안정성 확인...")
+                try:
+                    # 현재 URL 확인
+                    current_url = driver.current_url
+                    logger.info(f"   📍 현재 URL: {current_url}")
+                    
+                    # 메인 페이지인지 확인
+                    if "learnus.org" in current_url and "course" not in current_url:
+                        logger.info(f"   ✅ {course_name} 메인 페이지에 정상적으로 위치")
+                    else:
+                        logger.warning(f"   ⚠️ {course_name} 메인 페이지가 아님, 메인 페이지로 이동...")
+                        driver.get("https://ys.learnus.org/")
+                        time.sleep(2)
+                        logger.info(f"   ✅ {course_name} 메인 페이지로 이동 완료")
+                    
+                    # 과목 목록 재확인
+                    logger.info(f"   🔍 {course_name} 과목 목록 재확인...")
+                    fresh_course_elements = driver.find_elements(By.CSS_SELECTOR, ".course-title h3")
+                    if len(fresh_course_elements) == 0:
+                        # 다른 선택자들로 재시도
+                        alternative_selectors = [
+                            "h3", ".course-box h3", ".course-name h3",
+                            "a[href*='course/view.php'] h3", ".my-course-lists h3",
+                            "a[href*='course']", ".card a", ".course-card a"
+                        ]
+                        for selector in alternative_selectors:
+                            fresh_course_elements = driver.find_elements(By.CSS_SELECTOR, selector)
+                            if len(fresh_course_elements) > 0:
+                                logger.info(f"   ✅ {course_name} {selector} 선택자로 {len(fresh_course_elements)}개 과목 재발견")
+                                break
+                    
+                    if len(fresh_course_elements) > 0:
+                        logger.info(f"   ✅ {course_name} 과목 목록 재확인 완료: {len(fresh_course_elements)}개 과목")
+                        # course_elements 업데이트
+                        course_elements = fresh_course_elements
+                    else:
+                        logger.warning(f"   ⚠️ {course_name} 과목 목록을 찾을 수 없음")
+                        
+                except Exception as stability_error:
+                    logger.warning(f"   ⚠️ {course_name} 안정성 확인 실패: {stability_error}")
+                    # 안정성 확인 실패해도 계속 진행
                     
             except Exception as e:
                 logger.error(f"❌ 과목 {current_course_index+1} 처리 실패: {e}")
