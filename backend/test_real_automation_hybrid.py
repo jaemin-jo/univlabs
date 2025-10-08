@@ -1166,20 +1166,20 @@ def collect_this_week_lectures_hybrid(driver):
                     logger.info(f"   🔍 {course_name} 과목 요소 찾기 시작...")
                     selenium_course_element = None
                     
-                    # WebDriverWait를 사용한 Stale Element Reference 방지
+                    # WebDriverWait를 사용한 Stale Element Reference 방지 (공식 문서 권장 방법)
                     try:
                         # 과목 요소들이 로드될 때까지 명시적으로 대기
                         logger.info(f"   ⏳ {course_name} 과목 요소 로딩 대기 중...")
                         WebDriverWait(driver, 10).until(
                             EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".course-title h3"))
                         )
-                        
-                        # 현재 인덱스에 해당하는 과목 요소를 다시 찾기
+
+                        # 현재 인덱스에 해당하는 과목 요소를 다시 찾기 (매번 요소 재찾기)
                         fresh_course_elements = driver.find_elements(By.CSS_SELECTOR, ".course-title h3")
                         if len(fresh_course_elements) == 0:
-                            # 다른 선택자들로 재시도
+                            # 다른 선택자들로 재시도 (공식 문서 권장: 다양한 선택자 시도)
                             alternative_selectors = [
-                                "h3", ".course-box h3", ".course-name h3", 
+                                "h3", ".course-box h3", ".course-name h3",
                                 "a[href*='course/view.php'] h3", ".my-course-lists h3",
                                 "a[href*='course']", ".card a", ".course-card a"
                             ]
@@ -1190,13 +1190,14 @@ def collect_this_week_lectures_hybrid(driver):
                                     )
                                     fresh_course_elements = driver.find_elements(By.CSS_SELECTOR, selector)
                                     if len(fresh_course_elements) > 0:
+                                        logger.info(f"   ✅ {course_name} {selector} 선택자로 {len(fresh_course_elements)}개 과목 재발견")
                                         break
                                 except:
                                     continue
-                        
+
                         if current_course_index < len(fresh_course_elements):
                             selenium_course_element = fresh_course_elements[current_course_index]
-                            logger.info(f"   ✅ {course_name} 과목 요소 재찾기 성공")
+                            logger.info(f"   ✅ {course_name} 과목 요소 재찾기 성공 (공식 문서 권장 방법 적용)")
                         else:
                             logger.warning(f"   ⚠️ {course_name} 과목 요소를 재찾을 수 없음")
                             current_course_index += 1
@@ -1688,21 +1689,39 @@ def collect_this_week_lectures_hybrid(driver):
                         time.sleep(2)
                         logger.info(f"   ✅ {course_name} 메인 페이지로 이동 완료")
                         
-                        # 새로운 과목 목록 찾기
+                        # 새로운 과목 목록 찾기 (공식 문서 권장 방법: 매번 요소 재찾기)
                         logger.info(f"   🔍 {course_name} 새로운 과목 목록 찾기...")
-                        fresh_course_elements = driver.find_elements(By.CSS_SELECTOR, ".course-title h3")
+                        
+                        # WebDriverWait를 사용한 안정적인 요소 찾기
+                        try:
+                            WebDriverWait(driver, 10).until(
+                                EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".course-title h3"))
+                            )
+                            fresh_course_elements = driver.find_elements(By.CSS_SELECTOR, ".course-title h3")
+                            logger.info(f"   ✅ {course_name} WebDriverWait로 {len(fresh_course_elements)}개 과목 발견")
+                        except Exception as wait_error:
+                            logger.warning(f"   ⚠️ {course_name} WebDriverWait 실패: {wait_error}")
+                            # 대안 선택자들로 재시도
+                            fresh_course_elements = driver.find_elements(By.CSS_SELECTOR, ".course-title h3")
+                        
                         if len(fresh_course_elements) == 0:
-                            # 다른 선택자들로 재시도
+                            # 다른 선택자들로 재시도 (공식 문서 권장: 다양한 선택자 시도)
                             alternative_selectors = [
                                 "h3", ".course-box h3", ".course-name h3",
                                 "a[href*='course/view.php'] h3", ".my-course-lists h3",
                                 "a[href*='course']", ".card a", ".course-card a"
                             ]
                             for selector in alternative_selectors:
-                                fresh_course_elements = driver.find_elements(By.CSS_SELECTOR, selector)
-                                if len(fresh_course_elements) > 0:
-                                    logger.info(f"   ✅ {course_name} {selector} 선택자로 {len(fresh_course_elements)}개 과목 재발견")
-                                    break
+                                try:
+                                    WebDriverWait(driver, 5).until(
+                                        EC.presence_of_all_elements_located((By.CSS_SELECTOR, selector))
+                                    )
+                                    fresh_course_elements = driver.find_elements(By.CSS_SELECTOR, selector)
+                                    if len(fresh_course_elements) > 0:
+                                        logger.info(f"   ✅ {course_name} {selector} 선택자로 {len(fresh_course_elements)}개 과목 재발견")
+                                        break
+                                except:
+                                    continue
                         
                         if len(fresh_course_elements) > 0:
                             logger.info(f"   ✅ {course_name} 새로운 과목 목록 발견: {len(fresh_course_elements)}개 과목")
