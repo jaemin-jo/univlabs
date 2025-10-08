@@ -261,7 +261,7 @@ def setup_driver():
         chrome_options.add_argument("--log-level=3")
 
         service = Service(ChromeDriverManager().install())
-            driver = webdriver.Chrome(service=service, options=chrome_options)
+        driver = webdriver.Chrome(service=service, options=chrome_options)
         
         # 자동화 감지 방지
         driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
