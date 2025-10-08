@@ -64,6 +64,11 @@ backend/.hypothesis
 # Firebase
 backend/firebase_service_account.json
 
+# Environment variables
+.env
+.env.local
+.env.production
+
 # Logs
 *.log
 automation_debug.log

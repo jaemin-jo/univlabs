@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 class GeminiService {
-  static const String _apiKey = 'AIzaSyAwxEI92CtK1bomNALSOU2AzvH1aiwJ7ko';
+  static const String _apiKey = String.fromEnvironment('GEMINI_API_KEY', defaultValue: '');
   static GenerativeModel? _model;
   
   static GenerativeModel get model {
