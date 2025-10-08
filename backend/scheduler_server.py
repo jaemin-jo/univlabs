@@ -28,10 +28,10 @@ app = FastAPI(title="LearnUs Scheduler Server", version="1.0.0")
 # 스케줄러 함수 정의 (start_scheduler_auto보다 먼저 정의)
 def start_scheduler():
     """스케줄러 시작"""
-    logger.info("⏰ 스케줄러 시작...")
+    logger.info("스케줄러 시작...")
     
     # 즉시 한 번 실행 (서버 시작 시)
-    logger.info("🚀 서버 시작 시 즉시 자동화 실행...")
+    logger.info("서버 시작 시 즉시 자동화 실행...")
     run_automation_job()
     
     # 매일 오전 9시, 오후 6시에 자동화 실행
@@ -47,10 +47,15 @@ def start_scheduler():
 
 def start_scheduler_optimized():
     """Cloud Run 환경에 최적화된 스케줄러"""
-    print("🚀 Cloud Run 최적화 스케줄러 시작...")
+    print("Cloud Run 최적화 스케줄러 시작...")
     logger.info("Cloud Run 최적화 스케줄러 시작")
     
     try:
+        # 즉시 첫 실행
+        print("🚀 즉시 자동화 실행 시작...")
+        logger.info("🚀 즉시 자동화 실행 시작...")
+        run_automation_job()
+        
         # 개발용: 5분마다 실행
         schedule.every(5).minutes.do(run_automation_job)
         
@@ -58,8 +63,8 @@ def start_scheduler_optimized():
         # schedule.every().day.at("09:00").do(run_automation_job)
         # schedule.every().day.at("18:00").do(run_automation_job)
         
-        print("✅ 스케줄 등록 완료: 5분마다 자동화 실행")
-        logger.info("스케줄 등록 완료: 5분마다 자동화 실행")
+        print("스케줄 등록 완료: 즉시 실행 + 5분마다 자동화 실행")
+        logger.info("스케줄 등록 완료: 즉시 실행 + 5분마다 자동화 실행")
         
         # Cloud Run 환경에서 안정적인 스케줄러 실행
         while True:
@@ -73,28 +78,28 @@ def start_scheduler_optimized():
                 
     except Exception as e:
         logger.error(f"Cloud Run 스케줄러 시작 실패: {e}")
-        print(f"❌ Cloud Run 스케줄러 시작 실패: {e}")
+        print(f"Cloud Run 스케줄러 시작 실패: {e}")
 
 # FastAPI startup 이벤트로 스케줄러 시작
 @app.on_event("startup")
 async def startup_event():
     """FastAPI 앱 시작 시 스케줄러 자동 시작"""
-    print("🚀 LearnUs 스케줄러 서버 시작 중...")
-    print("📡 서버 주소: http://0.0.0.0:8080")
-    print("📋 API 문서: http://0.0.0.0:8080/docs")
-    print("🔍 헬스체크: http://0.0.0.0:8080/health")
-    print("📊 과제 정보: http://0.0.0.0:8080/assignments")
-    print("⏰ 자동화 실행: 매일 09:00, 18:00 (개발용: 5분마다)")
+    print("LearnUs 스케줄러 서버 시작 중...")
+    print("서버 주소: http://0.0.0.0:8080")
+    print("API 문서: http://0.0.0.0:8080/docs")
+    print("헬스체크: http://0.0.0.0:8080/health")
+    print("과제 정보: http://0.0.0.0:8080/assignments")
+    print("자동화 실행: 매일 09:00, 18:00 (개발용: 5분마다)")
     
     # Cloud Run 환경에 최적화된 스케줄러 시작
     try:
         # 백그라운드에서 스케줄러 시작 (서버 시작을 블로킹하지 않음)
         scheduler_thread = threading.Thread(target=start_scheduler_optimized, daemon=True)
         scheduler_thread.start()
-        print("✅ Cloud Run 최적화 스케줄러 백그라운드 시작됨")
+        print("Cloud Run 최적화 스케줄러 백그라운드 시작됨")
         
     except Exception as e:
-        print(f"❌ 스케줄러 시작 실패: {e}")
+        print(f"스케줄러 시작 실패: {e}")
         logger.error(f"스케줄러 시작 실패: {e}")
         # 스케줄러 실패해도 서버는 계속 실행
 
@@ -124,16 +129,30 @@ def run_automation_job():
         _automation_running = True
         logger.info("🤖 주기적 자동화 시작...")
         
+        # 상세한 환경 정보 로깅
+        logger.info("🔍 환경 변수 확인:")
+        logger.info(f"   DISPLAY: {os.environ.get('DISPLAY', 'NOT SET')}")
+        logger.info(f"   CHROME_BIN: {os.environ.get('CHROME_BIN', 'NOT SET')}")
+        logger.info(f"   WORKSPACE_DIR: {os.environ.get('WORKSPACE_DIR', 'NOT SET')}")
+        logger.info(f"   PYTHONPATH: {os.environ.get('PYTHONPATH', 'NOT SET')}")
+        logger.info(f"   PATH: {os.environ.get('PATH', 'NOT SET')[:200]}...")
+        
+        # 시스템 정보 로깅
+        logger.info("🔍 시스템 정보:")
+        logger.info(f"   Python 버전: {os.sys.version}")
+        logger.info(f"   현재 작업 디렉토리: {os.getcwd()}")
+        logger.info(f"   사용 가능한 파일: {os.listdir('.')[:10]}")
+        
         # Firebase 연결 상태 확인
-        logger.info("🔍 Firebase 연결 상태 확인 중...")
+        logger.info("Firebase 연결 상태 확인 중...")
         try:
             # Firebase에서 활성화된 사용자 정보 가져오기
             active_users = get_all_active_users()
-            logger.info(f"📊 Firebase에서 {len(active_users)}명의 활성화된 사용자 조회")
+            logger.info(f"Firebase에서 {len(active_users)}명의 활성화된 사용자 조회")
             
             if not active_users:
-                logger.warning("⚠️ 활성화된 사용자가 없습니다. 실제 LearnUs 사용자 정보를 Firebase에 추가해주세요.")
-                logger.info("💡 해결방법: Flutter 앱에서 LearnUs 정보를 설정하거나, add_real_user_manual.py를 실행하세요.")
+                logger.warning("활성화된 사용자가 없습니다. 실제 LearnUs 사용자 정보를 Firebase에 추가해주세요.")
+                logger.info("해결방법: Flutter 앱에서 LearnUs 정보를 설정하거나, add_real_user_manual.py를 실행하세요.")
                 
                 # 사용자 데이터가 없으면 자동화 실행하지 않음
                 result = {
@@ -145,10 +164,10 @@ def run_automation_job():
                     'user_count': 0
                 }
             else:
-                logger.info(f"✅ {len(active_users)}명의 활성화된 사용자 발견")
+                logger.info(f"{len(active_users)}명의 활성화된 사용자 발견")
                 
         except Exception as firebase_error:
-            logger.error(f"❌ Firebase 연결 실패: {firebase_error}")
+            logger.error(f"Firebase 연결 실패: {firebase_error}")
             result = {
                 'assignments': [],
                 'total_count': 0,
@@ -159,7 +178,7 @@ def run_automation_job():
             }
             active_users = []
         else:
-            logger.info(f"📊 {len(active_users)}명의 활성화된 사용자 발견")
+            logger.info(f"{len(active_users)}명의 활성화된 사용자 발견")
             
             # 모든 사용자에 대해 자동화 실행
             all_assignments = []
@@ -176,35 +195,61 @@ def run_automation_job():
                     logger.info(f"   대학교: {university}")
                     logger.info(f"   학번: {student_id}")
                     
-                    # 사용자별 자동화 실행 (타임아웃 설정)
-                    user_result = test_direct_selenium(
-                        university,
-                        username,
-                        user.get('password', ''),
-                        student_id
-                    )
+                    # Chrome 드라이버 초기화 전 상세 로그
+                    logger.info("🔧 Chrome 드라이버 초기화 시작...")
+                    logger.info("🔍 Chrome 관련 환경 변수:")
+                    logger.info(f"   CHROME_BIN: {os.environ.get('CHROME_BIN', 'NOT SET')}")
+                    logger.info(f"   DISPLAY: {os.environ.get('DISPLAY', 'NOT SET')}")
+                    logger.info(f"   XDG_SESSION_TYPE: {os.environ.get('XDG_SESSION_TYPE', 'NOT SET')}")
                     
-                    if user_result and user_result.get('assignments'):
-                        # 사용자별 결과를 전체 결과에 추가
-                        user_assignments = user_result.get('assignments', [])
-                        all_assignments.extend(user_assignments)
+                    # 사용자별 자동화 실행 (타임아웃 설정)
+                    logger.info("🚀 test_direct_selenium 함수 호출 시작...")
+                    logger.info(f"   매개변수: university={university}, username={username}, student_id={student_id}")
+                    
+                    try:
+                        user_result = test_direct_selenium(
+                            university,
+                            username,
+                            user.get('password', ''),
+                            student_id
+                        )
+                        logger.info("✅ test_direct_selenium 함수 호출 완료")
+                        logger.info(f"🔍 user_result 타입: {type(user_result)}")
+                        logger.info(f"🔍 user_result 내용: {user_result}")
+                    except Exception as selenium_error:
+                        logger.error(f"❌ test_direct_selenium 함수 호출 실패: {selenium_error}")
+                        logger.error(f"❌ 오류 상세: {str(selenium_error)}")
+                        import traceback
+                        logger.error(f"❌ 스택 트레이스: {traceback.format_exc()}")
+                        user_result = None
+                    
+                    if user_result:
+                        # user_result가 리스트인지 딕셔너리인지 확인
+                        if isinstance(user_result, list):
+                            # 리스트인 경우 직접 사용
+                            user_assignments = user_result
+                            all_assignments.extend(user_assignments)
+                        elif isinstance(user_result, dict):
+                            # 딕셔너리인 경우 assignments 키에서 추출
+                            user_assignments = user_result.get('assignments', [])
+                            all_assignments.extend(user_assignments)
                         
                         # 마지막 사용 시간 업데이트
                         try:
                             update_user_last_used(user.get('uid', ''))
-                            logger.info(f"✅ 사용자 {username} 마지막 사용 시간 업데이트 완료")
+                            logger.info(f"사용자 {username} 마지막 사용 시간 업데이트 완료")
                         except Exception as update_error:
-                            logger.warning(f"⚠️ 사용자 {username} 마지막 사용 시간 업데이트 실패: {update_error}")
+                            logger.warning(f"사용자 {username} 마지막 사용 시간 업데이트 실패: {update_error}")
                         
                         successful_users += 1
-                        logger.info(f"✅ 사용자 {username} 자동화 완료: {len(user_assignments)}개 과제")
+                        logger.info(f"사용자 {username} 자동화 완료: {len(user_assignments)}개 과제")
                     else:
                         failed_users += 1
-                        logger.warning(f"⚠️ 사용자 {username} 자동화 결과 없음")
+                        logger.warning(f"사용자 {username} 자동화 결과 없음")
                         
                 except Exception as user_error:
                     failed_users += 1
-                    logger.error(f"❌ 사용자 {user.get('username', 'Unknown')} 자동화 실패: {user_error}")
+                    logger.error(f"사용자 {user.get('username', 'Unknown')} 자동화 실패: {user_error}")
                     logger.error(f"   오류 상세: {str(user_error)}")
                     continue
             
@@ -219,7 +264,7 @@ def run_automation_job():
                 'user_count': len(active_users)
             }
             
-            logger.info(f"📊 자동화 실행 결과:")
+            logger.info(f"자동화 실행 결과:")
             logger.info(f"   총 사용자: {len(active_users)}명")
             logger.info(f"   성공: {successful_users}명")
             logger.info(f"   실패: {failed_users}명")
@@ -229,18 +274,27 @@ def run_automation_job():
         save_assignment_data(result)
         
         _last_update_time = datetime.now()
-        logger.info("✅ 주기적 자동화 완료")
+        logger.info("주기적 자동화 완료")
         
     except Exception as e:
-        logger.error(f"❌ 자동화 실행 실패: {e}")
+        logger.error(f"자동화 실행 실패: {e}")
     finally:
         _automation_running = False
 
 def save_assignment_data(automation_result):
     """자동화 결과를 assignment.txt 파일에 저장"""
     try:
-        # assignment.txt 파일 경로
-        assignment_file = "assignment.txt"
+        logger.info(f"🔍 save_assignment_data 호출됨")
+        logger.info(f"🔍 automation_result 타입: {type(automation_result)}")
+        logger.info(f"🔍 automation_result 내용: {automation_result}")
+        
+        # assignment.txt 파일 경로 (workspace 디렉토리에 저장)
+        workspace_dir = os.environ.get('WORKSPACE_DIR', '/app/workspace')
+        if not os.path.exists(workspace_dir):
+            workspace_dir = '.'  # workspace가 없으면 현재 디렉토리에 저장
+        
+        assignment_file = os.path.join(workspace_dir, "assignment.txt")
+        logger.info(f"🔍 저장 경로: {assignment_file}")
         
         # 파일이 존재하면 읽어서 기존 데이터와 병합
         existing_data = []
@@ -249,14 +303,28 @@ def save_assignment_data(automation_result):
                 with open(assignment_file, 'r', encoding='utf-8') as f:
                     content = f.read()
                     # 간단한 파싱 (실제로는 더 정교한 파싱 필요)
-                    if "📋 이번주 해야 할 과제 목록" in content:
+                    if "이번주 해야 할 과제 목록" in content:
                         existing_data = parse_assignment_file(content)
             except Exception as e:
                 logger.warning(f"기존 파일 읽기 실패: {e}")
         
-        # 새로운 데이터와 병합
+        # automation_result에서 실제 과제 데이터 추출
+        new_assignments = []
+        if automation_result and isinstance(automation_result, dict):
+            # automation_result에 assignments 키가 있으면 직접 사용
+            if 'assignments' in automation_result:
+                logger.info(f"🔍 직접 assignments 추출: {len(automation_result['assignments'])}개")
+                new_assignments = automation_result.get('assignments', [])
+            else:
+                # 각 사용자의 결과에서 과제 추출 (이전 방식)
+                for user_id, user_result in automation_result.items():
+                    if isinstance(user_result, dict) and user_result.get('success'):
+                        user_assignments = user_result.get('assignments', [])
+                        new_assignments.extend(user_assignments)
+        
+        # 전역 변수 업데이트
         global _assignment_data
-        _assignment_data = existing_data
+        _assignment_data = new_assignments
         
         # 파일에 저장
         with open(assignment_file, 'w', encoding='utf-8') as f:
@@ -264,16 +332,20 @@ def save_assignment_data(automation_result):
             f.write(f"업데이트 시간: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
             
             if _assignment_data:
-                f.write("📋 과제 목록:\n")
+                f.write("이번주 해야 할 과제 목록:\n")
                 for assignment in _assignment_data:
-                    f.write(f"  • {assignment['course']}: {assignment['activity']} - {assignment['status']}\n")
+                    course = assignment.get('course', '알 수 없음')
+                    # title 키를 우선 사용 (실제 데이터 구조에 맞춤)
+                    activity = assignment.get('title') or assignment.get('activity', '알 수 없음')
+                    status = assignment.get('status', '상태 불명')
+                    f.write(f"  • {course}: {activity} - {status}\n")
             else:
-                f.write("📭 이번주 과제가 없습니다.\n")
+                f.write("이번주 과제가 없습니다.\n")
         
-        logger.info(f"📄 assignment.txt 파일 업데이트 완료")
+        logger.info(f"assignment.txt 파일 업데이트 완료")
         
     except Exception as e:
-        logger.error(f"❌ 파일 저장 실패: {e}")
+        logger.error(f"파일 저장 실패: {e}")
 
 def parse_assignment_file(content):
     """assignment.txt 파일을 파싱하여 구조화된 데이터로 변환"""
@@ -324,7 +396,11 @@ async def get_assignments():
         global _assignment_data
         
         # assignment.txt 파일에서 최신 데이터 로드
-        assignment_file = "assignment.txt"
+        workspace_dir = os.environ.get('WORKSPACE_DIR', '/app/workspace')
+        if not os.path.exists(workspace_dir):
+            workspace_dir = '.'
+        
+        assignment_file = os.path.join(workspace_dir, "assignment.txt")
         if os.path.exists(assignment_file):
             with open(assignment_file, 'r', encoding='utf-8') as f:
                 content = f.read()
@@ -333,11 +409,11 @@ async def get_assignments():
         return {
             "assignments": _assignment_data,
             "total_count": len(_assignment_data),
-            "incomplete_count": len([a for a in _assignment_data if "❌" in a.get('status', '')]),
+            "incomplete_count": len([a for a in _assignment_data if "미완료" in a.get('status', '')]),
             "last_update": _last_update_time.isoformat() if _last_update_time else None
         }
     except Exception as e:
-        logger.error(f"❌ 과제 정보 조회 실패: {e}")
+        logger.error(f"과제 정보 조회 실패: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/automation/run")
@@ -352,18 +428,24 @@ async def run_automation_now():
         
         return {"message": "자동화가 시작되었습니다", "status": "started"}
     except Exception as e:
-        logger.error(f"❌ 자동화 실행 실패: {e}")
+        logger.error(f"자동화 실행 실패: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/status")
 async def get_status():
     """서버 상태 및 자동화 상태 조회"""
+    workspace_dir = os.environ.get('WORKSPACE_DIR', '/app/workspace')
+    if not os.path.exists(workspace_dir):
+        workspace_dir = '.'
+    assignment_file = os.path.join(workspace_dir, "assignment.txt")
+    
     return {
         "server_status": "running",
         "automation_running": _automation_running,
         "last_update": _last_update_time.isoformat() if _last_update_time else None,
         "next_scheduled": "매일 09:00, 18:00 (개발용: 5분마다)",
-        "assignment_file_exists": os.path.exists("assignment.txt")
+        "assignment_file_exists": os.path.exists(assignment_file),
+        "assignment_file_path": assignment_file
     }
 
 # Cloud Run에서는 uvicorn이 자동으로 실행됨

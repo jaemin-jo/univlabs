@@ -24,10 +24,14 @@ from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.service import Service
 
-# 로깅 설정
+# 로깅 설정 (JST 시간대)
+import os
+os.environ['TZ'] = 'Asia/Tokyo'  # JST 시간대 설정
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
     handlers=[
         logging.FileHandler('automation_debug.log', encoding='utf-8'),
         logging.StreamHandler()
@@ -258,13 +262,68 @@ def setup_driver():
     try:
         logger.info("🔧 Chrome 드라이버 설정 중...")
         
+        # 🔍 1단계: Chrome 실행 파일 확인
+        logger.info("🔍 1단계: Chrome 실행 파일 확인 중...")
+        chrome_bin_paths = [
+            '/usr/bin/google-chrome',
+            '/usr/bin/chromium-browser',
+            '/usr/bin/chromium',
+        ]
+        
+        chrome_found = False
+        for chrome_path in chrome_bin_paths:
+            if os.path.exists(chrome_path):
+                logger.info(f"✅ Chrome 실행 파일 발견: {chrome_path}")
+                os.environ['CHROME_BIN'] = chrome_path
+                chrome_found = True
+                break
+        
+        if not chrome_found:
+            logger.warning("⚠️ Chrome 실행 파일을 찾을 수 없음, 기본 경로 사용")
+        
+        # 🔍 2단계: Chrome 옵션 설정
+        logger.info("🔍 2단계: Chrome 옵션 설정 중...")
         chrome_options = Options()
         
-        # Cloud Run 환경을 위한 필수 옵션들 (DevToolsActivePort 오류 해결)
+        # 🔥 DevToolsActivePort 오류 해결 (Playwright 분석 결과 기반)
+        chrome_options.add_argument("--remote-debugging-port=9222")  # 핵심: 디버깅 포트 활성화
         chrome_options.add_argument("--no-sandbox")  # 필수: 샌드박스 비활성화
         chrome_options.add_argument("--disable-dev-shm-usage")  # 필수: 공유 메모리 비활성화
-        chrome_options.add_argument("--single-process")  # 필수: 단일 프로세스 모드
+        
+        # 🔥 자동화 감지 우회 핵심 옵션들 (Playwright 분석 결과 기반)
+        chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        chrome_options.add_experimental_option('useAutomationExtension', False)
+        
+        # 🔥 Playwright 분석 결과 기반 추가 안정성 옵션들
+        chrome_options.add_argument("--disable-background-timer-throttling")
+        chrome_options.add_argument("--disable-backgrounding-occluded-windows")
+        chrome_options.add_argument("--disable-renderer-backgrounding")
+        chrome_options.add_argument("--disable-features=TranslateUI")
+        chrome_options.add_argument("--disable-ipc-flooding-protection")
+        chrome_options.add_argument("--disable-software-rasterizer")
+        chrome_options.add_argument("--disable-background-networking")
+        chrome_options.add_argument("--disable-sync")
+        chrome_options.add_argument("--disable-translate")
+        chrome_options.add_argument("--disable-plugins-discovery")
+        chrome_options.add_argument("--disable-preconnect")
+        chrome_options.add_argument("--disable-hang-monitor")
+        chrome_options.add_argument("--disable-prompt-on-repost")
+        chrome_options.add_argument("--disable-domain-reliability")
+        chrome_options.add_argument("--disable-component-extensions-with-background-pages")
+        chrome_options.add_argument("--disable-background-downloads")
+        chrome_options.add_argument("--disable-add-to-shelf")
+        chrome_options.add_argument("--disable-client-side-phishing-detection")
+        
+        # 🔥 실제 사용자처럼 보이게 하는 옵션들
+        chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36")
+        chrome_options.add_argument("--accept-lang=ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7")
+        
+        # Cloud Run 환경을 위한 필수 옵션들
         chrome_options.add_argument("--headless")  # 필수: 헤드리스 모드
+        chrome_options.add_argument("--no-first-run")  # 첫 실행 비활성화
+        chrome_options.add_argument("--disable-default-apps")  # 기본 앱 비활성화
+        chrome_options.add_argument("--disable-background-mode")  # 백그라운드 모드 비활성화
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--disable-extensions")
         chrome_options.add_argument("--disable-plugins")
@@ -276,11 +335,28 @@ def setup_driver():
         chrome_options.add_argument("--log-level=3")
         chrome_options.add_argument("--disable-blink-features=AutomationControlled")
         
-        # Cloud Run 환경에서 Chrome 실행을 위한 추가 옵션
-        chrome_options.add_argument("--no-zygote")
+        # Cloud Run 환경 최적화 (충돌 옵션 제거)
         chrome_options.add_argument("--disable-background-timer-throttling")
         chrome_options.add_argument("--disable-backgrounding-occluded-windows")
         chrome_options.add_argument("--disable-renderer-backgrounding")
+        chrome_options.add_argument("--disable-features=TranslateUI")
+        chrome_options.add_argument("--disable-ipc-flooding-protection")
+        chrome_options.add_argument("--disable-software-rasterizer")
+        chrome_options.add_argument("--disable-background-networking")
+        chrome_options.add_argument("--disable-sync")
+        chrome_options.add_argument("--disable-translate")
+        chrome_options.add_argument("--disable-plugins-discovery")
+        chrome_options.add_argument("--disable-preconnect")
+        chrome_options.add_argument("--disable-hang-monitor")
+        chrome_options.add_argument("--disable-prompt-on-repost")
+        chrome_options.add_argument("--disable-domain-reliability")
+        chrome_options.add_argument("--disable-component-extensions-with-background-pages")
+        chrome_options.add_argument("--disable-background-downloads")
+        chrome_options.add_argument("--disable-add-to-shelf")
+        chrome_options.add_argument("--disable-client-side-phishing-detection")
+        
+        # Cloud Run 환경에서 Chrome 실행을 위한 추가 옵션
+        chrome_options.add_argument("--no-zygote")
         
         # Cloud Run 메모리 최적화
         chrome_options.add_argument("--memory-pressure-off")
@@ -303,7 +379,7 @@ def setup_driver():
         chrome_options.add_argument("--disable-features=TranslateUI")
         chrome_options.add_argument("--disable-ipc-flooding-protection")
         
-        # DevToolsActivePort 오류 해결을 위한 추가 옵션
+        # DevToolsActivePort 오류 해결을 위한 핵심 옵션들
         chrome_options.add_argument("--disable-dev-tools")
         chrome_options.add_argument("--disable-software-rasterizer")
         chrome_options.add_argument("--disable-gpu-sandbox")
@@ -329,12 +405,70 @@ def setup_driver():
         chrome_options.add_argument("--disable-permissions-api")
         chrome_options.add_argument("--disable-popup-blocking")
         
+        # 🔥 DevToolsActivePort 오류 해결을 위한 핵심 옵션들
+        chrome_options.add_argument("--remote-debugging-port=0")  # 핵심: 디버깅 포트 비활성화
+        chrome_options.add_argument("--disable-dev-shm-usage")  # 핵심: 공유 메모리 비활성화
+        chrome_options.add_argument("--no-zygote")  # 핵심: zygote 프로세스 비활성화
+        chrome_options.add_argument("--disable-setuid-sandbox")  # 핵심: setuid 샌드박스 비활성화
+        chrome_options.add_argument("--disable-accelerated-2d-canvas")  # 2D 가속 비활성화
+        chrome_options.add_argument("--disable-accelerated-jpeg-decoding")  # JPEG 디코딩 가속 비활성화
+        chrome_options.add_argument("--disable-accelerated-mjpeg-decode")  # MJPEG 디코딩 가속 비활성화
+        chrome_options.add_argument("--disable-accelerated-video-decode")  # 비디오 디코딩 가속 비활성화
+        chrome_options.add_argument("--disable-gpu-memory-buffer-compositor-resources")  # GPU 메모리 버퍼 비활성화
+        chrome_options.add_argument("--disable-gpu-memory-buffer-video-frames")  # GPU 비디오 프레임 비활성화
+        chrome_options.add_argument("--disable-gpu-rasterization")  # GPU 래스터화 비활성화
+        chrome_options.add_argument("--disable-zero-copy")  # 제로 카피 비활성화
+        chrome_options.add_argument("--disable-gpu-sandbox")  # GPU 샌드박스 비활성화
+        chrome_options.add_argument("--disable-software-rasterizer")  # 소프트웨어 래스터화 비활성화
+        chrome_options.add_argument("--disable-background-timer-throttling")  # 백그라운드 타이머 스로틀링 비활성화
+        chrome_options.add_argument("--disable-backgrounding-occluded-windows")  # 가려진 창 백그라운드 처리 비활성화
+        chrome_options.add_argument("--disable-renderer-backgrounding")  # 렌더러 백그라운드 처리 비활성화
+        chrome_options.add_argument("--disable-features=TranslateUI")  # 번역 UI 비활성화
+        chrome_options.add_argument("--disable-ipc-flooding-protection")  # IPC 플러딩 보호 비활성화
+        chrome_options.add_argument("--disable-hang-monitor")  # 행 모니터 비활성화
+        chrome_options.add_argument("--disable-prompt-on-repost")  # 재전송 프롬프트 비활성화
+        chrome_options.add_argument("--disable-client-side-phishing-detection")  # 클라이언트 사이드 피싱 탐지 비활성화
+        chrome_options.add_argument("--disable-component-update")  # 컴포넌트 업데이트 비활성화
+        chrome_options.add_argument("--disable-domain-reliability")  # 도메인 신뢰성 비활성화
+        chrome_options.add_argument("--disable-features=VizDisplayCompositor")  # Viz 디스플레이 컴포저 비활성화
+        chrome_options.add_argument("--disable-background-networking")  # 백그라운드 네트워킹 비활성화
+        chrome_options.add_argument("--disable-default-apps")  # 기본 앱 비활성화
+        chrome_options.add_argument("--disable-sync")  # 동기화 비활성화
+        chrome_options.add_argument("--disable-translate")  # 번역 비활성화
+        chrome_options.add_argument("--hide-scrollbars")  # 스크롤바 숨기기
+        chrome_options.add_argument("--mute-audio")  # 오디오 음소거
+        chrome_options.add_argument("--no-first-run")  # 첫 실행 비활성화
+        chrome_options.add_argument("--disable-logging")  # 로깅 비활성화
+        chrome_options.add_argument("--disable-permissions-api")  # 권한 API 비활성화
+        chrome_options.add_argument("--disable-popup-blocking")  # 팝업 차단 비활성화
+        
+        # 🔥 Cloud Run 환경에서 Chrome 실행을 위한 추가 옵션들
+        chrome_options.add_argument("--disable-web-security")  # 웹 보안 비활성화
+        chrome_options.add_argument("--disable-features=VizDisplayCompositor")  # Viz 디스플레이 컴포저 비활성화
+        chrome_options.add_argument("--disable-ipc-flooding-protection")  # IPC 플러딩 보호 비활성화
+        chrome_options.add_argument("--disable-hang-monitor")  # 행 모니터 비활성화
+        chrome_options.add_argument("--disable-prompt-on-repost")  # 재전송 프롬프트 비활성화
+        chrome_options.add_argument("--disable-client-side-phishing-detection")  # 클라이언트 사이드 피싱 탐지 비활성화
+        chrome_options.add_argument("--disable-component-update")  # 컴포넌트 업데이트 비활성화
+        chrome_options.add_argument("--disable-domain-reliability")  # 도메인 신뢰성 비활성화
+        chrome_options.add_argument("--disable-features=VizDisplayCompositor")  # Viz 디스플레이 컴포저 비활성화
+        chrome_options.add_argument("--disable-background-networking")  # 백그라운드 네트워킹 비활성화
+        chrome_options.add_argument("--disable-default-apps")  # 기본 앱 비활성화
+        chrome_options.add_argument("--disable-sync")  # 동기화 비활성화
+        chrome_options.add_argument("--disable-translate")  # 번역 비활성화
+        chrome_options.add_argument("--hide-scrollbars")  # 스크롤바 숨기기
+        chrome_options.add_argument("--mute-audio")  # 오디오 음소거
+        chrome_options.add_argument("--no-first-run")  # 첫 실행 비활성화
+        chrome_options.add_argument("--disable-logging")  # 로깅 비활성화
+        chrome_options.add_argument("--disable-permissions-api")  # 권한 API 비활성화
+        chrome_options.add_argument("--disable-popup-blocking")  # 팝업 차단 비활성화
+        
         chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
         chrome_options.add_experimental_option('useAutomationExtension', False)
         
-        # Cloud Run 환경에서 Chrome 드라이버 설정
+        # Cloud Run 환경에서 Chrome 드라이버 설정 (시스템 드라이버 우선)
         try:
-            # Chrome 드라이버 경로 우선순위 설정
+            # 🔥 시스템 Chrome 드라이버 우선 사용 (안정성)
             chrome_driver_paths = [
                 "/usr/bin/chromedriver",  # 설치된 chromedriver
                 "/usr/bin/chromium-driver",  # chromium-driver
@@ -342,21 +476,97 @@ def setup_driver():
             ]
             
             service = None
-            for path in chrome_driver_paths:
-                if os.path.exists(path):
-                    service = Service(path)
-                    logger.info(f"✅ Chrome 드라이버 사용: {path}")
-                    break
+            logger.info("🔍 시스템 Chrome 드라이버 경로 확인 중...")
+            for i, path in enumerate(chrome_driver_paths):
+                exists = os.path.exists(path)
+                logger.info(f"   경로 {i+1}/{len(chrome_driver_paths)}: {path} - {'존재' if exists else '없음'}")
+                if exists:
+                    try:
+                        # 파일 권한 확인
+                        is_executable = os.access(path, os.X_OK)
+                        file_size = os.path.getsize(path)
+                        logger.info(f"   ✅ 파일 발견: {path}")
+                        logger.info(f"   📊 파일 크기: {file_size} bytes")
+                        logger.info(f"   🔐 실행 권한: {'있음' if is_executable else '없음'}")
+                        
+                        # ChromeDriver 버전 확인 시도
+                        try:
+                            import subprocess
+                            result = subprocess.run([path, "--version"], capture_output=True, text=True, timeout=5)
+                            if result.returncode == 0:
+                                logger.info(f"   ✅ ChromeDriver 버전: {result.stdout.strip()}")
+                            else:
+                                logger.warning(f"   ⚠️ ChromeDriver 버전 확인 실패: {result.stderr}")
+                        except Exception as version_error:
+                            logger.warning(f"   ⚠️ ChromeDriver 버전 확인 오류: {version_error}")
+                            
+                        service = Service(path)
+                        logger.info(f"✅ 시스템 Chrome 드라이버 사용: {path}")
+                        break
+                        
+                    except Exception as file_error:
+                        logger.error(f"   ❌ 파일 정보 확인 실패: {file_error}")
+                        continue
             
             if service is None:
-                # WebDriver Manager 사용 (fallback)
-                service = Service(ChromeDriverManager().install())
-                logger.info("✅ WebDriver Manager로 Chrome 드라이버 설치")
+                logger.warning("시스템 드라이버 없음, WebDriver Manager 사용")
+                try:
+                    # WebDriver Manager fallback
+                    logger.info("🔧 WebDriver Manager로 Chrome 드라이버 설치 중...")
+                    wdm_path = ChromeDriverManager().install()
+                    logger.info(f"✅ WebDriver Manager 경로: {wdm_path}")
+                    
+                    # WebDriver Manager 경로 확인
+                    if os.path.exists(wdm_path):
+                        logger.info(f"✅ WebDriver Manager 파일 존재: {wdm_path}")
+                        service = Service(wdm_path)
+                        logger.info("✅ WebDriver Manager로 Chrome 드라이버 설치")
+                    else:
+                        raise Exception(f"WebDriver Manager 파일이 존재하지 않음: {wdm_path}")
+                        
+                except Exception as wdm_error:
+                    logger.error(f"❌ WebDriver Manager 실패: {wdm_error}")
+                    raise Exception(f"모든 Chrome 드라이버 설정 실패: 시스템 드라이버 없음, WebDriver Manager 실패")
         
             driver = webdriver.Chrome(service=service, options=chrome_options)
             
         except Exception as driver_error:
             logger.error(f"❌ Chrome 드라이버 초기화 실패: {driver_error}")
+            logger.error(f"   오류 타입: {type(driver_error).__name__}")
+            logger.error(f"   오류 메시지: {str(driver_error)}")
+            
+            # 추가 디버깅 정보
+            try:
+                logger.info("🔍 추가 디버깅 정보:")
+                logger.info(f"   현재 작업 디렉토리: {os.getcwd()}")
+                import sys
+                logger.info(f"   Python 버전: {sys.version}")
+                
+                # Chrome 실행 파일 확인
+                chrome_paths = ["/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chrome"]
+                for chrome_path in chrome_paths:
+                    if os.path.exists(chrome_path):
+                        logger.info(f"   Chrome 실행 파일: {chrome_path}")
+                        break
+                else:
+                    logger.warning("   Chrome 실행 파일을 찾을 수 없음")
+                    
+                # ChromeDriver 경로 재확인
+                driver_paths = ["/usr/bin/chromedriver", "/usr/bin/chromium-driver"]
+                for driver_path in driver_paths:
+                    if os.path.exists(driver_path):
+                        logger.info(f"   ChromeDriver 경로: {driver_path}")
+                        try:
+                            is_executable = os.access(driver_path, os.X_OK)
+                            logger.info(f"   실행 권한: {'있음' if is_executable else '없음'}")
+                        except Exception as perm_error:
+                            logger.warning(f"   권한 확인 실패: {perm_error}")
+                    else:
+                        logger.warning(f"   ChromeDriver 없음: {driver_path}")
+                        
+            except Exception as debug_error:
+                logger.error(f"   디버깅 정보 수집 실패: {debug_error}")
+            
             # Cloud Run 환경에서 Chrome 실행을 위한 추가 시도
             try:
                 # Chrome 실행 파일 경로 우선순위 설정
@@ -395,9 +605,48 @@ def test_direct_selenium(university, username, password, student_id):
     """직접 Selenium 로그인 테스트 (기존 코드의 검증된 로직)"""
     driver = None
     try:
+        logger.info("=" * 80)
+        logger.info("🚀 LearnUs 자동화 시작")
+        logger.info(f"   대학: {university}")
+        logger.info(f"   사용자명: {username}")
+        logger.info(f"   학생ID: {student_id}")
+        logger.info("=" * 80)
+        
+        logger.info("🔧 Chrome 드라이버 초기화 중...")
         driver = setup_driver()
         if not driver:
+            logger.error("❌ Chrome 드라이버 초기화 실패")
             return False
+        
+        # 🔥 자동화 감지 우회 JavaScript 실행
+        logger.info("🔧 자동화 감지 우회 JavaScript 실행...")
+        try:
+            driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
+                'source': '''
+                    Object.defineProperty(navigator, 'webdriver', {
+                        get: () => undefined,
+                    });
+                    Object.defineProperty(navigator, 'plugins', {
+                        get: () => [1, 2, 3, 4, 5],
+                    });
+                    Object.defineProperty(navigator, 'languages', {
+                        get: () => ['ko-KR', 'ko', 'en-US', 'en'],
+                    });
+                    window.chrome = {
+                        runtime: {},
+                    };
+                    delete window.selenium;
+                    delete window.webdriver;
+                    delete window.driver;
+                    delete window.playwright;
+                    delete window.automation;
+                '''
+            })
+            logger.info("✅ 자동화 감지 우회 JavaScript 실행 완료")
+        except Exception as e:
+            logger.warning(f"⚠️ 자동화 감지 우회 JavaScript 실행 실패: {e}")
+        
+        logger.info("✅ Chrome 드라이버 초기화 성공")
         
         logger.info(f"🌐 LearnUs 메인 페이지 접속: https://ys.learnus.org/")
         driver.get("https://ys.learnus.org/")
@@ -443,8 +692,11 @@ def test_direct_selenium(university, username, password, student_id):
                 else:
                     login_button = driver.find_element(By.CSS_SELECTOR, selector)
                 logger.info(f"✅ 연세포털 로그인 버튼 발견: {selector}")
+                logger.info(f"   버튼 텍스트: {login_button.text}")
+                logger.info(f"   버튼 태그: {login_button.tag_name}")
                 break
-            except:
+            except Exception as e:
+                logger.debug(f"   선택자 {selector} 실패: {e}")
                 continue
         
         if login_button:
@@ -498,6 +750,8 @@ def test_direct_selenium(university, username, password, student_id):
         # 비밀번호 필드 찾기 (기존 코드의 검증된 로직)
         password_field = None
         password_selectors = [
+            "input[id='loginPasswd']",  # 수정: 정확한 ID 사용
+            "input[name='loginPasswd']",  # 수정: 정확한 name 사용
             "input[id='loginPw']",
             "input[name='loginPw']",
             "input[type='password']",
@@ -532,6 +786,29 @@ def test_direct_selenium(university, username, password, student_id):
         password_field.clear()
         password_field.send_keys(password)
         time.sleep(0.5)
+        
+        # 🔥 숨겨진 필드들 처리 (E2, E3, E4)
+        logger.info("🔧 숨겨진 필드들 처리 중...")
+        try:
+            # E2 필드 설정 (JavaScript 사용)
+            driver.execute_script("document.getElementById('E2').value = arguments[0];", username)
+            logger.info("✅ E2 필드 설정 완료")
+        except Exception as e:
+            logger.warning(f"⚠️ E2 필드 설정 실패: {e}")
+        
+        try:
+            # E3 필드 설정 (JavaScript 사용)
+            driver.execute_script("document.getElementById('E3').value = arguments[0];", password)
+            logger.info("✅ E3 필드 설정 완료")
+        except Exception as e:
+            logger.warning(f"⚠️ E3 필드 설정 실패: {e}")
+        
+        try:
+            # E4 필드 설정 (JavaScript 사용)
+            driver.execute_script("document.getElementById('E4').value = arguments[0];", username)
+            logger.info("✅ E4 필드 설정 완료")
+        except Exception as e:
+            logger.warning(f"⚠️ E4 필드 설정 실패: {e}")
         
         # 로그인 버튼 찾기 및 클릭 (기존 코드의 검증된 로직)
         login_submit_button = None
@@ -581,11 +858,80 @@ def test_direct_selenium(university, username, password, student_id):
         if "ys.learnus.org" in current_url and "login" not in current_url.lower():
             logger.info("✅ 로그인 성공!")
             
-            # 이번주 강의 정보 수집 (혼합 로직)
-            collect_this_week_lectures_hybrid(driver)
-            return True
+            # 페이지 소스에서 로그인 상태 재확인
+            page_source = driver.page_source
+            if "로그아웃" in page_source or "logout" in page_source.lower():
+                logger.info("✅ 로그인 상태 재확인: 로그아웃 버튼 발견")
+            else:
+                logger.warning("⚠️ 로그인 상태 불확실: 로그아웃 버튼 없음")
+            
+            # 🔥 과제 페이지로 이동 시도
+            logger.info("🔍 과제 관련 페이지로 이동 시도...")
+            try:
+                # 과제 관련 링크 찾기
+                assignment_links = driver.find_elements(By.CSS_SELECTOR, "a[href*='assignment'], a[href*='과제'], a[href*='task'], a[href*='homework']")
+                if assignment_links:
+                    logger.info(f"✅ 과제 관련 링크 {len(assignment_links)}개 발견")
+                    for i, link in enumerate(assignment_links[:3]):
+                        logger.info(f"   {i+1}. {link.text} - {link.get_attribute('href')}")
+                    
+                    # 첫 번째 과제 링크 클릭
+                    assignment_links[0].click()
+                    time.sleep(3)
+                    logger.info(f"✅ 과제 페이지 이동: {driver.current_url}")
+                else:
+                    logger.info("ℹ️ 과제 관련 링크를 찾을 수 없음. 메인 페이지에서 과제 정보 수집 시도...")
+            except Exception as e:
+                logger.warning(f"⚠️ 과제 페이지 이동 실패: {e}")
+            
+            # 🔥 Playwright 분석 결과 기반 과제 수집
+            logger.info("📚 LearnUs 과제 정보 수집 시작 (Playwright 분석 결과 기반)...")
+            
+            # 🔥 메인 페이지에서 과목 목록 수집
+            logger.info("🔍 과목 목록 수집...")
+            course_links = driver.find_elements(By.CSS_SELECTOR, "a[href*='course/view.php']")
+            logger.info(f"✅ 발견된 과목 수: {len(course_links)}개")
+            
+            all_assignments = []
+            
+            # 각 과목별로 상세 정보 수집 (최대 3개 과목만 처리)
+            for i, course_link in enumerate(course_links[:3]):
+                try:
+                    course_name = course_link.find_element(By.CSS_SELECTOR, "h3").text.strip()
+                    course_url = course_link.get_attribute('href')
+                    logger.info(f"🔍 과목 {i+1}: {course_name}")
+                    
+                    # 과목 페이지로 이동
+                    driver.get(course_url)
+                    time.sleep(2)
+                    
+                    # 🔥 과제 정보 수집 (Playwright 분석 결과 기반)
+                    assignments = collect_course_assignments_optimized(driver, course_name)
+                    all_assignments.extend(assignments)
+                    
+                    # 메인 페이지로 돌아가기
+                    driver.get("https://ys.learnus.org/")
+                    time.sleep(1)
+                    
+                except Exception as e:
+                    logger.warning(f"⚠️ 과목 {i+1} 처리 실패: {e}")
+                    continue
+            
+            logger.info(f"✅ 총 {len(all_assignments)}개 과제 수집 완료")
+            assignments = all_assignments
+            
+            if assignments:
+                logger.info(f"✅ 과제 수집 성공: {len(assignments)}개 과제 발견")
+                for i, assignment in enumerate(assignments, 1):
+                    logger.info(f"   {i}. {assignment.get('course', '')}: {assignment.get('activity', '')}")
+            else:
+                logger.warning("⚠️ 과제 수집 실패: 과제가 없거나 수집 실패")
+            
+            return assignments if assignments else []
         else:
             logger.error("❌ 로그인 실패")
+            logger.error(f"   현재 URL: {current_url}")
+            logger.error(f"   예상 URL: ys.learnus.org (login 없음)")
             return False
             
     except Exception as e:
@@ -597,15 +943,93 @@ def test_direct_selenium(university, username, password, student_id):
             logger.info("🔚 Chrome 드라이버 종료")
             driver.quit()
 
+def collect_course_assignments_optimized(driver, course_name):
+    """개별 과목의 과제 정보 수집 (Playwright 분석 결과 기반)"""
+    try:
+        assignments = []
+        
+        # 🔥 주차별 학습 활동에서 과제 찾기
+        logger.info(f"🔍 {course_name} 과제 검색...")
+        
+        # 과제 링크 찾기 (Playwright 분석 결과 기반)
+        assignment_selectors = [
+            "a[href*='mod/assign/view.php']",  # 과제 제출 링크
+            "a[href*='mod/vod/view.php']",     # 동영상 링크
+            "a[href*='mod/ubfile/view.php']",  # 파일 링크
+        ]
+        
+        for selector in assignment_selectors:
+            try:
+                elements = driver.find_elements(By.CSS_SELECTOR, selector)
+                for element in elements:
+                    try:
+                        # 과제/동영상/파일 정보 추출
+                        title_element = element.find_element(By.CSS_SELECTOR, "span, div")
+                        title = title_element.text.strip()
+                        
+                        # 완료 상태 확인
+                        status = "미완료"
+                        try:
+                            # 완료 아이콘 찾기
+                            status_icon = element.find_element(By.XPATH, "following-sibling::img[contains(@alt, '완료')]")
+                            if "완료함" in status_icon.get_attribute('alt'):
+                                status = "완료"
+                        except:
+                            pass
+                        
+                        # 마감일 정보 추출
+                        deadline = "정보 없음"
+                        try:
+                            deadline_element = element.find_element(By.XPATH, "following-sibling::*[contains(text(), '2025-')]")
+                            deadline = deadline_element.text.strip()
+                        except:
+                            pass
+                        
+                        assignment_info = {
+                            'course': course_name,
+                            'title': title,
+                            'type': '과제' if 'assign' in element.get_attribute('href') else '동영상' if 'vod' in element.get_attribute('href') else '파일',
+                            'status': status,
+                            'deadline': deadline,
+                            'url': element.get_attribute('href')
+                        }
+                        
+                        assignments.append(assignment_info)
+                        logger.info(f"   📝 {assignment_info['type']}: {title} ({status})")
+                        
+                    except Exception as e:
+                        logger.warning(f"⚠️ 과제 정보 추출 실패: {e}")
+                        continue
+                        
+            except Exception as e:
+                logger.warning(f"⚠️ {selector} 선택자 실패: {e}")
+                continue
+        
+        return assignments
+        
+    except Exception as e:
+        logger.error(f"❌ {course_name} 과제 수집 실패: {e}")
+        return []
+
 def collect_this_week_lectures_hybrid(driver):
     """혼합 로직으로 이번주 강의 정보 수집"""
     try:
+        logger.info("=" * 60)
         logger.info("🔍 이번주 강의 정보 수집 시작...")
+        logger.info(f"📍 현재 URL: {driver.current_url}")
+        logger.info(f"📄 페이지 제목: {driver.title}")
+        logger.info("=" * 60)
+        
+        # 페이지 소스 저장 (디버깅용)
+        with open('debug_learnus_page.html', 'w', encoding='utf-8') as f:
+            f.write(driver.page_source)
+        logger.info("💾 LearnUs 페이지 소스 저장: debug_learnus_page.html")
         
         # 실제 페이지 구조에 맞는 과목 찾기
         course_elements = []
         
         # 1. 기존 방식 (course-title h3)
+        logger.info("🔍 course-title h3 태그 찾는 중...")
         course_elements = driver.find_elements(By.CSS_SELECTOR, ".course-title h3")
         logger.info(f"course-title 클래스 안의 h3 태그 {len(course_elements)}개 발견")
         
@@ -624,6 +1048,17 @@ def collect_this_week_lectures_hybrid(driver):
                 ".course-card a",  # 과목 카드 링크
                 ".my-course a",  # 나의강좌 링크
                 "div[class*='course'] a",  # course 클래스가 포함된 div의 링크
+                # 🔥 추가된 과제 관련 선택자들
+                ".assignment-item",  # 과제 아이템
+                ".task-item",  # 작업 아이템
+                ".homework-item",  # 숙제 아이템
+                "a[href*='assignment']",  # 과제 링크
+                "a[href*='task']",  # 작업 링크
+                "a[href*='homework']",  # 숙제 링크
+                ".activity-item",  # 활동 아이템
+                ".module-item",  # 모듈 아이템
+                "li[class*='course']",  # course 클래스가 포함된 li
+                "div[class*='activity']",  # activity 클래스가 포함된 div
             ]
             
             for selector in alternative_selectors:
@@ -687,14 +1122,60 @@ def collect_this_week_lectures_hybrid(driver):
         current_course_index = 0
         
         # 순차적으로 과목 처리 (한 과목씩)
+        logger.info(f"🔄 과목 순회 시작: 총 {len(course_elements)}개 과목, 현재 인덱스: {current_course_index}")
         while current_course_index < len(course_elements):
             try:
-                course_element = course_elements[current_course_index]
+                logger.info(f"🔍 과목 {current_course_index+1}/{len(course_elements)} 처리 시작...")
+                # Stale Element Reference 방지: 매번 새로운 요소 찾기
+                try:
+                    # 매번 새로운 요소 찾기로 Stale Element 방지
+                    course_elements = driver.find_elements(By.CSS_SELECTOR, ".course-title h3")
+                    if len(course_elements) == 0:
+                        # 다른 선택자들로 재시도
+                        alternative_selectors = [
+                            "h3", ".course-box h3", ".course-name h3", 
+                            "a[href*='course/view.php'] h3", ".my-course-lists h3",
+                            "a[href*='course']", ".card a", ".course-card a"
+                        ]
+                        for selector in alternative_selectors:
+                            course_elements = driver.find_elements(By.CSS_SELECTOR, selector)
+                            if len(course_elements) > 0:
+                                break
+                    
+                    if current_course_index >= len(course_elements):
+                        logger.warning(f"과목 {current_course_index+1}을 찾을 수 없음, 건너뜀")
+                        current_course_index += 1
+                        continue
+                        
+                    course_element = course_elements[current_course_index]
+                    course_name = course_element.text.strip()
+                    
+                except Exception as stale_error:
+                    logger.warning(f"Stale element 감지, 요소 재찾기: {stale_error}")
+                    # 요소 재찾기
+                    course_elements = driver.find_elements(By.CSS_SELECTOR, ".course-title h3")
+                    if len(course_elements) == 0:
+                        # 다른 선택자들로 재시도
+                        alternative_selectors = [
+                            "h3", ".course-box h3", ".course-name h3", 
+                            "a[href*='course/view.php'] h3", ".my-course-lists h3",
+                            "a[href*='course']", ".card a", ".course-card a"
+                        ]
+                        for selector in alternative_selectors:
+                            course_elements = driver.find_elements(By.CSS_SELECTOR, selector)
+                            if len(course_elements) > 0:
+                                break
+                    
+                    if current_course_index < len(course_elements):
+                        course_element = course_elements[current_course_index]
+                        course_name = course_element.text.strip()
+                    else:
+                        logger.warning(f"과목 {current_course_index+1}을 재찾을 수 없음, 건너뜀")
+                        current_course_index += 1
+                        continue
+                
                 i = current_course_index
                 logger.info(f"🔍 과목 {i+1}/{len(course_elements)} 처리 시작...")
-                
-                # 과목명 추출 (개발자 도구에서 확인한 구조)
-                course_name = course_element.text.strip()
                 logger.info(f"   📖 원본 과목명: '{course_name}'")
                 
                 # 과목명에서 불필요한 부분 제거 (예: "(2학기)" 등)
@@ -737,9 +1218,49 @@ def collect_this_week_lectures_hybrid(driver):
                     logger.info(f"   📄 {course_name} 과목 클릭 전 로딩 확인...")
                     time.sleep(0.5)
                     
-                    # 정확한 선택자로 과목 요소 찾기
+                    # Stale Element Reference 방지: 매번 새로운 요소 찾기
                     logger.info(f"   🔍 {course_name} 과목 요소 찾기 시작...")
                     selenium_course_element = None
+                    
+                    # WebDriverWait를 사용한 Stale Element Reference 방지
+                    try:
+                        # 과목 요소들이 로드될 때까지 명시적으로 대기
+                        logger.info(f"   ⏳ {course_name} 과목 요소 로딩 대기 중...")
+                        WebDriverWait(driver, 10).until(
+                            EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".course-title h3"))
+                        )
+                        
+                        # 현재 인덱스에 해당하는 과목 요소를 다시 찾기
+                        fresh_course_elements = driver.find_elements(By.CSS_SELECTOR, ".course-title h3")
+                        if len(fresh_course_elements) == 0:
+                            # 다른 선택자들로 재시도
+                            alternative_selectors = [
+                                "h3", ".course-box h3", ".course-name h3", 
+                                "a[href*='course/view.php'] h3", ".my-course-lists h3",
+                                "a[href*='course']", ".card a", ".course-card a"
+                            ]
+                            for selector in alternative_selectors:
+                                try:
+                                    WebDriverWait(driver, 5).until(
+                                        EC.presence_of_all_elements_located((By.CSS_SELECTOR, selector))
+                                    )
+                                    fresh_course_elements = driver.find_elements(By.CSS_SELECTOR, selector)
+                                    if len(fresh_course_elements) > 0:
+                                        break
+                                except:
+                                    continue
+                        
+                        if current_course_index < len(fresh_course_elements):
+                            selenium_course_element = fresh_course_elements[current_course_index]
+                            logger.info(f"   ✅ {course_name} 과목 요소 재찾기 성공")
+                        else:
+                            logger.warning(f"   ⚠️ {course_name} 과목 요소를 재찾을 수 없음")
+                            current_course_index += 1
+                            continue
+                    except Exception as e:
+                        logger.warning(f"   ⚠️ 과목 요소 재찾기 실패: {e}")
+                        current_course_index += 1
+                        continue
                     
                     # 다양한 과목명 변형으로 시도
                     course_name_variations = [
@@ -824,8 +1345,26 @@ def collect_this_week_lectures_hybrid(driver):
                     
                     # 과목 클릭
                     selenium_course_element.click()
-                    time.sleep(0.5)  # 페이지 로딩 대기
                     logger.info(f"   ✅ {course_name} 과목 페이지 진입")
+                    
+                    # WebDriverWait를 사용한 과목 페이지 로딩 확인
+                    try:
+                        logger.info(f"   ⏳ {course_name} 과목 페이지 로딩 대기 중...")
+                        # 과목 페이지의 주요 요소가 로드될 때까지 대기
+                        WebDriverWait(driver, 10).until(
+                            EC.any_of(
+                                EC.presence_of_element_located((By.CSS_SELECTOR, ".course-content")),
+                                EC.presence_of_element_located((By.CSS_SELECTOR, ".course-header")),
+                                EC.presence_of_element_located((By.CSS_SELECTOR, ".course-info")),
+                                EC.presence_of_element_located((By.CSS_SELECTOR, ".course-title")),
+                                EC.presence_of_element_located((By.CSS_SELECTOR, "h1")),
+                                EC.presence_of_element_located((By.CSS_SELECTOR, "h2"))
+                            )
+                        )
+                        logger.info(f"   ✅ {course_name} 과목 페이지 로딩 완료")
+                    except Exception as e:
+                        logger.warning(f"   ⚠️ {course_name} 과목 페이지 로딩 확인 실패: {e}")
+                        # 로딩 실패해도 계속 진행
                     
                     # 과목 페이지 로딩 확인
                     logger.info(f"   📄 {course_name} 과목 페이지 로딩 확인...")
@@ -1020,11 +1559,22 @@ def collect_this_week_lectures_hybrid(driver):
                 except Exception as e:
                     logger.warning(f"   {course_name} 페이지 분석 실패: {e}")
                 
-                # 메인 페이지로 돌아가기 (기존 코드의 간단한 로직)
+                # 메인 페이지로 돌아가기 (WebDriverWait 사용)
                 try:
                     driver.back()
-                    time.sleep(0.5)  # 페이지 로딩 대기
                     logger.info(f"   ✅ {course_name} 메인 페이지 복귀 완료")
+                    
+                    # WebDriverWait를 사용한 메인 페이지 로딩 대기
+                    try:
+                        logger.info(f"   ⏳ {course_name} 메인 페이지 로딩 대기 중...")
+                        # 메인 페이지의 과목 목록이 로드될 때까지 대기
+                        WebDriverWait(driver, 10).until(
+                            EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".course-title h3"))
+                        )
+                        logger.info(f"   ✅ {course_name} 메인 페이지 로딩 완료")
+                    except Exception as e:
+                        logger.warning(f"   ⚠️ {course_name} 메인 페이지 로딩 확인 실패: {e}")
+                        # 로딩 실패해도 계속 진행
                     
                     # 메인 페이지 복귀 후 상태 확인
                     current_url = driver.current_url
@@ -1161,7 +1711,10 @@ def collect_this_week_lectures_hybrid(driver):
                 logger.info(f"   ✅ {course_name} 처리 완료, 다음 과목으로 이동 (인덱스: {current_course_index})")
                     
             except Exception as e:
-                logger.debug(f"   과목 {i+1} 처리 실패: {e}")
+                logger.error(f"❌ 과목 {current_course_index+1} 처리 실패: {e}")
+                logger.error(f"❌ 오류 상세: {str(e)}")
+                import traceback
+                logger.error(f"❌ 스택 트레이스: {traceback.format_exc()}")
                 current_course_index += 1
                 continue
         
@@ -1313,6 +1866,14 @@ def collect_this_week_lectures_hybrid(driver):
             
     except Exception as e:
         logger.error(f"❌ 이번주 강의 정보 수집 실패: {e}")
+    
+    # 리스트를 딕셔너리로 변환하여 반환
+    return {
+        "lectures": all_lectures,
+        "count": len(all_lectures),
+        "success": True,
+        "message": f"총 {len(all_lectures)}개 강의 정보 수집 완료"
+    }
 
 def main():
     """메인 함수 (9887 빠른 실행 포함)"""
@@ -1341,14 +1902,28 @@ def main():
     
     print()
     print("🔧 자동화 테스트 시작...")
+    print("=" * 60)
     
     # Selenium 직접 테스트
+    logger.info("🚀 메인 자동화 테스트 시작")
+    logger.info(f"   대학: {university}")
+    logger.info(f"   사용자: {username}")
+    logger.info(f"   학생ID: {student_id}")
+    
     success = test_direct_selenium(university, username, password, student_id)
     
+    print("=" * 60)
     if success:
+        if isinstance(success, list) and len(success) > 0:
+            print(f"✅ 자동화 성공! {len(success)}개 과제 발견")
+            for i, assignment in enumerate(success, 1):
+                print(f"   {i}. {assignment.get('course', '')}: {assignment.get('activity', '')}")
+        else:
+            print("⚠️ 자동화 완료되었지만 과제가 없습니다.")
         print("✅ 테스트 완료! assignment.txt 파일을 확인하세요.")
     else:
-        print("❌ 테스트 실패")
+        print("❌ 자동화 실패!")
+    print("=" * 60)
 
 if __name__ == "__main__":
     main()

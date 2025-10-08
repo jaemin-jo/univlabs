@@ -7,7 +7,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/learnus-backend']
   
-  # Cloud Run에 배포
+  # Cloud Run에 배포 (Chrome 실행을 위한 리소스 증가)
   - name: 'gcr.io/cloud-builders/gcloud'
     args: [
       'run', 'deploy', 'learnus-backend',
@@ -15,11 +15,12 @@ steps:
       '--platform', 'managed',
       '--region', 'asia-northeast3',
       '--allow-unauthenticated',
-      '--memory', '2Gi',
+      '--memory', '4Gi',  # Chrome 실행을 위해 메모리 증가
       '--cpu', '2',
       '--timeout', '3600',
       '--max-instances', '10',
-      '--min-instances', '0'
+      '--min-instances', '0',
+      '--set-env-vars', 'DISPLAY=:99,CHROME_BIN=/usr/bin/google-chrome,CHROMEDRIVER_PATH=/usr/bin/chromedriver'
     ]
 
 # 로깅 설정 추가
