@@ -137,6 +137,13 @@ def run_automation_job():
         logger.info(f"   PYTHONPATH: {os.environ.get('PYTHONPATH', 'NOT SET')}")
         logger.info(f"   PATH: {os.environ.get('PATH', 'NOT SET')[:200]}...")
         
+        # WORKSPACE_DIR 환경 변수가 설정되지 않았을 때 기본값 설정
+        if not os.environ.get('WORKSPACE_DIR'):
+            os.environ['WORKSPACE_DIR'] = '/app/workspace'
+            logger.info(f"🔧 WORKSPACE_DIR 환경 변수 설정: {os.environ['WORKSPACE_DIR']}")
+        else:
+            logger.info(f"✅ WORKSPACE_DIR 환경 변수 이미 설정됨: {os.environ['WORKSPACE_DIR']}")
+        
         # 시스템 정보 로깅
         logger.info("🔍 시스템 정보:")
         logger.info(f"   Python 버전: {os.sys.version}")

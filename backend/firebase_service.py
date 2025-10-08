@@ -23,37 +23,61 @@ class FirebaseService:
     def _initialize_firebase(self):
         """Firebase 초기화"""
         try:
+            logger.info("🔧 Firebase 초기화 시작...")
+            logger.info(f"🔍 현재 작업 디렉토리: {os.getcwd()}")
+            logger.info(f"🔍 사용 가능한 파일: {os.listdir('.')[:10]}")
+            
             # Firebase Admin SDK 자격 증명 설정
             # 방법 1: 서비스 계정 키 파일 사용
             service_account_path = "firebase_service_account.json"
+            logger.info(f"🔍 서비스 계정 키 파일 확인: {service_account_path}")
+            
             if os.path.exists(service_account_path):
+                logger.info("✅ 서비스 계정 키 파일 발견")
                 cred = credentials.Certificate(service_account_path)
                 firebase_admin.initialize_app(cred)
-                logger.info("Firebase Admin SDK 초기화 완료 (서비스 계정 키)")
+                logger.info("✅ Firebase Admin SDK 초기화 완료 (서비스 계정 키)")
             else:
+                logger.warning("⚠️ 서비스 계정 키 파일을 찾을 수 없음")
                 # 방법 2: 환경 변수 사용 (클라우드 배포시)
-                if os.getenv("FIREBASE_PROJECT_ID"):
+                firebase_project_id = os.getenv("FIREBASE_PROJECT_ID")
+                logger.info(f"🔍 FIREBASE_PROJECT_ID 환경 변수: {firebase_project_id}")
+                
+                if firebase_project_id:
+                    logger.info("✅ FIREBASE_PROJECT_ID 환경 변수 발견")
                     firebase_admin.initialize_app()
-                    logger.info("Firebase Admin SDK 초기화 완료 (환경 변수)")
+                    logger.info("✅ Firebase Admin SDK 초기화 완료 (환경 변수)")
                 else:
-                    logger.warning("Firebase 설정 파일을 찾을 수 없습니다. 테스트 모드로 실행합니다.")
+                    logger.warning("⚠️ Firebase 설정 파일과 환경 변수를 찾을 수 없습니다.")
+                    logger.info("🔧 테스트 모드로 실행합니다.")
                     # 테스트용 더미 데이터 사용
                     self.db = None
                     return
             
             self.db = firestore.client()
-            logger.info("Firebase Firestore 클라이언트 초기화 완료")
+            logger.info("✅ Firebase Firestore 클라이언트 초기화 완료")
             
         except Exception as e:
-            logger.error(f"Firebase 초기화 실패: {e}")
-            logger.warning("테스트 모드로 실행합니다.")
+            logger.error(f"❌ Firebase 초기화 실패: {e}")
+            logger.error(f"❌ 오류 상세: {str(e)}")
+            import traceback
+            logger.error(f"❌ 스택 트레이스: {traceback.format_exc()}")
+            logger.warning("🔧 테스트 모드로 실행합니다.")
             self.db = None
     
     def get_all_active_learnus_credentials(self) -> List[Dict]:
         """활성화된 모든 LearnUs 인증 정보 가져오기"""
         if not self.db:
-            logger.error("Firebase가 초기화되지 않았습니다.")
-            return []
+            logger.warning("Firebase가 초기화되지 않았습니다. 테스트용 더미 데이터를 사용합니다.")
+            # 테스트용 더미 데이터 반환
+            return [{
+                'uid': 'test_user_1',
+                'student_id': '2024248012',
+                'university': '연세대학교',
+                'username': 'test_user',
+                'password': 'test_password',
+                'isActive': True
+            }]
         
         try:
             # learnus_credentials 컬렉션에서 활성화된 사용자들 조회
