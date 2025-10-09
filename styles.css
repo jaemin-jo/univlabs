@@ -1534,16 +1534,29 @@ body {
         left: -100%;
         top: 70px;
         flex-direction: column;
-        background-color: white;
+        background-color: rgba(12, 20, 69, 0.98);
+        backdrop-filter: blur(20px);
         width: 100%;
         text-align: center;
         transition: 0.3s;
-        box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 10px 27px rgba(0, 0, 0, 0.3);
         padding: 2rem 0;
     }
 
     .nav-menu.active {
         left: 0;
+    }
+
+    .nav-menu .nav-link {
+        color: white;
+        font-size: 1.1rem;
+        padding: 1rem 0;
+        display: block;
+    }
+
+    .nav-menu .nav-link:hover {
+        color: #60a5fa;
+        background-color: rgba(255, 255, 255, 0.1);
     }
 
     .nav-toggle {
