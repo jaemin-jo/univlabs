@@ -269,6 +269,8 @@ body {
     margin-bottom: 2.5rem;
     opacity: 0.9;
     line-height: 1.6;
+    word-break: keep-all;
+    white-space: normal;
 }
 
 .highlight-text {
@@ -1580,6 +1582,12 @@ body {
 
     .nav-toggle {
         display: flex;
+    }
+
+    .hero-subtitle {
+        font-size: 1.1rem;
+        word-break: keep-all;
+        line-height: 1.7;
     }
 
     .nav-toggle.active .bar:nth-child(2) {
