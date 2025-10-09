@@ -1417,7 +1417,7 @@ body {
 
 /* Footer */
 .footer {
-    background: transparent;
+    background: linear-gradient(135deg, #0c1445 0%, #1e3a8a 25%, #1e40af 50%, #1d4ed8 75%, #2563eb 100%);
     color: white;
     padding: 2rem 0;
     position: relative;
