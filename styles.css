@@ -1509,7 +1509,7 @@ body {
     z-index: 1;
 }
 
-.company-info {
+.footer .company-info {
     width: 100%;
     text-align: center;
 }
