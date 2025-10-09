@@ -271,6 +271,25 @@ body {
     line-height: 1.6;
 }
 
+.highlight-text {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    text-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+    animation: highlight-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes highlight-glow {
+    0% {
+        text-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+    }
+    100% {
+        text-shadow: 0 0 30px rgba(251, 191, 36, 0.6);
+    }
+}
+
 .hero-buttons {
     display: flex;
     gap: 1rem;
