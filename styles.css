@@ -1480,14 +1480,36 @@ body {
 
 .footer-bottom {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
     padding-top: 2rem;
     border-top: 1px solid rgba(59, 130, 246, 0.2);
-    flex-wrap: wrap;
-    gap: 1rem;
+    gap: 1.5rem;
     position: relative;
     z-index: 1;
+}
+
+.company-info {
+    width: 100%;
+    text-align: center;
+}
+
+.company-locations {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.location-item {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+.location-item strong {
+    color: #60a5fa;
+    font-weight: 600;
 }
 
 .footer-legal {
@@ -1610,6 +1632,15 @@ body {
     .footer-bottom {
         flex-direction: column;
         text-align: center;
+    }
+
+    .company-locations {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .location-item {
+        font-size: 0.8rem;
     }
 
     .download-buttons {
