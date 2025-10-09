@@ -59,14 +59,15 @@ body {
 }
 
 .logo-img {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
     transition: transform 0.3s ease;
+    object-fit: cover;
 }
 
 .logo-img:hover {
-    transform: scale(1.1);
+    transform: scale(1.1) rotate(5deg);
 }
 
 .nav-menu {
