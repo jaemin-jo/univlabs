@@ -274,21 +274,21 @@ body {
 }
 
 .highlight-text {
-    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     font-weight: 700;
-    text-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+    text-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
     animation: highlight-glow 2s ease-in-out infinite alternate;
 }
 
 @keyframes highlight-glow {
     0% {
-        text-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+        text-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
     }
     100% {
-        text-shadow: 0 0 30px rgba(251, 191, 36, 0.6);
+        text-shadow: 0 0 30px rgba(6, 182, 212, 0.7);
     }
 }
 
@@ -1588,6 +1588,8 @@ body {
         font-size: 1.1rem;
         word-break: keep-all;
         line-height: 1.7;
+        hyphens: none;
+        overflow-wrap: break-word;
     }
 
     .nav-toggle.active .bar:nth-child(2) {
