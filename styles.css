@@ -530,10 +530,10 @@ body {
 }
 
 .assignment-section {
-    background: #f1f5f9;
+    background: #e0f2fe;
     border-radius: 12px;
     padding: 12px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #b3e5fc;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
@@ -1013,7 +1013,7 @@ body {
 }
 
 .schedule-item {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(14, 165, 233, 0.15);
     padding: 15px;
     border-radius: 12px;
     margin-bottom: 10px;
