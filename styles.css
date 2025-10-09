@@ -1497,14 +1497,12 @@ body {
     position: relative;
     z-index: 1;
     color: white;
-    background: rgba(12, 20, 69, 0.9);
-    padding: 1rem 0;
 }
 
 .company-info {
     width: 100%;
     text-align: center;
-    color: white;
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .company-locations {
@@ -1515,7 +1513,6 @@ body {
     max-width: 1200px;
     margin-top: 0.3rem;
     gap: 0.5rem;
-    color: white;
 }
 
 .location-item {
