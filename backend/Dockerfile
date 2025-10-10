@@ -91,5 +91,5 @@ ENV CHROME_BIN=/usr/bin/google-chrome
 ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 ENV PORT=8080
 
-# 🔥 Cloud Run 환경에서 앱 실행 (직접 uvicorn 실행)
-CMD ["uvicorn", "scheduler_server:app", "--host", "0.0.0.0", "--port", "8080"]
+# 🔥 Cloud Run 환경에서 앱 실행 (가장 단순한 방식)
+CMD ["python", "-m", "uvicorn", "scheduler_server:app", "--host", "0.0.0.0", "--port", "8080"]
