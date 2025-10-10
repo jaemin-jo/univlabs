@@ -14,6 +14,8 @@ import time
 import threading
 import json
 import os
+import subprocess
+import signal
 from datetime import datetime
 from test_real_automation_hybrid import test_direct_selenium
 from firebase_service import get_all_active_users, update_user_last_used
@@ -21,6 +23,53 @@ from firebase_service import get_all_active_users, update_user_last_used
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Xvfb 프로세스 저장용
+xvfb_process = None
+
+def start_xvfb():
+    """Xvfb 가상 디스플레이 시작"""
+    global xvfb_process
+    try:
+        logger.info("🖥️ Xvfb 시작 시도...")
+        
+        # X11 디렉토리 설정
+        os.makedirs('/tmp/.X11-unix', exist_ok=True)
+        os.chmod('/tmp/.X11-unix', 0o1777)
+        
+        # Xvfb 시작
+        xvfb_process = subprocess.Popen([
+            'Xvfb', ':99', '-screen', '0', '1920x1080x24', 
+            '-ac', '+extension', 'GLX', '+render', '-noreset'
+        ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        
+        # 환경 변수 설정
+        os.environ['DISPLAY'] = ':99'
+        os.environ['CHROME_BIN'] = '/usr/bin/google-chrome'
+        os.environ['CHROMEDRIVER_PATH'] = '/usr/bin/chromedriver'
+        
+        logger.info(f"✅ Xvfb 시작됨 (PID: {xvfb_process.pid})")
+        
+        # Xvfb 초기화 대기
+        time.sleep(3)
+        
+        return True
+    except Exception as e:
+        logger.error(f"❌ Xvfb 시작 실패: {e}")
+        return False
+
+def stop_xvfb():
+    """Xvfb 가상 디스플레이 종료"""
+    global xvfb_process
+    if xvfb_process:
+        try:
+            xvfb_process.terminate()
+            xvfb_process.wait(timeout=5)
+            logger.info("✅ Xvfb 종료됨")
+        except:
+            xvfb_process.kill()
+            logger.info("✅ Xvfb 강제 종료됨")
+        xvfb_process = None
 
 # FastAPI 앱 생성
 app = FastAPI(title="LearnUs Scheduler Server", version="1.0.0")
@@ -454,6 +503,28 @@ async def get_status():
         "assignment_file_exists": os.path.exists(assignment_file),
         "assignment_file_path": assignment_file
     }
+
+# 앱 시작 시 Xvfb 시작
+@app.on_event("startup")
+async def startup_event():
+    """앱 시작 시 실행"""
+    logger.info("🚀 애플리케이션 시작...")
+    
+    # Xvfb 시작
+    if start_xvfb():
+        logger.info("✅ Xvfb 초기화 완료")
+    else:
+        logger.warning("⚠️ Xvfb 초기화 실패 - Chrome 자동화에 문제가 있을 수 있습니다")
+    
+    # 스케줄러 시작
+    threading.Thread(target=start_scheduler_optimized, daemon=True).start()
+    logger.info("📅 스케줄러 시작됨")
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """앱 종료 시 실행"""
+    logger.info("🛑 애플리케이션 종료...")
+    stop_xvfb()
 
 # Cloud Run에서는 uvicorn이 자동으로 실행됨
 # 로컬 테스트용 (개발 시에만 사용)
