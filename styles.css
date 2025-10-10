@@ -1397,7 +1397,7 @@ body {
 /* Footer */
 .footer {
     background: linear-gradient(135deg, #1e40af 0%, #2563eb 25%, #3b82f6 50%, #60a5fa 75%, #93c5fd 100%);
-    color: white;
+    color: #1e293b;
     padding: 3rem 0 1rem;
     position: relative;
     overflow: hidden;
@@ -1440,13 +1440,13 @@ body {
 }
 
 .footer-links a {
-    color: #94a3b8;
+    color: #475569;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .footer-links a:hover {
-    color: white;
+    color: #1e293b;
 }
 
 .footer-social {
@@ -1504,7 +1504,7 @@ body {
 }
 
 .location-item {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(30, 41, 59, 0.7);
     font-size: 0.8rem;
     font-weight: 300;
 }
@@ -1515,14 +1515,14 @@ body {
 }
 
 .footer-legal a {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(30, 41, 59, 0.8);
     text-decoration: none;
     font-size: 0.9rem;
     transition: color 0.3s ease;
 }
 
 .footer-legal a:hover {
-    color: #3b82f6;
+    color: #1e40af;
 }
 
 /* Responsive Design */
@@ -1638,7 +1638,7 @@ body {
 
     .location-item {
         font-size: 0.7rem;
-        color: rgba(255, 255, 255, 0.4);
+        color: rgba(30, 41, 59, 0.6);
     }
 
     .download-buttons {
