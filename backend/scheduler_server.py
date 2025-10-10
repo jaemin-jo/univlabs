@@ -37,7 +37,7 @@ def start_xvfb():
         os.makedirs('/tmp/.X11-unix', exist_ok=True)
         os.chmod('/tmp/.X11-unix', 0o1777)
         
-        # Xvfb 시작
+        # Xvfb 시작 (오류 무시)
         xvfb_process = subprocess.Popen([
             'Xvfb', ':99', '-screen', '0', '1920x1080x24', 
             '-ac', '+extension', 'GLX', '+render', '-noreset'
@@ -50,12 +50,12 @@ def start_xvfb():
         
         logger.info(f"✅ Xvfb 시작됨 (PID: {xvfb_process.pid})")
         
-        # Xvfb 초기화 대기
-        time.sleep(3)
+        # Xvfb 초기화 대기 (짧은 시간)
+        time.sleep(2)
         
         return True
     except Exception as e:
-        logger.error(f"❌ Xvfb 시작 실패: {e}")
+        logger.warning(f"⚠️ Xvfb 시작 실패 (계속 진행): {e}")
         return False
 
 def stop_xvfb():
@@ -515,18 +515,19 @@ async def startup_event():
     os.environ['CHROME_BIN'] = '/usr/bin/google-chrome'
     os.environ['CHROMEDRIVER_PATH'] = '/usr/bin/chromedriver'
     
-    # Xvfb 시작 (오류 무시)
+    # Xvfb 시작 (오류 무시, 계속 진행)
     try:
-        if start_xvfb():
-            logger.info("✅ Xvfb 초기화 완료")
-        else:
-            logger.warning("⚠️ Xvfb 초기화 실패 - Chrome 자동화에 문제가 있을 수 있습니다")
+        start_xvfb()
+        logger.info("✅ Xvfb 초기화 시도 완료")
     except Exception as e:
-        logger.warning(f"⚠️ Xvfb 시작 중 오류 발생: {e}")
+        logger.warning(f"⚠️ Xvfb 시작 중 오류 발생 (계속 진행): {e}")
     
     # 스케줄러 시작
-    threading.Thread(target=start_scheduler_optimized, daemon=True).start()
-    logger.info("📅 스케줄러 시작됨")
+    try:
+        threading.Thread(target=start_scheduler_optimized, daemon=True).start()
+        logger.info("📅 스케줄러 시작됨")
+    except Exception as e:
+        logger.error(f"❌ 스케줄러 시작 실패: {e}")
 
 @app.on_event("shutdown")
 async def shutdown_event():
