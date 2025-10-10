@@ -15,11 +15,11 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # MCP 서버 의존성 설치
-COPY requirements.mcp.txt .
+COPY backend/requirements.mcp.txt .
 RUN pip install --no-cache-dir -r requirements.mcp.txt
 
 # MCP 서버 코드 복사
-COPY mcp_server.py .
+COPY backend/mcp_server.py .
 
 # 포트 노출 (MCP 서버는 8080 포트 사용)
 EXPOSE 8080
