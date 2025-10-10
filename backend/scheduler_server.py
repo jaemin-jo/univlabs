@@ -481,8 +481,9 @@ async def shutdown_event():
 # Cloud Run에서는 uvicorn이 자동으로 실행됨
 # 로컬 테스트용 (개발 시에만 사용)
 if __name__ == "__main__":
-    # FastAPI 서버 시작
+    # FastAPI 서버 시작 (Cloud Run 환경 변수 처리)
     port = int(os.environ.get("PORT", 8080))
+    logger.info(f"🚀 서버 시작 - PORT: {port}")
     uvicorn.run(
         app, 
         host="0.0.0.0", 
