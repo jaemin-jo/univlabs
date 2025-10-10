@@ -1,21 +1,18 @@
 @echo off
-echo 🔄 ChromeDriver 버전 문제 해결을 위한 클라우드 재배포
+echo 🚀 최적화된 자동화 배포
+echo.
+echo ⚡ 시간 제한 문제 해결:
+echo    - Cloud Run 타임아웃: 60분 (3600초)
+echo    - 병렬 처리로 속도 향상
+echo    - 배치 처리로 안정성 확보
+echo    - 상태 확인 최적화
 echo.
 
 cd /d "%~dp0"
 
-echo 📦 Docker 이미지 빌드 중...
-docker build -t learnus-backend-fixed .
-
-if %ERRORLEVEL% neq 0 (
-    echo ❌ Docker 빌드 실패!
-    pause
-    exit /b 1
-)
-
-echo 🚀 Google Cloud Run에 배포 중...
+echo 📦 최적화된 코드 배포 중...
 gcloud run deploy learnus-backend \
-  --image learnus-backend-fixed \
+  --source . \
   --platform managed \
   --region asia-northeast3 \
   --allow-unauthenticated \
@@ -30,16 +27,15 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 
-echo ✅ 배포 완료!
+echo ✅ 최적화된 배포 완료!
 echo.
 echo 🔍 배포된 서비스 확인:
 echo    URL: https://learnus-backend-986202706020.asia-northeast3.run.app
 echo    헬스체크: https://learnus-backend-986202706020.asia-northeast3.run.app/health
 echo    과제 정보: https://learnus-backend-986202706020.asia-northeast3.run.app/assignments
 echo.
-echo 🔍 로그 확인: https://console.cloud.google.com/run/detail/asia-northeast3/learnus-backend/logs
-echo.
-echo 🧪 테스트 실행:
+echo 🧪 배포 테스트:
+timeout /t 30 /nobreak > nul
 python sync_now.py
 
 pause

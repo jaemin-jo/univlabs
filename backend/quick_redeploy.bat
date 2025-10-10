@@ -5,7 +5,7 @@ echo.
 cd /d "%~dp0"
 
 echo 소스 코드를 Google Cloud Run에 직접 배포 중...
-gcloud run deploy learnus-backend --source . --platform managed --region asia-northeast3 --allow-unauthenticated --memory 2Gi --cpu 2 --timeout 900 --max-instances 10
+gcloud run deploy learnus-backend --source . --platform managed --region asia-northeast3 --allow-unauthenticated --memory 2Gi --cpu 2 --timeout 3600 --max-instances 10
 
 if %ERRORLEVEL% neq 0 (
     echo ❌ 배포 실패!

@@ -18,6 +18,18 @@ from datetime import datetime
 from test_real_automation_hybrid import test_direct_selenium
 from firebase_service import get_all_active_users, update_user_last_used
 
+# 최적화된 모듈들 (선택적 import)
+try:
+    from batch_automation_scheduler import BatchAutomationScheduler
+    from optimized_hybrid_automation import OptimizedHybridAutomation
+    OPTIMIZED_MODULES_AVAILABLE = True
+    logger.info("✅ 최적화된 모듈들 로드 성공")
+except ImportError as e:
+    logger.warning(f"⚠️ 최적화된 모듈들 로드 실패: {e}")
+    BatchAutomationScheduler = None
+    OptimizedHybridAutomation = None
+    OPTIMIZED_MODULES_AVAILABLE = False
+
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -26,6 +38,67 @@ logger = logging.getLogger(__name__)
 os.environ['DISPLAY'] = ':99'
 os.environ['CHROME_BIN'] = '/usr/bin/google-chrome'
 os.environ['CHROMEDRIVER_PATH'] = '/usr/bin/chromedriver'
+
+def run_basic_automation(active_users):
+    """기본 자동화 실행 (최적화된 모듈이 없을 때 사용)"""
+    all_assignments = []
+    successful_users = 0
+    failed_users = 0
+    
+    for user in active_users:
+        try:
+            username = user.get('username', 'Unknown')
+            university = user.get('university', '연세대학교')
+            student_id = user.get('studentId', '')
+            
+            logger.info(f"🔄 사용자 {username} 자동화 시작...")
+            logger.info(f"   대학교: {university}")
+            logger.info(f"   학번: {student_id}")
+            
+            # 사용자별 자동화 실행
+            user_result = test_direct_selenium(
+                university,
+                username,
+                user.get('password', ''),
+                student_id
+            )
+            
+            if user_result:
+                # user_result가 리스트인지 딕셔너리인지 확인
+                if isinstance(user_result, list):
+                    user_assignments = user_result
+                    all_assignments.extend(user_assignments)
+                elif isinstance(user_result, dict):
+                    user_assignments = user_result.get('assignments', [])
+                    all_assignments.extend(user_assignments)
+                
+                # 마지막 사용 시간 업데이트
+                try:
+                    update_user_last_used(user.get('uid', ''))
+                    logger.info(f"사용자 {username} 마지막 사용 시간 업데이트 완료")
+                except Exception as update_error:
+                    logger.warning(f"사용자 {username} 마지막 사용 시간 업데이트 실패: {update_error}")
+                
+                successful_users += 1
+                logger.info(f"사용자 {username} 자동화 완료: {len(user_assignments)}개 과제")
+            else:
+                failed_users += 1
+                logger.warning(f"사용자 {username} 자동화 결과 없음")
+                
+        except Exception as user_error:
+            failed_users += 1
+            logger.error(f"사용자 {user.get('username', 'Unknown')} 자동화 실패: {user_error}")
+            continue
+    
+    return {
+        'assignments': all_assignments,
+        'total_count': len(all_assignments),
+        'users_processed': len(active_users),
+        'successful_users': successful_users,
+        'failed_users': failed_users,
+        'firebase_status': 'connected',
+        'user_count': len(active_users)
+    }
 
 # FastAPI 앱 생성
 app = FastAPI(title="LearnUs Scheduler Server", version="1.0.0")
@@ -123,7 +196,7 @@ _last_update_time = None
 _assignment_data = []
 
 def run_automation_job():
-    """주기적으로 실행되는 자동화 작업"""
+    """주기적으로 실행되는 자동화 작업 (최적화된 버전)"""
     global _automation_running, _last_update_time, _assignment_data
     
     if _automation_running:
@@ -132,7 +205,7 @@ def run_automation_job():
     
     try:
         _automation_running = True
-        logger.info("🤖 주기적 자동화 시작...")
+        logger.info("🤖 최적화된 자동화 시작...")
         
         # 상세한 환경 정보 로깅
         logger.info("🔍 환경 변수 확인:")
@@ -178,6 +251,32 @@ def run_automation_job():
             else:
                 logger.info(f"{len(active_users)}명의 활성화된 사용자 발견")
                 
+                # 🚀 최적화된 배치 자동화 실행 (가능한 경우)
+                if OPTIMIZED_MODULES_AVAILABLE and BatchAutomationScheduler:
+                    logger.info("🚀 최적화된 배치 자동화 시작...")
+                    try:
+                        scheduler = BatchAutomationScheduler(
+                            max_runtime_minutes=50,  # 50분 제한 (Cloud Run 60분 내에서 안전하게)
+                            batch_size=3  # 한 번에 3명씩 처리
+                        )
+                        
+                        result = scheduler.run_batch_automation()
+                        scheduler.save_batch_results(result)
+                        
+                        logger.info(f"🎉 최적화된 배치 자동화 완료:")
+                        logger.info(f"   총 사용자: {result.get('user_count', 0)}명")
+                        logger.info(f"   성공: {result.get('successful_users', 0)}명")
+                        logger.info(f"   실패: {result.get('failed_users', 0)}명")
+                        logger.info(f"   총 과제: {result.get('total_count', 0)}개")
+                        logger.info(f"   실행 시간: {result.get('execution_time', 0):.2f}초")
+                    except Exception as optimized_error:
+                        logger.error(f"❌ 최적화된 배치 자동화 실패: {optimized_error}")
+                        logger.info("🔄 기본 자동화 방식으로 전환...")
+                        result = run_basic_automation(active_users)
+                else:
+                    logger.info("🔄 기본 자동화 방식 사용...")
+                    result = run_basic_automation(active_users)
+                
         except Exception as firebase_error:
             logger.error(f"Firebase 연결 실패: {firebase_error}")
             result = {
@@ -188,105 +287,12 @@ def run_automation_job():
                 'firebase_status': 'disconnected',
                 'user_count': 0
             }
-            active_users = []
-        else:
-            logger.info(f"{len(active_users)}명의 활성화된 사용자 발견")
-            
-            # 모든 사용자에 대해 자동화 실행
-            all_assignments = []
-            successful_users = 0
-            failed_users = 0
-            
-            for user in active_users:
-                try:
-                    username = user.get('username', 'Unknown')
-                    university = user.get('university', '연세대학교')
-                    student_id = user.get('studentId', '')
-                    
-                    logger.info(f"🔄 사용자 {username} 자동화 시작...")
-                    logger.info(f"   대학교: {university}")
-                    logger.info(f"   학번: {student_id}")
-                    
-                    # Chrome 드라이버 초기화 전 상세 로그
-                    logger.info("🔧 Chrome 드라이버 초기화 시작...")
-                    logger.info("🔍 Chrome 관련 환경 변수:")
-                    logger.info(f"   CHROME_BIN: {os.environ.get('CHROME_BIN', 'NOT SET')}")
-                    logger.info(f"   DISPLAY: {os.environ.get('DISPLAY', 'NOT SET')}")
-                    logger.info(f"   XDG_SESSION_TYPE: {os.environ.get('XDG_SESSION_TYPE', 'NOT SET')}")
-                    
-                    # 사용자별 자동화 실행 (타임아웃 설정)
-                    logger.info("🚀 test_direct_selenium 함수 호출 시작...")
-                    logger.info(f"   매개변수: university={university}, username={username}, student_id={student_id}")
-                    
-                    try:
-                        user_result = test_direct_selenium(
-                            university,
-                            username,
-                            user.get('password', ''),
-                            student_id
-                        )
-                        logger.info("✅ test_direct_selenium 함수 호출 완료")
-                        logger.info(f"🔍 user_result 타입: {type(user_result)}")
-                        logger.info(f"🔍 user_result 내용: {user_result}")
-                    except Exception as selenium_error:
-                        logger.error(f"❌ test_direct_selenium 함수 호출 실패: {selenium_error}")
-                        logger.error(f"❌ 오류 상세: {str(selenium_error)}")
-                        import traceback
-                        logger.error(f"❌ 스택 트레이스: {traceback.format_exc()}")
-                        user_result = None
-                    
-                    if user_result:
-                        # user_result가 리스트인지 딕셔너리인지 확인
-                        if isinstance(user_result, list):
-                            # 리스트인 경우 직접 사용
-                            user_assignments = user_result
-                            all_assignments.extend(user_assignments)
-                        elif isinstance(user_result, dict):
-                            # 딕셔너리인 경우 assignments 키에서 추출
-                            user_assignments = user_result.get('assignments', [])
-                            all_assignments.extend(user_assignments)
-                        
-                        # 마지막 사용 시간 업데이트
-                        try:
-                            update_user_last_used(user.get('uid', ''))
-                            logger.info(f"사용자 {username} 마지막 사용 시간 업데이트 완료")
-                        except Exception as update_error:
-                            logger.warning(f"사용자 {username} 마지막 사용 시간 업데이트 실패: {update_error}")
-                        
-                        successful_users += 1
-                        logger.info(f"사용자 {username} 자동화 완료: {len(user_assignments)}개 과제")
-                    else:
-                        failed_users += 1
-                        logger.warning(f"사용자 {username} 자동화 결과 없음")
-                        
-                except Exception as user_error:
-                    failed_users += 1
-                    logger.error(f"사용자 {user.get('username', 'Unknown')} 자동화 실패: {user_error}")
-                    logger.error(f"   오류 상세: {str(user_error)}")
-                    continue
-            
-            # 모든 사용자의 결과를 통합
-            result = {
-                'assignments': all_assignments,
-                'total_count': len(all_assignments),
-                'users_processed': len(active_users),
-                'successful_users': successful_users,
-                'failed_users': failed_users,
-                'firebase_status': 'connected',
-                'user_count': len(active_users)
-            }
-            
-            logger.info(f"자동화 실행 결과:")
-            logger.info(f"   총 사용자: {len(active_users)}명")
-            logger.info(f"   성공: {successful_users}명")
-            logger.info(f"   실패: {failed_users}명")
-            logger.info(f"   총 과제: {len(all_assignments)}개")
         
         # 결과를 assignment.txt 파일에 저장
         save_assignment_data(result)
         
         _last_update_time = datetime.now()
-        logger.info("주기적 자동화 완료")
+        logger.info("최적화된 자동화 완료")
         
     except Exception as e:
         logger.error(f"자동화 실행 실패: {e}")
