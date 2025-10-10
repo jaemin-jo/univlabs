@@ -4,7 +4,7 @@ steps:
     args: 
       - 'build'
       - '-f'
-      - 'Dockerfile.mcp'
+      - 'backend/Dockerfile.mcp'
       - '-t'
       - 'gcr.io/$PROJECT_ID/gcp-mcp-server:$COMMIT_SHA'
       - '-t'
