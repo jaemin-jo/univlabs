@@ -510,11 +510,19 @@ async def startup_event():
     """앱 시작 시 실행"""
     logger.info("🚀 애플리케이션 시작...")
     
-    # Xvfb 시작
-    if start_xvfb():
-        logger.info("✅ Xvfb 초기화 완료")
-    else:
-        logger.warning("⚠️ Xvfb 초기화 실패 - Chrome 자동화에 문제가 있을 수 있습니다")
+    # 환경 변수 설정
+    os.environ['DISPLAY'] = ':99'
+    os.environ['CHROME_BIN'] = '/usr/bin/google-chrome'
+    os.environ['CHROMEDRIVER_PATH'] = '/usr/bin/chromedriver'
+    
+    # Xvfb 시작 (오류 무시)
+    try:
+        if start_xvfb():
+            logger.info("✅ Xvfb 초기화 완료")
+        else:
+            logger.warning("⚠️ Xvfb 초기화 실패 - Chrome 자동화에 문제가 있을 수 있습니다")
+    except Exception as e:
+        logger.warning(f"⚠️ Xvfb 시작 중 오류 발생: {e}")
     
     # 스케줄러 시작
     threading.Thread(target=start_scheduler_optimized, daemon=True).start()
