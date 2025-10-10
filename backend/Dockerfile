@@ -100,20 +100,20 @@ export CHROME_BIN=/usr/bin/google-chrome\n\
 export CHROMEDRIVER_PATH=/usr/bin/chromedriver\n\
 export PORT=8080\n\
 \n\
-# X11 디렉토리 설정 (Xvfb 시작 전)\n\
+# X11 디렉토리 설정\n\
 echo "📁 X11 디렉토리 설정..."\n\
 mkdir -p /tmp/.X11-unix 2>/dev/null || true\n\
 chmod 1777 /tmp/.X11-unix 2>/dev/null || true\n\
 \n\
-# 가상 디스플레이 시작 (오류 무시)\n\
+# 가상 디스플레이 시작 (백그라운드, 오류 무시)\n\
 echo "🖥️ Xvfb 시작 시도..."\n\
-Xvfb :99 -screen 0 1920x1080x24 -ac +extension GLX +render -noreset 2>/dev/null &\n\
+Xvfb :99 -screen 0 1920x1080x24 -ac +extension GLX +render -noreset >/dev/null 2>&1 &\n\
 XVFB_PID=$!\n\
 echo "✅ Xvfb 시작됨 (PID: $XVFB_PID)"\n\
 \n\
-# Xvfb 시작 대기 (최대 5초)\n\
+# Xvfb 시작 대기\n\
 echo "⏳ Xvfb 초기화 대기 중..."\n\
-sleep 2\n\
+sleep 3\n\
 \n\
 # Chrome 환경 변수 출력\n\
 echo "🔍 환경 변수 확인:"\n\
@@ -126,5 +126,5 @@ echo "  PORT=$PORT"\n\
 echo "🚀 애플리케이션 시작..."\n\
 exec "$@"' > /start.sh && chmod +x /start.sh
 
-# 🔥 Cloud Run 환경에서 앱 실행
+# 🔥 Cloud Run 환경에서 앱 실행 (start.sh 스크립트 사용)
 CMD ["/start.sh", "uvicorn", "scheduler_server:app", "--host", "0.0.0.0", "--port", "8080"]
