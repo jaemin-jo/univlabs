@@ -58,7 +58,7 @@ def run_basic_automation(active_users):
     successful_users = 0
     failed_users = 0
     
-    # Chrome 비활성화된 경우 더미 데이터 반환
+    # Chrome 비활성화된 경우 더미 데이터 반환 (디버깅용)
     if CHROME_DISABLED:
         logger.info("🔧 Chrome 비활성화 모드 - 더미 데이터 생성")
         for user in active_users:
@@ -94,6 +94,9 @@ def run_basic_automation(active_users):
             'user_count': len(active_users)
         }
     
+    # 실제 Chrome 자동화 실행
+    logger.info("🌐 실제 Chrome 자동화 실행...")
+    
     for user in active_users:
         try:
             username = user.get('username', 'Unknown')
@@ -106,12 +109,21 @@ def run_basic_automation(active_users):
             
             # 사용자별 자동화 실행 (모듈 사용 가능한 경우에만)
             if CORE_MODULES_AVAILABLE and test_direct_selenium:
-                user_result = test_direct_selenium(
-                    university,
-                    username,
-                    user.get('password', ''),
-                    student_id
-                )
+                logger.info(f"🌐 Chrome 자동화 시작 - 사용자: {username}")
+                logger.info(f"   대학교: {university}")
+                logger.info(f"   학번: {student_id}")
+                
+                try:
+                    user_result = test_direct_selenium(
+                        university,
+                        username,
+                        user.get('password', ''),
+                        student_id
+                    )
+                    logger.info(f"✅ Chrome 자동화 완료 - 사용자: {username}")
+                except Exception as chrome_error:
+                    logger.error(f"❌ Chrome 자동화 실패 - 사용자: {username}: {chrome_error}")
+                    user_result = None
             else:
                 logger.warning("핵심 모듈이 사용 불가능 - 더미 데이터 생성")
                 user_result = [
