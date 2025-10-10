@@ -1073,8 +1073,8 @@ def collect_this_week_lectures_hybrid(driver):
                 f.write("📚 LearnUs 과목 및 이번주 강의 활동 목록\n")
                 f.write("=" * 60 + "\n\n")
                 f.write(f"수집 시간: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-                f.write(f"총 수집된 항목 수: {len(all_lectures)}개\n")
-                f.write(f"처리된 과목 수: {len(processed_courses)}개\n\n")
+                f.write(f"총 수집된 항목 수: {len(all_lectures) if all_lectures else 0}개\n")
+                f.write(f"처리된 과목 수: {len(processed_courses) if processed_courses else 0}개\n\n")
                 
                 if all_lectures:
                     # 과목별로 그룹화
@@ -1142,17 +1142,18 @@ def collect_this_week_lectures_hybrid(driver):
                     incomplete_videos = []
                     incomplete_other_activities = []
                     
-                    for lecture in all_lectures:
-                        if lecture['activity'] not in ['이번주 강의 활동 없음', '이번주 강의 섹션 없음']:
-                            status = lecture.get('status', '상태 불명')
-                            # "해야 할 과제" 또는 "미완료" 상태인 것만 포함
-                            if '해야 할 과제' in status or '미완료' in status or '미시청' in status:
-                                if lecture['type'] == '과제':
-                                    incomplete_assignments.append(lecture)
-                                elif lecture['type'] == '동영상':
-                                    incomplete_videos.append(lecture)
-                                else:
-                                    incomplete_other_activities.append(lecture)
+                    if all_lectures:
+                        for lecture in all_lectures:
+                            if lecture['activity'] not in ['이번주 강의 활동 없음', '이번주 강의 섹션 없음']:
+                                status = lecture.get('status', '상태 불명')
+                                # "해야 할 과제" 또는 "미완료" 상태인 것만 포함
+                                if '해야 할 과제' in status or '미완료' in status or '미시청' in status:
+                                    if lecture['type'] == '과제':
+                                        incomplete_assignments.append(lecture)
+                                    elif lecture['type'] == '동영상':
+                                        incomplete_videos.append(lecture)
+                                    else:
+                                        incomplete_other_activities.append(lecture)
                     
                     if incomplete_assignments:
                         f.write("📝 해야 할 과제:\n")
