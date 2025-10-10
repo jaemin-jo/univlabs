@@ -163,6 +163,25 @@ def run_basic_automation(active_users):
 # FastAPI 앱 생성
 app = FastAPI(title="LearnUs Scheduler Server", version="1.0.0")
 
+# Health Check 엔드포인트 (Cloud Run 타임아웃 방지)
+@app.get("/health")
+async def health_check():
+    """Cloud Run Health Check"""
+    return {
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "service": "learnus-backend"
+    }
+
+@app.get("/")
+async def root():
+    """루트 엔드포인트"""
+    return {
+        "message": "LearnUs Scheduler Server",
+        "status": "running",
+        "version": "1.0.0"
+    }
+
 # 스케줄러 함수 정의 (start_scheduler_auto보다 먼저 정의)
 def start_scheduler():
     """스케줄러 시작"""
@@ -531,6 +550,17 @@ async def get_status():
 async def startup_event():
     """앱 시작 시 실행"""
     logger.info("🚀 애플리케이션 시작...")
+    
+    # 초기화 대기 시간 추가
+    logger.info("⏳ 초기화 대기 중...")
+    import time
+    time.sleep(5)  # 5초 대기
+    
+    # 환경 변수 확인
+    logger.info("🔍 환경 변수 확인:")
+    logger.info(f"   PORT: {os.environ.get('PORT', 'NOT SET')}")
+    logger.info(f"   CHROME_DISABLED: {os.environ.get('CHROME_DISABLED', 'NOT SET')}")
+    logger.info(f"   DISPLAY: {os.environ.get('DISPLAY', 'NOT SET')}")
     
     # 스케줄러 시작
     try:

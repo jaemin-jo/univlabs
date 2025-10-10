@@ -91,6 +91,10 @@ ENV CHROME_BIN=/usr/bin/google-chrome
 ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 ENV PORT=8080
 ENV CHROME_DISABLED=true
+# Cloud Run 타임아웃 설정
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV UVICORN_TIMEOUT=300
 
-# 🔥 Cloud Run 환경에서 앱 실행 (PORT 환경 변수 사용)
-CMD ["sh", "-c", "echo 'Starting server on port ${PORT:-8080}' && python -m uvicorn scheduler_server:app --host 0.0.0.0 --port ${PORT:-8080} --workers 1"]
+# 🔥 Cloud Run 환경에서 앱 실행 (PORT 환경 변수 사용, 타임아웃 증가)
+CMD ["sh", "-c", "echo 'Starting server on port ${PORT:-8080}' && echo 'Waiting for initialization...' && sleep 10 && python -m uvicorn scheduler_server:app --host 0.0.0.0 --port ${PORT:-8080} --workers 1 --timeout-keep-alive 300"]
