@@ -570,8 +570,8 @@ def collect_this_week_lectures_hybrid(driver):
         
         # 순차적으로 과목 처리 (한 과목씩)
         while current_course_index < len(course_elements):
-                try:
-                    course_element = course_elements[current_course_index]
+            try:
+                course_element = course_elements[current_course_index]
                 i = current_course_index
                 logger.info(f"🔍 과목 {i+1}/{len(course_elements)} 처리 시작...")
 
