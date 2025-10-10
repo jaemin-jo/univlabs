@@ -100,6 +100,12 @@ ENV UVICORN_TIMEOUT=300
 RUN echo '#!/bin/bash\n\
 # Cloud Run 환경에서 Chrome 실행을 위한 설정\n\
 echo "🔧 Start script 시작..."\n\
+echo "📅 현재 시간: $(date)"\n\
+echo "🖥️ 시스템 정보:"\n\
+echo "  OS: $(uname -a)"\n\
+echo "  메모리: $(free -h)"\n\
+echo "  디스크: $(df -h /)"\n\
+\n\
 export DISPLAY=:99\n\
 export CHROME_BIN=/usr/bin/google-chrome\n\
 export CHROMEDRIVER_PATH=/usr/bin/chromedriver\n\
@@ -109,6 +115,25 @@ export PORT=8080\n\
 echo "📁 X11 디렉토리 설정..."\n\
 mkdir -p /tmp/.X11-unix 2>/dev/null || true\n\
 chmod 1777 /tmp/.X11-unix 2>/dev/null || true\n\
+echo "✅ X11 디렉토리 설정 완료"\n\
+\n\
+# Chrome 설치 확인\n\
+echo "🔍 Chrome 설치 확인:"\n\
+if [ -f "$CHROME_BIN" ]; then\n\
+    echo "  ✅ Chrome 설치됨: $CHROME_BIN"\n\
+    $CHROME_BIN --version 2>/dev/null || echo "  ⚠️ Chrome 버전 확인 실패"\n\
+else\n\
+    echo "  ❌ Chrome 설치되지 않음: $CHROME_BIN"\n\
+fi\n\
+\n\
+# ChromeDriver 설치 확인\n\
+echo "🔍 ChromeDriver 설치 확인:"\n\
+if [ -f "$CHROMEDRIVER_PATH" ]; then\n\
+    echo "  ✅ ChromeDriver 설치됨: $CHROMEDRIVER_PATH"\n\
+    $CHROMEDRIVER_PATH --version 2>/dev/null || echo "  ⚠️ ChromeDriver 버전 확인 실패"\n\
+else\n\
+    echo "  ❌ ChromeDriver 설치되지 않음: $CHROMEDRIVER_PATH"\n\
+fi\n\
 \n\
 # 가상 디스플레이 시작 (백그라운드, 오류 무시)\n\
 echo "🖥️ Xvfb 시작 시도..."\n\
@@ -120,15 +145,32 @@ echo "✅ Xvfb 시작됨 (PID: $XVFB_PID)"\n\
 echo "⏳ Xvfb 초기화 대기 중..."\n\
 sleep 5\n\
 \n\
+# Xvfb 프로세스 확인\n\
+if ps -p $XVFB_PID > /dev/null; then\n\
+    echo "✅ Xvfb 프로세스 실행 중 (PID: $XVFB_PID)"\n\
+else\n\
+    echo "❌ Xvfb 프로세스 종료됨"\n\
+fi\n\
+\n\
 # Chrome 환경 변수 출력\n\
 echo "🔍 환경 변수 확인:"\n\
 echo "  DISPLAY=$DISPLAY"\n\
 echo "  CHROME_BIN=$CHROME_BIN"\n\
 echo "  CHROMEDRIVER_PATH=$CHROMEDRIVER_PATH"\n\
 echo "  PORT=$PORT"\n\
+echo "  PYTHONPATH=$PYTHONPATH"\n\
+echo "  PYTHONUNBUFFERED=$PYTHONUNBUFFERED"\n\
+\n\
+# Python 환경 확인\n\
+echo "🐍 Python 환경 확인:"\n\
+echo "  Python 버전: $(python --version)"\n\
+echo "  Python 경로: $(which python)"\n\
+echo "  작업 디렉토리: $(pwd)"\n\
+echo "  파일 목록: $(ls -la)"\n\
 \n\
 # 애플리케이션 시작\n\
 echo "🚀 애플리케이션 시작..."\n\
+echo "📅 시작 시간: $(date)"\n\
 exec "$@"' > /start.sh && chmod +x /start.sh
 
 # 🔥 Cloud Run 환경에서 앱 실행 (start.sh 스크립트 사용)
