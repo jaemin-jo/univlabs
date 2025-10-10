@@ -484,9 +484,11 @@ if __name__ == "__main__":
     # FastAPI 서버 시작 (Cloud Run 환경 변수 처리)
     port = int(os.environ.get("PORT", 8080))
     logger.info(f"🚀 서버 시작 - PORT: {port}")
+    logger.info(f"🔍 환경 변수 확인 - PORT: {os.environ.get('PORT', 'Not set')}")
     uvicorn.run(
         app, 
         host="0.0.0.0", 
         port=port,
-        log_level="info"
+        log_level="info",
+        workers=1
     )
