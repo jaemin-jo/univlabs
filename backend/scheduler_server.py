@@ -28,12 +28,14 @@ except ImportError as e:
     update_user_last_used = None
     CORE_MODULES_AVAILABLE = False
 
-# 최적화된 모듈들 (선택적 import)
+# 최적화된 모듈들 (선택적 import) - 임시 비활성화
 try:
-    from batch_automation_scheduler import BatchAutomationScheduler
-    from optimized_hybrid_automation import OptimizedHybridAutomation
-    OPTIMIZED_MODULES_AVAILABLE = True
-    logger.info("✅ 최적화된 모듈들 로드 성공")
+    # from batch_automation_scheduler import BatchAutomationScheduler
+    # from optimized_hybrid_automation import OptimizedHybridAutomation
+    BatchAutomationScheduler = None
+    OptimizedHybridAutomation = None
+    OPTIMIZED_MODULES_AVAILABLE = False
+    logger.info("⚠️ 최적화된 모듈들 임시 비활성화 (순환 import 방지)")
 except ImportError as e:
     logger.warning(f"⚠️ 최적화된 모듈들 로드 실패: {e}")
     BatchAutomationScheduler = None
