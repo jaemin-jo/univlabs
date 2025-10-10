@@ -94,24 +94,36 @@ ENV PORT=8080
 # 🔥 Cloud Run 환경에서 Chrome 실행을 위한 스크립트 생성
 RUN echo '#!/bin/bash\n\
 # Cloud Run 환경에서 Chrome 실행을 위한 설정\n\
+echo "🔧 Start script 시작..."\n\
 export DISPLAY=:99\n\
 export CHROME_BIN=/usr/bin/google-chrome\n\
 export CHROMEDRIVER_PATH=/usr/bin/chromedriver\n\
+export PORT=8080\n\
 \n\
-# 가상 디스플레이 시작 (DevToolsActivePort 오류 해결)\n\
-Xvfb :99 -screen 0 1920x1080x24 -ac +extension GLX +render -noreset &\n\
+# X11 디렉토리 설정 (Xvfb 시작 전)\n\
+echo "📁 X11 디렉토리 설정..."\n\
+mkdir -p /tmp/.X11-unix 2>/dev/null || true\n\
+chmod 1777 /tmp/.X11-unix 2>/dev/null || true\n\
 \n\
-# Chrome이 디스플레이에 접근할 수 있도록 권한 설정\n\
-xhost +local:docker\n\
+# 가상 디스플레이 시작 (오류 무시)\n\
+echo "🖥️ Xvfb 시작 시도..."\n\
+Xvfb :99 -screen 0 1920x1080x24 -ac +extension GLX +render -noreset 2>/dev/null &\n\
+XVFB_PID=$!\n\
+echo "✅ Xvfb 시작됨 (PID: $XVFB_PID)"\n\
 \n\
-# Cloud Run 환경에서 Chrome 실행을 위한 추가 설정\n\
-mkdir -p /tmp/.X11-unix\n\
-chmod 1777 /tmp/.X11-unix\n\
+# Xvfb 시작 대기 (최대 5초)\n\
+echo "⏳ Xvfb 초기화 대기 중..."\n\
+sleep 2\n\
 \n\
-# 잠시 대기 후 앱 실행\n\
-sleep 3\n\
+# Chrome 환경 변수 출력\n\
+echo "🔍 환경 변수 확인:"\n\
+echo "  DISPLAY=$DISPLAY"\n\
+echo "  CHROME_BIN=$CHROME_BIN"\n\
+echo "  CHROMEDRIVER_PATH=$CHROMEDRIVER_PATH"\n\
+echo "  PORT=$PORT"\n\
 \n\
-# 앱 실행\n\
+# 애플리케이션 시작\n\
+echo "🚀 애플리케이션 시작..."\n\
 exec "$@"' > /start.sh && chmod +x /start.sh
 
 # 🔥 Cloud Run 환경에서 앱 실행
