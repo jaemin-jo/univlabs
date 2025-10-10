@@ -1,7 +1,0 @@
-# MCP 서버 의존성
-mcp>=1.0.0
-asyncio
-aiohttp>=3.8.0
-google-cloud-logging>=3.0.0
-google-cloud-run>=0.10.0
-google-cloud-build>=3.0.0
