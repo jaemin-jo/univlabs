@@ -1,0 +1,52 @@
+steps:
+  # MCP 서버 Docker 이미지 빌드
+  - name: 'gcr.io/cloud-builders/docker'
+    args: 
+      - 'build'
+      - '-f'
+      - 'Dockerfile.mcp'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/gcp-mcp-server:$COMMIT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/gcp-mcp-server:latest'
+      - '.'
+
+  # Container Registry에 이미지 푸시
+  - name: 'gcr.io/cloud-builders/docker'
+    args: 
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/gcp-mcp-server:$COMMIT_SHA'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: 
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/gcp-mcp-server:latest'
+
+  # Cloud Run에 MCP 서버 배포
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'gcp-mcp-server'
+      - '--image=gcr.io/$PROJECT_ID/gcp-mcp-server:$COMMIT_SHA'
+      - '--platform=managed'
+      - '--region=asia-northeast3'
+      - '--allow-unauthenticated'
+      - '--port=8080'
+      - '--memory=1Gi'
+      - '--cpu=1'
+      - '--timeout=3600'
+      - '--max-instances=10'
+      - '--set-env-vars=PORT=8080'
+
+# 이미지 저장소 설정
+images:
+  - 'gcr.io/$PROJECT_ID/gcp-mcp-server:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/gcp-mcp-server:latest'
+
+# 빌드 옵션
+options:
+  machineType: 'E2_HIGHCPU_8'
+  diskSizeGb: 100
+  logging: CLOUD_LOGGING_ONLY
