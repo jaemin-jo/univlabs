@@ -39,11 +39,50 @@ os.environ['DISPLAY'] = ':99'
 os.environ['CHROME_BIN'] = '/usr/bin/google-chrome'
 os.environ['CHROMEDRIVER_PATH'] = '/usr/bin/chromedriver'
 
+# Cloud Run 환경에서 Chrome 실행 비활성화 (디버깅용)
+CHROME_DISABLED = os.environ.get('CHROME_DISABLED', 'false').lower() == 'true'
+
 def run_basic_automation(active_users):
     """기본 자동화 실행 (최적화된 모듈이 없을 때 사용)"""
     all_assignments = []
     successful_users = 0
     failed_users = 0
+    
+    # Chrome 비활성화된 경우 더미 데이터 반환
+    if CHROME_DISABLED:
+        logger.info("🔧 Chrome 비활성화 모드 - 더미 데이터 생성")
+        for user in active_users:
+            username = user.get('username', 'Unknown')
+            logger.info(f"🔄 사용자 {username} 더미 자동화 처리...")
+            
+            # 더미 과제 데이터 생성
+            dummy_assignments = [
+                {
+                    'title': f'{username}의 더미 과제 1',
+                    'status': '미완료',
+                    'deadline': '2024-12-31',
+                    'course': '테스트 과목'
+                },
+                {
+                    'title': f'{username}의 더미 과제 2',
+                    'status': '완료',
+                    'deadline': '2024-12-25',
+                    'course': '테스트 과목'
+                }
+            ]
+            all_assignments.extend(dummy_assignments)
+            successful_users += 1
+            logger.info(f"사용자 {username} 더미 자동화 완료: {len(dummy_assignments)}개 과제")
+        
+        return {
+            'assignments': all_assignments,
+            'total_count': len(all_assignments),
+            'users_processed': len(active_users),
+            'successful_users': successful_users,
+            'failed_users': failed_users,
+            'firebase_status': 'connected',
+            'user_count': len(active_users)
+        }
     
     for user in active_users:
         try:

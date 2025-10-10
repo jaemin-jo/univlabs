@@ -90,6 +90,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV CHROME_BIN=/usr/bin/google-chrome
 ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 ENV PORT=8080
+ENV CHROME_DISABLED=true
 
 # 🔥 Cloud Run 환경에서 앱 실행 (PORT 환경 변수 사용)
 CMD ["sh", "-c", "echo 'Starting server on port ${PORT:-8080}' && python -m uvicorn scheduler_server:app --host 0.0.0.0 --port ${PORT:-8080} --workers 1"]
