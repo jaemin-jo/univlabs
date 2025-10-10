@@ -1,0 +1,32 @@
+FROM python:3.11-slim
+
+# 작업 디렉토리 설정
+WORKDIR /app
+
+# Google Cloud SDK 설치
+RUN apt-get update && apt-get install -y \
+    curl \
+    gnupg \
+    lsb-release \
+    && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
+    && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - \
+    && apt-get update \
+    && apt-get install -y google-cloud-cli \
+    && rm -rf /var/lib/apt/lists/*
+
+# MCP 서버 의존성 설치
+COPY requirements.mcp.txt .
+RUN pip install --no-cache-dir -r requirements.mcp.txt
+
+# MCP 서버 코드 복사
+COPY mcp_server.py .
+
+# 포트 노출 (MCP 서버는 8080 포트 사용)
+EXPOSE 8080
+
+# 환경 변수 설정
+ENV PORT=8080
+ENV PYTHONUNBUFFERED=1
+
+# MCP 서버 실행
+CMD ["python", "mcp_server.py"]

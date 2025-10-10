@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "gcp-mcp-server": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "http://gcp-mcp-server-xxx-uc.a.run.app/sse"
+      ]
+    }
+  }
+}
