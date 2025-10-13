@@ -51,30 +51,16 @@ RUN echo "🔧 [DOCKERFILE] Chrome 및 의존성 패키지 설치 시작..." && 
     libnss3 \
     chromium \
     chromium-driver \
-    && echo "🔧 [DOCKERFILE] Google Chrome 저장소 설정 중..." && \
-    wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/googlechrome-linux-keyring.gpg \
-    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/googlechrome-linux-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list \
-    && echo "🔧 [DOCKERFILE] Google Chrome 설치 중..." && \
+    && echo "🔧 [DOCKERFILE] Chromium 설치 중..." && \
     apt-get update \
-    && apt-get install -y google-chrome-stable \
-    && echo "✅ [DOCKERFILE] Google Chrome 설치 완료" && \
+    && apt-get install -y chromium chromium-driver \
+    && echo "✅ [DOCKERFILE] Chromium 설치 완료" && \
     rm -rf /var/lib/apt/lists/*
 
-# 🔥 Chrome 드라이버 설치 (수동 설치 - 안정화)
-RUN echo "🔧 [DOCKERFILE] ChromeDriver 설치 시작..." && \
-    CHROMEDRIVER_VERSION=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_STABLE") \
-    && echo "🔧 [DOCKERFILE] ChromeDriver 버전: $CHROMEDRIVER_VERSION" \
-    && echo "🔧 [DOCKERFILE] ChromeDriver 다운로드 중..." && \
-    wget -O /tmp/chromedriver.zip "https://storage.googleapis.com/chrome-for-testing-public/${CHROMEDRIVER_VERSION}/linux64/chromedriver-linux64.zip" \
-    && echo "🔧 [DOCKERFILE] ChromeDriver 압축 해제 중..." && \
-    unzip /tmp/chromedriver.zip -d /tmp/ \
-    && echo "🔧 [DOCKERFILE] ChromeDriver 설치 중..." && \
-    mv /tmp/chromedriver-linux64/chromedriver /usr/bin/chromedriver \
-    && chmod +x /usr/bin/chromedriver \
-    && echo "🔧 [DOCKERFILE] ChromeDriver 버전 확인 중..." && \
-    /usr/bin/chromedriver --version \
-    && echo "✅ [DOCKERFILE] ChromeDriver 설치 완료" && \
-    rm -rf /tmp/chromedriver.zip /tmp/chromedriver-linux64
+# 🔥 Chromium 드라이버는 이미 설치됨 (apt 패키지로 설치)
+RUN echo "🔧 [DOCKERFILE] Chromium 드라이버 확인 중..." && \
+    /usr/bin/chromedriver --version && \
+    echo "✅ [DOCKERFILE] Chromium 드라이버 확인 완료"
 
 # 🔥 WebDriver Manager 캐시 정리 (문제 해결)
 RUN rm -rf /root/.wdm/ || true
@@ -82,7 +68,6 @@ RUN rm -rf /root/.cache/ || true
 
 # 🔥 Cloud Run 환경을 위한 권한 설정
 RUN chmod 755 /usr/bin/chromedriver \
-    && chmod 755 /usr/bin/google-chrome \
     && chmod 755 /usr/bin/chromium
 
 # Python 의존성 설치
@@ -104,7 +89,7 @@ EXPOSE 8080
 # 🔥 Cloud Run 환경을 위한 환경 변수 설정
 ENV DISPLAY=:99
 ENV DEBIAN_FRONTEND=noninteractive
-ENV CHROME_BIN=/usr/bin/google-chrome
+ENV CHROME_BIN=/usr/bin/chromium
 ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 ENV PORT=8080
 ENV CHROME_DISABLED=false

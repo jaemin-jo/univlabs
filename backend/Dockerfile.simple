@@ -1,0 +1,72 @@
+FROM python:3.11-slim
+
+# 작업 디렉토리 설정
+WORKDIR /app
+
+# 시스템 패키지 업데이트 및 필수 패키지 설치
+RUN apt-get update && apt-get install -y \
+    wget \
+    gnupg \
+    unzip \
+    curl \
+    xvfb \
+    fonts-liberation \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libdrm2 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    libgbm1 \
+    libxss1 \
+    libnss3 \
+    libxkbcommon0 \
+    libx11-6 \
+    libx11-xcb1 \
+    libxcb1 \
+    libxcomposite1 \
+    libxcursor1 \
+    libxdamage1 \
+    libxext6 \
+    libxfixes3 \
+    libxi6 \
+    libxrandr2 \
+    libxrender1 \
+    libxss1 \
+    libxtst6 \
+    ca-certificates \
+    fonts-liberation \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libdrm2 \
+    libgtk-3-0 \
+    libnspr4 \
+    libnss3 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    libgbm1 \
+    libxss1 \
+    libnss3 \
+    chromium \
+    chromium-driver \
+    && rm -rf /var/lib/apt/lists/*
+
+# Python 의존성 설치
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 앱 코드 복사
+COPY . .
+
+# 포트 노출
+EXPOSE 8080
+
+# 환경 변수 설정
+ENV DISPLAY=:99
+ENV CHROME_BIN=/usr/bin/chromium
+ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
+ENV PORT=8080
+
+# 단순한 실행 명령
+CMD ["python", "simple_test_server.py"]
