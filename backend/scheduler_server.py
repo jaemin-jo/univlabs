@@ -14,6 +14,8 @@ import time
 import threading
 import json
 import os
+import subprocess
+import signal
 from datetime import datetime
 # 로깅 설정
 logging.basicConfig(
@@ -215,10 +217,73 @@ def run_basic_automation(active_users):
         'user_count': len(active_users)
     }
 
+# Xvfb 프로세스 관리
+xvfb_process = None
+
+def start_xvfb():
+    """Xvfb 가상 디스플레이 시작"""
+    global xvfb_process
+    try:
+        logger.info("🔧 [SCHEDULER] Xvfb 가상 디스플레이 시작...")
+        xvfb_process = subprocess.Popen([
+            'Xvfb', ':99', '-screen', '0', '1920x1080x24', 
+            '-ac', '+extension', 'GLX', '+render', '-noreset'
+        ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        time.sleep(3)  # Xvfb 시작 대기
+        logger.info("✅ [SCHEDULER] Xvfb 시작 완료")
+        return True
+    except Exception as e:
+        logger.error(f"❌ [SCHEDULER] Xvfb 시작 실패: {e}")
+        return False
+
+def stop_xvfb():
+    """Xvfb 가상 디스플레이 종료"""
+    global xvfb_process
+    if xvfb_process:
+        try:
+            logger.info("🔧 [SCHEDULER] Xvfb 종료 중...")
+            xvfb_process.terminate()
+            xvfb_process.wait(timeout=5)
+            logger.info("✅ [SCHEDULER] Xvfb 종료 완료")
+        except Exception as e:
+            logger.error(f"❌ [SCHEDULER] Xvfb 종료 실패: {e}")
+
 # FastAPI 앱 생성
 logger.info("🔧 [SCHEDULER] FastAPI 앱 생성 시작...")
 app = FastAPI(title="LearnUs Scheduler Server", version="1.0.0")
 logger.info("✅ [SCHEDULER] FastAPI 앱 생성 완료")
+
+# FastAPI 이벤트 핸들러
+@app.on_event("startup")
+async def startup_event():
+    """애플리케이션 시작 시 Xvfb 시작"""
+    logger.info("🚀 [SCHEDULER] 애플리케이션 시작 이벤트")
+    
+    # 환경 변수 설정
+    os.environ['DISPLAY'] = ':99'
+    os.environ['CHROME_BIN'] = '/usr/bin/google-chrome'
+    os.environ['CHROMEDRIVER_PATH'] = '/usr/bin/chromedriver'
+    os.environ['WDM_LOG_LEVEL'] = '0'
+    
+    logger.info("🔧 [SCHEDULER] 환경 변수 설정 완료")
+    logger.info(f"   DISPLAY: {os.environ.get('DISPLAY')}")
+    logger.info(f"   CHROME_BIN: {os.environ.get('CHROME_BIN')}")
+    logger.info(f"   CHROMEDRIVER_PATH: {os.environ.get('CHROMEDRIVER_PATH')}")
+    
+    # Xvfb 시작
+    if start_xvfb():
+        logger.info("✅ [SCHEDULER] Xvfb 시작 성공")
+    else:
+        logger.error("❌ [SCHEDULER] Xvfb 시작 실패")
+    
+    logger.info("✅ [SCHEDULER] 애플리케이션 시작 완료")
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """애플리케이션 종료 시 Xvfb 종료"""
+    logger.info("🔚 [SCHEDULER] 애플리케이션 종료 이벤트")
+    stop_xvfb()
+    logger.info("✅ [SCHEDULER] 애플리케이션 종료 완료")
 
 # Health Check 엔드포인트 (Cloud Run 타임아웃 방지)
 @app.get("/health")

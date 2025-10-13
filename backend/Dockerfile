@@ -206,5 +206,5 @@ echo "🚀 [START.SH] 애플리케이션 시작..."\n\
 echo "📅 [START.SH] 시작 시간: $(date)"\n\
 exec "$@"' > /start.sh && chmod +x /start.sh
 
-# 🔥 Cloud Run 환경에서 앱 실행 (start.sh 스크립트 사용)
-CMD ["/start.sh", "python", "scheduler_server.py"]
+# 🔥 Cloud Run 환경에서 앱 실행 (단순화된 방법)
+CMD ["python", "scheduler_server.py"]
