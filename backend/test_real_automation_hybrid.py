@@ -1074,7 +1074,7 @@ def collect_this_week_lectures_hybrid(driver):
                 # 과목 처리 완료 후 인덱스 증가
                 current_course_index += 1
                 logger.info(f"   ✅ {course_name} 처리 완료, 다음 과목으로 이동 (인덱스: {current_course_index})")
-                    
+                
             except Exception as e:
                 logger.debug(f"   과목 {i+1} 처리 실패: {e}")
                 current_course_index += 1
