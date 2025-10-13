@@ -18,7 +18,7 @@ steps:
       '--image', 'gcr.io/$PROJECT_ID/learnus-backend',
       '--platform', 'managed',
       '--region', 'asia-northeast3',
-      '--allow-unauthenticated',
+      '--no-allow-unauthenticated',  # 인증 필요로 변경
       '--memory', '4Gi',  # Chrome 실행을 위해 메모리 증가
       '--cpu', '2',
       '--timeout', '3600',
