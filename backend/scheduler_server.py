@@ -15,29 +15,55 @@ import threading
 import json
 import os
 from datetime import datetime
+# 로깅 설정
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+
 # 핵심 모듈들 (안전한 import)
+logger.info("🔧 [SCHEDULER] 핵심 모듈 로딩 시작...")
 try:
+    logger.info("🔧 [SCHEDULER] test_real_automation_hybrid 모듈 로딩 중...")
     from test_real_automation_hybrid import test_direct_selenium
+    logger.info("✅ [SCHEDULER] test_real_automation_hybrid 모듈 로드 성공")
+    
+    logger.info("🔧 [SCHEDULER] firebase_service 모듈 로딩 중...")
     from firebase_service import get_all_active_users, update_user_last_used
+    logger.info("✅ [SCHEDULER] firebase_service 모듈 로드 성공")
+    
     CORE_MODULES_AVAILABLE = True
-    logger.info("✅ 핵심 모듈들 로드 성공")
+    logger.info("✅ [SCHEDULER] 모든 핵심 모듈들 로드 성공")
 except ImportError as e:
-    logger.error(f"❌ 핵심 모듈들 로드 실패: {e}")
+    logger.error(f"❌ [SCHEDULER] 핵심 모듈들 로드 실패: {e}")
+    logger.error(f"🔍 [SCHEDULER] ImportError 상세: {type(e).__name__}")
+    logger.error(f"🔍 [SCHEDULER] ImportError 메시지: {str(e)}")
+    import traceback
+    logger.error(f"🔍 [SCHEDULER] ImportError 스택 트레이스:\n{traceback.format_exc()}")
     test_direct_selenium = None
     get_all_active_users = None
     update_user_last_used = None
     CORE_MODULES_AVAILABLE = False
 
 # 최적화된 모듈들 (선택적 import) - 임시 비활성화
+logger.info("🔧 [SCHEDULER] 최적화된 모듈들 로딩 시작...")
 try:
+    logger.info("🔧 [SCHEDULER] batch_automation_scheduler 모듈 로딩 시도...")
     # from batch_automation_scheduler import BatchAutomationScheduler
+    logger.info("🔧 [SCHEDULER] optimized_hybrid_automation 모듈 로딩 시도...")
     # from optimized_hybrid_automation import OptimizedHybridAutomation
     BatchAutomationScheduler = None
     OptimizedHybridAutomation = None
     OPTIMIZED_MODULES_AVAILABLE = False
-    logger.info("⚠️ 최적화된 모듈들 임시 비활성화 (순환 import 방지)")
+    logger.info("⚠️ [SCHEDULER] 최적화된 모듈들 임시 비활성화 (순환 import 방지)")
 except ImportError as e:
-    logger.warning(f"⚠️ 최적화된 모듈들 로드 실패: {e}")
+    logger.warning(f"⚠️ [SCHEDULER] 최적화된 모듈들 로드 실패: {e}")
+    logger.warning(f"🔍 [SCHEDULER] ImportError 상세: {type(e).__name__}")
+    logger.warning(f"🔍 [SCHEDULER] ImportError 메시지: {str(e)}")
     BatchAutomationScheduler = None
     OptimizedHybridAutomation = None
     OPTIMIZED_MODULES_AVAILABLE = False
@@ -190,7 +216,9 @@ def run_basic_automation(active_users):
     }
 
 # FastAPI 앱 생성
+logger.info("🔧 [SCHEDULER] FastAPI 앱 생성 시작...")
 app = FastAPI(title="LearnUs Scheduler Server", version="1.0.0")
+logger.info("✅ [SCHEDULER] FastAPI 앱 생성 완료")
 
 # Health Check 엔드포인트 (Cloud Run 타임아웃 방지)
 @app.get("/health")
@@ -418,12 +446,9 @@ def save_assignment_data(automation_result):
         logger.info(f"🔍 automation_result 타입: {type(automation_result)}")
         logger.info(f"🔍 automation_result 내용: {automation_result}")
         
-        # assignment.txt 파일 경로 (workspace 디렉토리에 저장)
-        workspace_dir = os.environ.get('WORKSPACE_DIR', '/app/workspace')
-        if not os.path.exists(workspace_dir):
-            workspace_dir = '.'  # workspace가 없으면 현재 디렉토리에 저장
-        
-        assignment_file = os.path.join(workspace_dir, "assignment.txt")
+        # assignment.txt 파일 경로 (backend 디렉토리에 저장)
+        backend_dir = os.path.dirname(os.path.abspath(__file__))
+        assignment_file = os.path.join(backend_dir, "assignment.txt")
         logger.info(f"🔍 저장 경로: {assignment_file}")
         
         # 파일이 존재하면 읽어서 기존 데이터와 병합
@@ -525,12 +550,9 @@ async def get_assignments():
     try:
         global _assignment_data
         
-        # assignment.txt 파일에서 최신 데이터 로드
-        workspace_dir = os.environ.get('WORKSPACE_DIR', '/app/workspace')
-        if not os.path.exists(workspace_dir):
-            workspace_dir = '.'
-        
-        assignment_file = os.path.join(workspace_dir, "assignment.txt")
+        # assignment.txt 파일에서 최신 데이터 로드 (backend 디렉토리)
+        backend_dir = os.path.dirname(os.path.abspath(__file__))
+        assignment_file = os.path.join(backend_dir, "assignment.txt")
         if os.path.exists(assignment_file):
             with open(assignment_file, 'r', encoding='utf-8') as f:
                 content = f.read()
@@ -564,10 +586,8 @@ async def run_automation_now():
 @app.get("/status")
 async def get_status():
     """서버 상태 및 자동화 상태 조회"""
-    workspace_dir = os.environ.get('WORKSPACE_DIR', '/app/workspace')
-    if not os.path.exists(workspace_dir):
-        workspace_dir = '.'
-    assignment_file = os.path.join(workspace_dir, "assignment.txt")
+    backend_dir = os.path.dirname(os.path.abspath(__file__))
+    assignment_file = os.path.join(backend_dir, "assignment.txt")
     
     return {
         "server_status": "running",

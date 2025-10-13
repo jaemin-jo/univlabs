@@ -250,6 +250,12 @@ def setup_driver():
     try:
         logger.info("🔧 Chrome 드라이버 설정 중...")
         
+        # 환경 변수 설정
+        os.environ['DISPLAY'] = ':99'
+        os.environ['CHROME_BIN'] = '/usr/bin/google-chrome'
+        os.environ['CHROMEDRIVER_PATH'] = '/usr/bin/chromedriver'
+        os.environ['WDM_LOG_LEVEL'] = '0'
+        
         chrome_options = Options()
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
@@ -259,8 +265,21 @@ def setup_driver():
         chrome_options.add_argument("--window-size=1920,1080")
         chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
         chrome_options.add_argument("--log-level=3")
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--disable-plugins")
+        chrome_options.add_argument("--disable-images")
+        chrome_options.add_argument("--disable-javascript")
+        chrome_options.add_argument("--disable-web-security")
+        chrome_options.add_argument("--allow-running-insecure-content")
+        chrome_options.add_argument("--disable-features=VizDisplayCompositor")
+        
+        # Chrome 실행 파일 경로 설정
+        chrome_options.binary_location = '/usr/bin/google-chrome'
 
-        service = Service(ChromeDriverManager().install())
+        # ChromeDriver 직접 경로 사용 (WebDriver Manager 문제 해결)
+        service = Service('/usr/bin/chromedriver')
         driver = webdriver.Chrome(service=service, options=chrome_options)
         
         # 자동화 감지 방지
@@ -275,30 +294,44 @@ def setup_driver():
 
 def test_direct_selenium(university, username, password, student_id):
     """직접 Selenium 로그인 테스트 (기존 코드의 검증된 로직)"""
+    logger.info("🚀 [AUTOMATION] 직접 Selenium 테스트 시작")
+    logger.info(f"   대학교: {university}")
+    logger.info(f"   사용자명: {username}")
+    logger.info(f"   학번: {student_id}")
+    logger.info("🔧 [AUTOMATION] 환경 변수 확인:")
+    logger.info(f"   DISPLAY: {os.environ.get('DISPLAY', 'Not set')}")
+    logger.info(f"   CHROME_BIN: {os.environ.get('CHROME_BIN', 'Not set')}")
+    logger.info(f"   CHROMEDRIVER_PATH: {os.environ.get('CHROMEDRIVER_PATH', 'Not set')}")
+    
     driver = None
     try:
+        logger.info("🔧 [AUTOMATION] Chrome 드라이버 설정 시작...")
         driver = setup_driver()
         if not driver:
+            logger.error("❌ [AUTOMATION] Chrome 드라이버 설정 실패")
             return False
+        logger.info("✅ [AUTOMATION] Chrome 드라이버 설정 완료")
         
-        logger.info(f"🌐 LearnUs 메인 페이지 접속: https://ys.learnus.org/")
+        logger.info("🌐 [AUTOMATION] LearnUs 메인 페이지 접속 시작...")
         driver.get("https://ys.learnus.org/")
+        logger.info("✅ [AUTOMATION] LearnUs 메인 페이지 접속 완료")
         time.sleep(2)
         
-        logger.info("⏳ 페이지 로딩 대기 중...")
+        logger.info("⏳ [AUTOMATION] 페이지 로딩 대기 중...")
         time.sleep(2)
         
         # 페이지 로딩 확인 (마우스 이동 제거)
-        logger.info("📄 페이지 로딩 확인 중...")
+        logger.info("📄 [AUTOMATION] 페이지 로딩 확인 중...")
         time.sleep(1)
         
-        logger.info(f"📍 현재 URL: {driver.current_url}")
-        logger.info(f"📄 페이지 제목: {driver.title}")
+        logger.info(f"📍 [AUTOMATION] 현재 URL: {driver.current_url}")
+        logger.info(f"📄 [AUTOMATION] 페이지 제목: {driver.title}")
         
         # 페이지 소스 저장 (디버깅용)
+        logger.info("💾 [AUTOMATION] 페이지 소스 저장 중...")
         with open('debug_page_source.html', 'w', encoding='utf-8') as f:
             f.write(driver.page_source)
-        logger.info("💾 페이지 소스 저장: debug_page_source.html")
+        logger.info("✅ [AUTOMATION] 페이지 소스 저장 완료: debug_page_source.html")
         
         # 연세포털 로그인 버튼 찾기 (기존 코드의 검증된 로직)
         login_button = None
@@ -1069,7 +1102,13 @@ def collect_this_week_lectures_hybrid(driver):
         
         # 결과를 파일로 저장
         try:
-            with open('assignment.txt', 'w', encoding='utf-8') as f:
+            # backend 폴더에 저장하도록 경로 설정
+            import os
+            backend_dir = os.path.dirname(os.path.abspath(__file__))
+            assignment_file_path = os.path.join(backend_dir, 'assignment.txt')
+            logger.info(f"📁 파일 저장 경로: {assignment_file_path}")
+            
+            with open(assignment_file_path, 'w', encoding='utf-8') as f:
                 f.write("📚 LearnUs 과목 및 이번주 강의 활동 목록\n")
                 f.write("=" * 60 + "\n\n")
                 f.write(f"수집 시간: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
@@ -1091,12 +1130,12 @@ def collect_this_week_lectures_hybrid(driver):
                         f.write("-" * 50 + "\n")
                         
                         # 활동이 있는지 확인
-                        has_activities = any(lecture['activity'] not in ['이번주 강의 활동 없음', '이번주 강의 섹션 없음'] for lecture in lectures)
+                        has_activities = any(lecture.get('activity') and lecture['activity'] not in ['이번주 강의 활동 없음', '이번주 강의 섹션 없음'] for lecture in lectures)
                         
                         if has_activities:
                             f.write("📚 이번주 강의 활동:\n")
                             for lecture in lectures:
-                                if lecture['activity'] not in ['이번주 강의 활동 없음', '이번주 강의 섹션 없음']:
+                                if lecture.get('activity') and lecture['activity'] not in ['이번주 강의 활동 없음', '이번주 강의 섹션 없음']:
                                     f.write(f"  • {lecture['activity']} ({lecture['type']}) - {lecture.get('status', '상태 불명')}\n")
                                     if lecture['url']:
                                         f.write(f"    URL: {lecture['url']}\n")
@@ -1118,7 +1157,7 @@ def collect_this_week_lectures_hybrid(driver):
                     courses_without_activities = []
                     
                     for course, lectures in course_groups.items():
-                        has_activities = any(lecture['activity'] not in ['이번주 강의 활동 없음', '이번주 강의 섹션 없음'] for lecture in lectures)
+                        has_activities = any(lecture.get('activity') and lecture['activity'] not in ['이번주 강의 활동 없음', '이번주 강의 섹션 없음'] for lecture in lectures)
                         if has_activities:
                             courses_with_activities.append(course)
                         else:
@@ -1144,10 +1183,10 @@ def collect_this_week_lectures_hybrid(driver):
                     
                     if all_lectures:
                         for lecture in all_lectures:
-                            if lecture['activity'] not in ['이번주 강의 활동 없음', '이번주 강의 섹션 없음']:
+                            if lecture.get('activity') and lecture['activity'] not in ['이번주 강의 활동 없음', '이번주 강의 섹션 없음']:
                                 status = lecture.get('status', '상태 불명')
-                                # "해야 할 과제" 또는 "미완료" 상태인 것만 포함
-                                if '해야 할 과제' in status or '미완료' in status or '미시청' in status:
+                                # status가 None이거나 빈 문자열이 아닌지 확인하고 "해야 할 과제" 또는 "미완료" 상태인 것만 포함
+                                if status and isinstance(status, str) and ('해야 할 과제' in status or '미완료' in status or '미시청' in status):
                                     if lecture['type'] == '과제':
                                         incomplete_assignments.append(lecture)
                                     elif lecture['type'] == '동영상':
@@ -1193,9 +1232,40 @@ def collect_this_week_lectures_hybrid(driver):
                 
         except Exception as e:
             logger.error(f"❌ 파일 저장 실패: {e}")
+            logger.error(f"🔍 에러 타입: {type(e).__name__}")
+            logger.error(f"🔍 에러 상세: {str(e)}")
+            import traceback
+            logger.error(f"🔍 스택 트레이스:\n{traceback.format_exc()}")
+            
+            # 변수 상태 확인
+            logger.error(f"🔍 디버깅 정보:")
+            logger.error(f"   - all_lectures 타입: {type(all_lectures)}")
+            logger.error(f"   - all_lectures 길이: {len(all_lectures) if all_lectures else 'None'}")
+            logger.error(f"   - processed_courses 타입: {type(processed_courses)}")
+            logger.error(f"   - processed_courses 길이: {len(processed_courses) if processed_courses else 'None'}")
+            
+            if all_lectures:
+                logger.error(f"   - all_lectures 첫 번째 항목: {all_lectures[0] if len(all_lectures) > 0 else 'None'}")
+                for i, lecture in enumerate(all_lectures[:3]):  # 처음 3개만 확인
+                    logger.error(f"   - lecture[{i}] keys: {list(lecture.keys()) if isinstance(lecture, dict) else 'Not a dict'}")
+                    if isinstance(lecture, dict):
+                        for key in ['activity', 'status', 'type', 'course']:
+                            value = lecture.get(key)
+                            logger.error(f"     - {key}: {value} (타입: {type(value).__name__})")
             
     except Exception as e:
         logger.error(f"❌ 이번주 강의 정보 수집 실패: {e}")
+        logger.error(f"🔍 에러 타입: {type(e).__name__}")
+        logger.error(f"🔍 에러 상세: {str(e)}")
+        import traceback
+        logger.error(f"🔍 스택 트레이스:\n{traceback.format_exc()}")
+        
+        # 함수 매개변수 확인
+        logger.error(f"🔍 함수 매개변수:")
+        logger.error(f"   - university: {university}")
+        logger.error(f"   - username: {username}")
+        logger.error(f"   - password: {password}")
+        logger.error(f"   - student_id: {student_id}")
 
 def main():
     """메인 함수 (자동 설정)"""
@@ -1218,12 +1288,21 @@ def main():
     print("🔧 자동화 테스트 시작...")
     
     # Selenium 직접 테스트
-    success = test_direct_selenium(university, username, password, student_id)
-    
-    if success:
-        print("✅ 테스트 완료! assignment.txt 파일을 확인하세요.")
-    else:
-        print("❌ 테스트 실패")
+    try:
+        success = test_direct_selenium(university, username, password, student_id)
+        
+        if success:
+            print("✅ 테스트 완료! assignment.txt 파일을 확인하세요.")
+        else:
+            print("❌ 테스트 실패")
+            print("🔍 자세한 오류 정보는 automation_debug.log 파일을 확인하세요.")
+            
+    except Exception as e:
+        print(f"❌ 메인 실행 중 오류 발생: {e}")
+        print(f"🔍 에러 타입: {type(e).__name__}")
+        import traceback
+        print(f"🔍 스택 트레이스:\n{traceback.format_exc()}")
+        print("🔍 자세한 오류 정보는 automation_debug.log 파일을 확인하세요.")
 
 if __name__ == "__main__":
     main()

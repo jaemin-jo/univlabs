@@ -2,10 +2,14 @@ steps:
   # Docker 이미지 빌드
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/$PROJECT_ID/learnus-backend', './backend']
+    env:
+      - 'DOCKER_BUILDKIT=1'
+    timeout: '1200s'
   
   # Docker 이미지 푸시
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/learnus-backend']
+    timeout: '600s'
   
   # Cloud Run에 배포 (Chrome 실행을 위한 리소스 증가)
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -22,7 +26,11 @@ steps:
       '--min-instances', '0',
       '--set-env-vars', 'DISPLAY=:99,CHROME_BIN=/usr/bin/google-chrome,CHROMEDRIVER_PATH=/usr/bin/chromedriver'
     ]
+    timeout: '1800s'
 
 # 로깅 설정 추가
 options:
   logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'  # 더 강력한 머신 타입 사용
+  diskSizeGb: 100  # 디스크 크기 증가
+  substitution_option: 'ALLOW_LOOSE'
