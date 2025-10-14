@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/assignment.dart';
 import '../services/firebase_service.dart';
+import '../services/school_automation_service.dart';
 import '../models/learnus_credentials.dart';
 
 class AssignmentsScreen extends StatefulWidget {
@@ -19,6 +20,7 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
   String? _error;
   List<Assignment> _assignments = [];
   DateTime? _lastUpdated;
+  String _rawAssignmentContent = '';
   late AnimationController _loadingController;
   late AnimationController _fadeController;
 
@@ -562,7 +564,7 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
                   ],
                   if (_isLoading) ...[
                     const Text(
-                      'assignment.txt 파일에서 과제정보를 불러오고 있어요..',
+                      'VM 서버에서 과제정보를 불러오고 있어요..',
                       style: TextStyle(
                         color: Colors.white70,
                         fontSize: 16,
@@ -990,8 +992,9 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
     _fadeController.forward();
 
     try {
-      // 여러 서버 URL 시도
+      // VM 서버 URL 시도
       final serverUrls = [
+        'http://34.64.123.45:8080', // VM 서버 (외부 IP)
         'https://learnus-backend-986202706020.asia-northeast3.run.app', // Cloud Run 서비스
         'http://10.0.2.2:8000',  // 에뮬레이터용
         'http://localhost:8000', // 로컬호스트

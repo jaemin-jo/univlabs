@@ -14,16 +14,16 @@ class SchoolAutomationService {
   
   SchoolAutomationService._();
   
-  // Python 백엔드 서버 URL (로컬 개발용)
+  // Python 백엔드 서버 URL (VM 서버용)
   static String get _backendUrl {
     if (kIsWeb) {
-      return 'http://localhost:8000';
+      return 'http://localhost:8080';
     } else if (Platform.isAndroid) {
-      // Android 에뮬레이터에서는 10.0.2.2를 사용
-      return 'http://10.0.2.2:8000';
+      // Android에서는 VM의 외부 IP 사용 (VM IP 주소로 변경 필요)
+      return 'http://34.64.123.45:8080'; // VM의 외부 IP로 변경
     } else {
-      // iOS 시뮬레이터나 데스크톱에서는 localhost 사용
-      return 'http://localhost:8000';
+      // iOS 시뮬레이터나 데스크톱에서는 VM IP 사용
+      return 'http://34.64.123.45:8080'; // VM의 외부 IP로 변경
     }
   }
   
@@ -142,6 +142,28 @@ class SchoolAutomationService {
     } catch (e) {
       debugPrint('과제 정보 수집 오류: $e');
       return [];
+    }
+  }
+
+  // VM의 assignment.txt 파일 내용을 직접 가져오기
+  Future<String> fetchRawAssignments() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_backendUrl/assignments/raw'),
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(const Duration(seconds: 30));
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        debugPrint('assignment.txt 파일 내용 조회 완료');
+        return data['content'] ?? '파일 내용이 없습니다.';
+      } else {
+        debugPrint('assignment.txt 파일 조회 실패: ${response.statusCode}');
+        return '파일 조회 실패';
+      }
+    } catch (e) {
+      debugPrint('assignment.txt 파일 조회 오류: $e');
+      return '파일 조회 오류: $e';
     }
   }
   

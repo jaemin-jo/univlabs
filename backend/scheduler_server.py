@@ -633,6 +633,22 @@ async def get_assignments():
         logger.error(f"과제 정보 조회 실패: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/assignments/raw")
+async def get_raw_assignments():
+    """assignment.txt 파일 내용을 직접 반환"""
+    try:
+        # Docker 컨테이너 내부의 assignment.txt 파일 경로
+        assignment_file = "/app/assignment.txt"
+        if os.path.exists(assignment_file):
+            with open(assignment_file, "r", encoding="utf-8") as f:
+                content = f.read()
+            return {"content": content, "status": "success"}
+        else:
+            return {"content": "assignment.txt 파일이 존재하지 않습니다.", "status": "error"}
+    except Exception as e:
+        logger.error(f"assignment.txt 파일 읽기 실패: {e}")
+        return {"content": f"파일 읽기 실패: {str(e)}", "status": "error"}
+
 @app.post("/automation/run")
 async def run_automation_now():
     """즉시 자동화 실행"""
