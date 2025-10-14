@@ -246,40 +246,75 @@ def check_quiz_status(driver, quiz_url):
         return "❓ 상태 확인 불가"
 
 def setup_driver():
-    """Chrome 드라이버 설정 (기존 코드와 동일)"""
+    """Chrome 드라이버 설정 (환경별 자동 감지)"""
     try:
         logger.info("🔧 Chrome 드라이버 설정 중...")
         
-        # 환경 변수 설정 (Windows 로컬 환경)
-        os.environ['CHROME_BIN'] = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
-        os.environ['CHROMEDRIVER_PATH'] = 'C:\\Users\\jaemd\\chromedriver-win64\\chromedriver.exe'
-        os.environ['WDM_LOG_LEVEL'] = '0'
+        # 환경 감지
+        is_cloud_run = os.environ.get('K_SERVICE') is not None  # Cloud Run 환경 감지
+        is_docker = os.path.exists('/.dockerenv')  # Docker 환경 감지
         
-        chrome_options = Options()
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--disable-blink-features=AutomationControlled")
-        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        chrome_options.add_experimental_option('useAutomationExtension', False)
-        chrome_options.add_argument("--window-size=1920,1080")
-        chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-        chrome_options.add_argument("--log-level=3")
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--disable-plugins")
-        chrome_options.add_argument("--disable-images")
-        # Windows 로컬 환경에 맞는 옵션들
-        chrome_options.add_argument("--disable-web-security")
-        chrome_options.add_argument("--allow-running-insecure-content")
-        chrome_options.add_argument("--disable-features=VizDisplayCompositor")
-        chrome_options.add_argument("--remote-debugging-port=9222")
+        logger.info(f"🌍 환경 감지: Cloud Run={is_cloud_run}, Docker={is_docker}")
         
-        # Chrome 실행 파일 경로 설정 (Windows 로컬 환경)
-        chrome_options.binary_location = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
-
-        # ChromeDriver 직접 경로 사용 (Windows 로컬 환경)
-        service = Service('C:\\Users\\jaemd\\chromedriver-win64\\chromedriver.exe')
+        if is_cloud_run or is_docker:
+            # Cloud Run/Docker 환경 (Linux)
+            logger.info("🐧 Linux 환경 설정 적용")
+            os.environ['CHROME_BIN'] = '/usr/bin/chromium'
+            os.environ['CHROMEDRIVER_PATH'] = '/usr/bin/chromedriver'
+            os.environ['WDM_LOG_LEVEL'] = '0'
+            
+            chrome_options = Options()
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-dev-shm-usage")
+            chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+            chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+            chrome_options.add_experimental_option('useAutomationExtension', False)
+            chrome_options.add_argument("--window-size=1920,1080")
+            chrome_options.add_argument("--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+            chrome_options.add_argument("--log-level=3")
+            chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--disable-gpu")
+            chrome_options.add_argument("--disable-extensions")
+            chrome_options.add_argument("--disable-plugins")
+            chrome_options.add_argument("--disable-images")
+            chrome_options.add_argument("--disable-web-security")
+            chrome_options.add_argument("--allow-running-insecure-content")
+            chrome_options.add_argument("--disable-features=VizDisplayCompositor")
+            
+            # Linux 환경 Chrome 경로
+            chrome_options.binary_location = '/usr/bin/chromium'
+            service = Service('/usr/bin/chromedriver')
+            
+        else:
+            # Windows 로컬 환경
+            logger.info("🪟 Windows 환경 설정 적용")
+            os.environ['CHROME_BIN'] = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+            os.environ['CHROMEDRIVER_PATH'] = 'C:\\Users\\jaemd\\chromedriver-win64\\chromedriver.exe'
+            os.environ['WDM_LOG_LEVEL'] = '0'
+            
+            chrome_options = Options()
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-dev-shm-usage")
+            chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+            chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+            chrome_options.add_experimental_option('useAutomationExtension', False)
+            chrome_options.add_argument("--window-size=1920,1080")
+            chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+            chrome_options.add_argument("--log-level=3")
+            chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--disable-gpu")
+            chrome_options.add_argument("--disable-extensions")
+            chrome_options.add_argument("--disable-plugins")
+            chrome_options.add_argument("--disable-images")
+            chrome_options.add_argument("--disable-web-security")
+            chrome_options.add_argument("--allow-running-insecure-content")
+            chrome_options.add_argument("--disable-features=VizDisplayCompositor")
+            chrome_options.add_argument("--remote-debugging-port=9222")
+            
+            # Windows 환경 Chrome 경로
+            chrome_options.binary_location = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+            service = Service('C:\\Users\\jaemd\\chromedriver-win64\\chromedriver.exe')
+        
         driver = webdriver.Chrome(service=service, options=chrome_options)
         
         # 자동화 감지 방지
