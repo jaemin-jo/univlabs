@@ -14,3 +14,4 @@ python local_test_pipeline.py
 
 echo
 echo "📋 테스트 완료! pipeline_test.log 파일을 확인하세요."
+

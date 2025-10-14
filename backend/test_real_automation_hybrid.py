@@ -250,10 +250,9 @@ def setup_driver():
     try:
         logger.info("🔧 Chrome 드라이버 설정 중...")
         
-        # 환경 변수 설정
-        os.environ['DISPLAY'] = ':99'
-        os.environ['CHROME_BIN'] = '/usr/bin/google-chrome'
-        os.environ['CHROMEDRIVER_PATH'] = '/usr/bin/chromedriver'
+        # 환경 변수 설정 (Windows 로컬 환경)
+        os.environ['CHROME_BIN'] = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+        os.environ['CHROMEDRIVER_PATH'] = 'C:\\Users\\jaemd\\chromedriver-win64\\chromedriver.exe'
         os.environ['WDM_LOG_LEVEL'] = '0'
         
         chrome_options = Options()
@@ -270,16 +269,17 @@ def setup_driver():
         chrome_options.add_argument("--disable-extensions")
         chrome_options.add_argument("--disable-plugins")
         chrome_options.add_argument("--disable-images")
-        chrome_options.add_argument("--disable-javascript")
+        # Windows 로컬 환경에 맞는 옵션들
         chrome_options.add_argument("--disable-web-security")
         chrome_options.add_argument("--allow-running-insecure-content")
         chrome_options.add_argument("--disable-features=VizDisplayCompositor")
+        chrome_options.add_argument("--remote-debugging-port=9222")
         
-        # Chrome 실행 파일 경로 설정
-        chrome_options.binary_location = '/usr/bin/google-chrome'
+        # Chrome 실행 파일 경로 설정 (Windows 로컬 환경)
+        chrome_options.binary_location = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
 
-        # ChromeDriver 직접 경로 사용 (WebDriver Manager 문제 해결)
-        service = Service('/usr/bin/chromedriver')
+        # ChromeDriver 직접 경로 사용 (Windows 로컬 환경)
+        service = Service('C:\\Users\\jaemd\\chromedriver-win64\\chromedriver.exe')
         driver = webdriver.Chrome(service=service, options=chrome_options)
         
         # 자동화 감지 방지
@@ -1266,6 +1266,14 @@ def collect_this_week_lectures_hybrid(driver):
         logger.error(f"   - username: {username}")
         logger.error(f"   - password: {password}")
         logger.error(f"   - student_id: {student_id}")
+    
+    # 리스트를 딕셔너리로 변환하여 반환
+    return {
+        "lectures": all_lectures,
+        "count": len(all_lectures),
+        "success": True,
+        "message": f"총 {len(all_lectures)}개 강의 정보 수집 완료"
+    }
 
 def main():
     """메인 함수 (자동 설정)"""

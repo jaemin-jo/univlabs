@@ -83,29 +83,36 @@ class LearnUsAutomationService:
             logger.info(f"🔍 수집된 원본 데이터 타입: {type(raw_data)}")
             logger.info(f"🔍 수집된 원본 데이터 내용: {raw_data}")
             
-            # 🎯 데이터 타입에 따른 완전히 새로운 처리
-            if isinstance(raw_data, list):
+            # 🎯 collect_this_week_lectures_hybrid는 딕셔너리를 반환함
+            if isinstance(raw_data, dict):
+                logger.info("📋 딕셔너리 형태의 데이터 처리")
+                success = raw_data.get('success', False)
+                lectures = raw_data.get('lectures', [])
+                message = raw_data.get('message', '강의 정보 수집 완료')
+                
+                return {
+                    "success": success,
+                    "message": message,
+                    "lectures": lectures,
+                    "data_type": "dict_original",
+                    "count": len(lectures)
+                }
+            elif isinstance(raw_data, list):
                 logger.info("📋 리스트 형태의 데이터를 딕셔너리로 변환")
                 return {
                     "success": True,
                     "message": f"{len(raw_data)}개 강의 정보 수집 완료",
                     "lectures": raw_data,
-                    "data_type": "list_converted"
-                }
-            elif isinstance(raw_data, dict):
-                logger.info("📋 이미 딕셔너리 형태의 데이터")
-                return {
-                    "success": True,
-                    "message": "강의 정보 수집 완료",
-                    "lectures": raw_data.get('lectures', []),
-                    "data_type": "dict_original"
+                    "data_type": "list_converted",
+                    "count": len(raw_data)
                 }
             else:
                 logger.error(f"❌ 예상치 못한 데이터 타입: {type(raw_data)}")
                 return {
                     "success": False,
                     "error": f"잘못된 데이터 타입: {type(raw_data)}",
-                    "lectures": []
+                    "lectures": [],
+                    "count": 0
                 }
                 
         except Exception as e:
@@ -113,7 +120,8 @@ class LearnUsAutomationService:
             return {
                 "success": False,
                 "error": f"강의 정보 수집 실패: {str(e)}",
-                "lectures": []
+                "lectures": [],
+                "count": 0
             }
     
     async def _process_results_new_way(self, lectures_result: Dict, user_id: int) -> Dict:

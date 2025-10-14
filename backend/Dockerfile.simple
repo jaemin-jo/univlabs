@@ -70,3 +70,4 @@ ENV PORT=8080
 
 # 단순한 실행 명령
 CMD ["python", "simple_test_server.py"]
+
