@@ -112,7 +112,7 @@ echo "  사용자: $(whoami)"\n\
 echo "  작업 디렉토리: $(pwd)"\n\
 \n\
 export DISPLAY=:99\n\
-export CHROME_BIN=/usr/bin/google-chrome\n\
+export CHROME_BIN=/usr/bin/chromium\n\
 export CHROMEDRIVER_PATH=/usr/bin/chromedriver\n\
 export WDM_LOG_LEVEL=0\n\
 export PORT=${PORT:-8080}\n\
