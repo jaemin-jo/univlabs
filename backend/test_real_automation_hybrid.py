@@ -327,6 +327,133 @@ def setup_driver():
         logger.error(f"❌ Chrome 드라이버 설정 실패: {e}")
         return None
 
+def login_to_learnus(driver, username, password):
+    """LearnUs 로그인 함수"""
+    try:
+        logger.info("🔐 [LOGIN] LearnUs 로그인 시작...")
+        logger.info(f"   사용자명: {username}")
+        
+        # 연세포털 로그인 버튼 찾기
+        login_button = None
+        login_selectors = [
+            "a.btn.btn-sso",
+            "a[href*='sso']",
+            "a[href*='login']",
+            ".btn-sso",
+            ".login-btn",
+            "a:contains('연세포털')",
+        ]
+        
+        for selector in login_selectors:
+            try:
+                if ":contains" in selector:
+                    # XPath로 텍스트 포함 검색
+                    xpath_selector = f"//a[contains(text(), '연세포털')]"
+                    login_button = driver.find_element(By.XPATH, xpath_selector)
+                else:
+                    login_button = driver.find_element(By.CSS_SELECTOR, selector)
+                logger.info(f"✅ [LOGIN] 로그인 버튼 발견: {selector}")
+                break
+            except:
+                continue
+        
+        if not login_button:
+            logger.error("❌ [LOGIN] 로그인 버튼을 찾을 수 없습니다")
+            return False
+        
+        # 로그인 버튼 클릭
+        logger.info("🖱️ [LOGIN] 로그인 버튼 클릭...")
+        login_button.click()
+        time.sleep(3)
+        
+        # 로그인 페이지에서 사용자명/비밀번호 입력
+        logger.info("📝 [LOGIN] 로그인 정보 입력 중...")
+        
+        # 사용자명 필드 찾기
+        username_field = None
+        username_selectors = [
+            "input[id='loginId']",
+            "input[name='loginId']",
+            "input[type='text']",
+            "input[placeholder*='아이디']",
+            "input[placeholder*='사용자']",
+        ]
+        
+        for selector in username_selectors:
+            try:
+                username_field = driver.find_element(By.CSS_SELECTOR, selector)
+                logger.info(f"✅ [LOGIN] 사용자명 필드 발견: {selector}")
+                break
+            except:
+                continue
+        
+        if not username_field:
+            logger.error("❌ [LOGIN] 사용자명 필드를 찾을 수 없습니다")
+            return False
+        
+        # 비밀번호 필드 찾기
+        password_field = None
+        password_selectors = [
+            "input[id='loginPasswd']",
+            "input[name='loginPasswd']",
+            "input[type='password']",
+            "input[placeholder*='비밀번호']",
+        ]
+        
+        for selector in password_selectors:
+            try:
+                password_field = driver.find_element(By.CSS_SELECTOR, selector)
+                logger.info(f"✅ [LOGIN] 비밀번호 필드 발견: {selector}")
+                break
+            except:
+                continue
+        
+        if not password_field:
+            logger.error("❌ [LOGIN] 비밀번호 필드를 찾을 수 없습니다")
+            return False
+        
+        # 로그인 정보 입력
+        username_field.clear()
+        username_field.send_keys(username)
+        time.sleep(1)
+        
+        password_field.clear()
+        password_field.send_keys(password)
+        time.sleep(1)
+        
+        # 로그인 버튼 클릭 또는 Enter 키
+        try:
+            from selenium.webdriver.common.keys import Keys
+            password_field.send_keys(Keys.RETURN)
+            logger.info("⌨️ [LOGIN] Enter 키로 로그인 시도...")
+        except:
+            # 로그인 버튼 찾아서 클릭
+            submit_button = driver.find_element(By.CSS_SELECTOR, "input[type='submit'], button[type='submit']")
+            submit_button.click()
+            logger.info("🖱️ [LOGIN] 로그인 버튼 클릭...")
+        
+        time.sleep(5)
+        
+        # 로그인 성공 확인
+        logger.info("🔍 [LOGIN] 로그인 성공 확인 중...")
+        current_url = driver.current_url
+        page_title = driver.title
+        
+        logger.info(f"📍 [LOGIN] 로그인 후 URL: {current_url}")
+        logger.info(f"📄 [LOGIN] 로그인 후 제목: {page_title}")
+        
+        # 로그인 성공 여부 확인
+        if "learnus.org" in current_url and "로그인" not in page_title:
+            logger.info("✅ [LOGIN] 로그인 성공!")
+            return True
+        else:
+            logger.error("❌ [LOGIN] 로그인 실패")
+            return False
+            
+    except Exception as e:
+        logger.error(f"❌ [LOGIN] 로그인 중 오류 발생: {str(e)}")
+        return False
+
 def test_direct_selenium(university, username, password, student_id):
     """직접 Selenium 로그인 테스트 (기존 코드의 검증된 로직)"""
     logger.info("🚀 [AUTOMATION] 직접 Selenium 테스트 시작")
