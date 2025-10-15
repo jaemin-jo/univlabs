@@ -8,9 +8,19 @@ services:
     environment:
       - DATABASE_URL=sqlite:///./learnus_automation.db
       - LOG_LEVEL=INFO
+      # Firebase 환경변수 추가
+      - FIREBASE_PROJECT_ID=univlabs-ai
+      - FIREBASE_PRIVATE_KEY_ID=b8bf857a1c94fcabe3d40f1bca598f3a15b05d9e
+      - FIREBASE_PRIVATE_KEY=-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCRETPmyUaPXH/5\noUGK+zwXRnfGjdQ3onctu4Z+yQTn99qFB9+wwxHuV3K5tZOSMn+PE3brblRISGU/\nJIjj++Mh8SLYrz0EQS8qza5jjujL+VCe73b/sqNdfv07s1KrtLQiX9eiulZKJAnP\nrIBVMAPp9IkPq8HZbhJg6l5hBiM2iTAINbdMEXkEmNvGlfLtwaDyIPmZ+/neTXXn\n7M8vmCLArftKVdABxNuAX+MufZoX/gIot2hpGBl3167vF9yHnBBjaBulhX0xmkVk\nRbaXK8ApFPCOBb0DhnlU79W0sBeHvIsZ0Ip5rfciDWEf0//sVdBBGu4hWF5u+8ya\n/7TEWooFAgMBAAECggEAF/XP7T/0VAxypMACK9roJ23/rX9SfGfsqFSPV9SK52d0\nI8HTrAXkKcouzEaV27FUiUStQSCFcjTm6CF4LLO3Za1G1KRI/zFnAXpcYdxCTiJd\nMwsZTA1s1y341In/TxX3JLBQ1PNS+kbuiesTfT6DfvphQwHa8DcyeOhs8ziIy2Jo\nsDCPyybnLeVakYYTjgOPGr1m07jaCH1WdBVPx4mWdKYayrpwgFCi7psope47xJ61\n6ZZw4OJzskwl0jiWBmbwox/GQ++7jFIJZZDR/3kI0QsyDtxXAmSjRj+INwjO1SS9\nlyaEW+6gpKPy3V5e+yyzrFXT4ohuo7VppDv/gfx6AQKBgQDBK0tcSoH6rDZ1v7WE\nTPahRbU7nP23P4hw9zXScMgxoIAH8S+BAYoPSZAUqU86LiSOXFHSOsudKOjoG+9M\n3VqxYLBWlQXUugh4mg1UZxmtnvH7ylV+Y3SB4slxopZSGNBmo030ZHd//6/i7Ibc\n1M3+jm3fpKcJFtrGzEwRuWSpBQKBgQDAQJUrHBRT+x6eSxF0881NQyR7opYuoLlK\nS8Lf62VQ1/x85qFv6m7SbadxH8K9ExJsrz1h4gUAWj26xDO01NaOA3oLtshAlTyM\nV1K6a1AutHhIePHjb94uSwaI/6o3kdD8lGa25gT2yne1fJldYFtHIaRcKDsaSWfV\noPiVOEAtAQKBgApzpz41IddIXiH833trFqUfOnEhS3EQ1PcXySe7xnk47/R+Dk3y\noV+2YT9c8dZ6DKxPPnYbjEzSm9eDO21zRKb4TlJA+fHKpw6vdy0r7u2//ePbzMhr\n5S/p73BglbWXdh83ks44aWbZlNC4b4ufUA4H8tX4+Li7Ldc30p3a5CFpAoGBAK7Q\nCtOQTMuwZD77c3ws1FmU2++v/2+WpeVwzlpd6VqBiwzniZQCT5L4MnEiuCjE1tQM\n5HvE0VdotwjEr1+WySGI98j/A0f2a4ARRyBLxDUz1MvRbeGpLxZZEjAwic7NwIJr\nTpqwvYLKx9821R2bKGSdqp5B1rwoU0plfKPy6igBAoGAM6/L+uHwRYGll0tkKix+\nORa/KE3Er/QCg6OXYzO4fphAd/yrxbQjD1RVm0Se7F1AXaKXt/48pgmiazra1OVc\n1YFTi3XqasbTSdJla3RTOOtKjcq3Ym8/9GcdlX9Deyjkrc6vGX64Sp8KpyyZW7hB\n/tOOSKwpOJNPfcCNPm7uh2E=\n-----END PRIVATE KEY-----\n
+      - FIREBASE_CLIENT_EMAIL=firebase-adminsdk-fbsvc@univlabs-ai.iam.gserviceaccount.com
+      - FIREBASE_CLIENT_ID=110322192572543241401
+      - FIREBASE_AUTH_URI=https://accounts.google.com/o/oauth2/auth
+      - FIREBASE_TOKEN_URI=https://oauth2.googleapis.com/token
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/firebase_service_account.json
     volumes:
       - ./user_results:/app/user_results
       - ./logs:/app/logs
+      - ./firebase_service_account.json:/app/firebase_service_account.json
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
@@ -37,6 +47,9 @@ services:
     depends_on:
       - learnus-automation
     restart: unless-stopped
+
+
+
 
 
 

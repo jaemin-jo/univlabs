@@ -992,9 +992,10 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
     _fadeController.forward();
 
     try {
-      // VM 서버 URL 시도
+      // VM 서버 URL 시도 (VM 서버 우선)
       final serverUrls = [
-        'http://34.64.123.45:8080', // VM 서버 (외부 IP)
+        'http://34.64.123.45:8080', // VM 서버 (외부 IP) - 우선순위 1
+        'http://10.0.2.2:8080',  // 에뮬레이터용 VM 서버 - 우선순위 2
         'https://learnus-backend-986202706020.asia-northeast3.run.app', // Cloud Run 서비스
         'http://10.0.2.2:8000',  // 에뮬레이터용
         'http://localhost:8000', // 로컬호스트

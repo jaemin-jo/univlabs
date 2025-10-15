@@ -39,6 +39,9 @@ class FirebaseService:
             logger.info(f"   FIREBASE_CLIENT_EMAIL: {firebase_client_email}")
             logger.info(f"   GOOGLE_APPLICATION_CREDENTIALS: {google_application_credentials}")
             
+            # 🔍 Docker 환경에서 Firebase 연결 테스트
+            logger.info("🔍 Docker 환경 Firebase 연결 테스트 시작...")
+            
             # Firebase Admin SDK 자격 증명 설정
             # 방법 1: 서비스 계정 키 파일 사용
             service_account_path = "firebase_service_account.json"
