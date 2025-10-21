@@ -91,3 +91,7 @@ dist/
 # OS
 .DS_Store
 Thumbs.db
+
+# Backend deployment archives
+univlabs-backend.tar.gz
+backend-*.tar.gz
