@@ -20,13 +20,12 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import TimeoutException, NoSuchElementException, WebDriverException, StaleElementReferenceException
-from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.service import Service
 
 # 로깅 설정
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.INFO, 
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
         logging.FileHandler('automation_debug.log', encoding='utf-8'),
@@ -315,7 +314,7 @@ def setup_driver():
             chrome_options.binary_location = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
             service = Service('C:\\Users\\jaemd\\chromedriver-win64\\chromedriver.exe')
         
-        driver = webdriver.Chrome(service=service, options=chrome_options)
+        driver = webdriver.Chrome(options=chrome_options)
         
         # 자동화 감지 방지
         driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
