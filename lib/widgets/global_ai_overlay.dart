@@ -82,7 +82,7 @@ class _GlobalAIOverlayState extends State<GlobalAIOverlay>
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final urgentSchedules = context.watch<ScheduleProvider>().urgentSchedules;
-    final hasUrgentSchedules = urgentSchedules.isNotEmpty;
+    final hasUrgentSchedules = false; // 임시로 긴급 일정 표시 비활성화
 
     return AnimatedBuilder(
       animation: Listenable.merge([_pulseAnimation, _floatAnimation, _snapAnimation]),
@@ -143,8 +143,8 @@ class _GlobalAIOverlayState extends State<GlobalAIOverlay>
               child: Transform.scale(
                 scale: _isDragging ? 1.0 : _pulseAnimation.value,
                 child: Container(
-                  width: 70,
-                  height: 70,
+                  width: 80,
+                  height: 80,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     boxShadow: [
@@ -179,8 +179,8 @@ class _GlobalAIOverlayState extends State<GlobalAIOverlay>
                             // AI 서클 (uiverse.io 스타일 적용)
                             Center(
                               child: Container(
-                                width: 65,
-                                height: 65,
+                                width: 80,
+                                height: 80,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   gradient: LinearGradient(
@@ -206,11 +206,27 @@ class _GlobalAIOverlayState extends State<GlobalAIOverlay>
                                   ],
                                 ),
                                 child: Center(
-                                  child: Icon(
-                                    hasUrgentSchedules ? Icons.warning_rounded : Icons.psychology_rounded,
-                                    color: Colors.white,
-                                    size: 32,
-                                  ),
+                                  child: hasUrgentSchedules 
+                                    ? Icon(
+                                        Icons.warning_rounded,
+                                        color: Colors.white,
+                                        size: 32,
+                                      )
+                                    : ClipOval(
+                                        child: Image.asset(
+                                          'assets/ai_circle2.gif',
+                                          width: 80,
+                                          height: 80,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (context, error, stackTrace) {
+                                            return Icon(
+                                              Icons.psychology_rounded,
+                                              color: Colors.white,
+                                              size: 60,
+                                            );
+                                          },
+                                        ),
+                                      ),
                                 ),
                               ),
                             ),

@@ -200,22 +200,22 @@ class _GlobalAIChatDialogState extends State<GlobalAIChatDialog>
       child: Row(
         children: [
           Container(
-            width: 50,
-            height: 50,
+            width: 60,
+            height: 60,
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(25),
+              borderRadius: BorderRadius.circular(30),
             ),
             child: ClipOval(
               child: Image.asset(
-                'assets/robot_head_icon.png',
-                width: 40,
-                height: 40,
+                'assets/ai_circle2.gif',
+                width: 60,
+                height: 60,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
-                    width: 40,
-                    height: 40,
+                    width: 60,
+                    height: 60,
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
                       shape: BoxShape.circle,

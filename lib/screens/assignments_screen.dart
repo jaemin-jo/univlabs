@@ -334,20 +334,17 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
       
       for (String url in serverUrls) {
         try {
-          print('🔍 서버 연결 시도: $url');
           final testResponse = await http.get(
             Uri.parse('$url/health'),
             headers: {'Content-Type': 'application/json'},
           ).timeout(const Duration(seconds: 5));
           
           if (testResponse.statusCode == 200) {
-            print('✅ 서버 연결 성공: $url');
             serverConnected = true;
             serverUrl = url;
             break;
           }
         } catch (e) {
-          print('❌ 서버 연결 실패: $url - $e');
           continue;
         }
       }
@@ -357,12 +354,10 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
         await _runAutomation(serverUrl);
       } else {
         // 서버가 없으면 시뮬레이션 모드로 실행
-        print('⚠️ 모든 서버 연결 실패, 시뮬레이션 모드로 실행');
         await _runSimulation();
       }
     } catch (e) {
       // 서버 연결 실패 시 시뮬레이션 모드로 실행
-      print('서버 연결 실패, 시뮬레이션 모드로 실행: $e');
       await _runSimulation();
     } finally {
       _loadingController.stop();
@@ -394,10 +389,7 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
         final incompleteCount = data['incomplete_count'] ?? 0;
         final lastUpdate = data['last_update'];
         
-        print('📊 assignment.txt 파일에서 데이터 로드 완료:');
-        print('   총 과제: $totalCount개');
-        print('   미완료: $incompleteCount개');
-        print('   마지막 업데이트: $lastUpdate');
+        // 데이터 로드 완료
         
         setState(() {
           _assignments = assignmentsData.map((item) => Assignment(
@@ -410,13 +402,13 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
           _lastUpdated = DateTime.now(); // 업데이트 시간 기록
         });
         
-        print('✅ 실제 LearnUs 데이터 표시 완료!');
+        // LearnUs 데이터 표시 완료
       } else {
-        print('❌ assignment.txt 데이터 로드 실패, 시뮬레이션 모드로 전환');
+        // 데이터 로드 실패, 시뮬레이션 모드로 전환
         await _runSimulation(); // 실패 시 시뮬레이션
       }
     } catch (e) {
-      print('assignment.txt 파일 읽기 실패: $e');
+      // 파일 읽기 실패
       await _runSimulation(); // 실패 시 시뮬레이션
     }
   }
@@ -950,12 +942,12 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
   // LearnUs 정보 자동 확인
   Future<void> _checkLearnUsCredentials() async {
     try {
-      print('🔍 LearnUs 정보 자동 확인 중...');
+      // LearnUs 정보 자동 확인 중
       
       // 현재 사용자 UID 가져오기
       final user = FirebaseService.instance.auth.currentUser;
       if (user == null) {
-        print('❌ 사용자가 로그인되지 않았습니다.');
+        // 사용자가 로그인되지 않음
         return;
       }
       
@@ -963,7 +955,7 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
       final credentials = await FirebaseService.instance.getLearnUsCredentials(user.uid);
       
       if (credentials != null && credentials.isActive) {
-        print('✅ LearnUs 정보 발견: ${credentials.username}');
+        // LearnUs 정보 발견
         
         // 자동으로 로그인 상태로 설정
         setState(() {
@@ -973,12 +965,12 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
         // 자동으로 과제 정보 로드
         await _loadAssignments();
         
-        print('🎉 LearnUs 정보로 자동 로그인 완료!');
+        // LearnUs 정보로 자동 로그인 완료
       } else {
-        print('ℹ️ LearnUs 정보가 없습니다. 수동 로그인이 필요합니다.');
+        // LearnUs 정보가 없음
       }
     } catch (e) {
-      print('❌ LearnUs 정보 확인 실패: $e');
+      // LearnUs 정보 확인 실패
     }
   }
 
@@ -1005,7 +997,7 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
       bool success = false;
       for (String serverUrl in serverUrls) {
         try {
-          print('🔍 서버 연결 시도: $serverUrl');
+          // 서버 연결 시도
           
           final response = await http.get(
             Uri.parse('$serverUrl/assignments'),
@@ -1013,7 +1005,7 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
           ).timeout(const Duration(seconds: 10));
 
           if (response.statusCode == 200) {
-            print('✅ 서버 연결 성공: $serverUrl');
+            // 서버 연결 성공
             
             final data = json.decode(response.body);
             final assignmentsData = data['assignments'] as List;
@@ -1021,10 +1013,7 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
             final incompleteCount = data['incomplete_count'] ?? 0;
             final lastUpdate = data['last_update'];
             
-            print('📊 assignment.txt 파일에서 데이터 로드 완료:');
-            print('   총 과제: $totalCount개');
-            print('   미완료: $incompleteCount개');
-            print('   마지막 업데이트: $lastUpdate');
+            // 데이터 로드 완료
             
             setState(() {
               _assignments = assignmentsData.map((item) => Assignment(
@@ -1037,22 +1026,22 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
               _lastUpdated = DateTime.now(); // 업데이트 시간 기록
             });
             
-            print('✅ 실제 LearnUs 데이터 표시 완료!');
+            // LearnUs 데이터 표시 완료
             success = true;
             break;
           }
         } catch (e) {
-          print('❌ 서버 연결 실패: $serverUrl - $e');
+          // 서버 연결 실패
           continue;
         }
       }
 
       if (!success) {
-        print('❌ 모든 서버 연결 실패, 시뮬레이션 모드로 실행');
+        // 모든 서버 연결 실패, 시뮬레이션 모드로 실행
         await _runSimulation();
       }
     } catch (e) {
-      print('❌ 과제 정보 로드 실패: $e');
+      // 과제 정보 로드 실패
       setState(() {
         _error = '과제 정보를 불러오는데 실패했습니다: $e';
       });

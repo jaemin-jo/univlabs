@@ -117,92 +117,37 @@ class _MainScreenState extends State<MainScreen> {
             ),
             items: [
               BottomNavigationBarItem(
-                icon: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    gradient: _currentIndex == 0
-                        ? const LinearGradient(
-                            colors: [Color(0xFF3B82F6), Color(0xFF1E40AF)],
-                          )
-                        : null,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    _currentIndex == 0 ? Icons.home_rounded : Icons.home_outlined,
-                    size: 24,
-                  ),
+                icon: Icon(
+                  _currentIndex == 0 ? Icons.home_rounded : Icons.home_outlined,
+                  size: 24,
                 ),
                 label: '홈',
               ),
               BottomNavigationBarItem(
-                icon: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    gradient: _currentIndex == 1
-                        ? const LinearGradient(
-                            colors: [Color(0xFF3B82F6), Color(0xFF1E40AF)],
-                          )
-                        : null,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    _currentIndex == 1 ? Icons.calendar_today_rounded : Icons.calendar_today_outlined,
-                    size: 24,
-                  ),
+                icon: Icon(
+                  _currentIndex == 1 ? Icons.calendar_today_rounded : Icons.calendar_today_outlined,
+                  size: 24,
                 ),
                 label: '일정',
               ),
               BottomNavigationBarItem(
-                icon: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    gradient: _currentIndex == 2
-                        ? const LinearGradient(
-                            colors: [Color(0xFF3B82F6), Color(0xFF1E40AF)],
-                          )
-                        : null,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    _currentIndex == 2 ? Icons.assignment_rounded : Icons.assignment_outlined,
-                    size: 24,
-                  ),
+                icon: Icon(
+                  _currentIndex == 2 ? Icons.assignment_rounded : Icons.assignment_outlined,
+                  size: 24,
                 ),
                 label: '과제',
               ),
               BottomNavigationBarItem(
-                icon: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    gradient: _currentIndex == 3
-                        ? const LinearGradient(
-                            colors: [Color(0xFF3B82F6), Color(0xFF1E40AF)],
-                          )
-                        : null,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    _currentIndex == 3 ? Icons.schedule_rounded : Icons.schedule_outlined,
-                    size: 24,
-                  ),
+                icon: Icon(
+                  _currentIndex == 3 ? Icons.schedule_rounded : Icons.schedule_outlined,
+                  size: 24,
                 ),
                 label: '시간표',
               ),
               BottomNavigationBarItem(
-                icon: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    gradient: _currentIndex == 4
-                        ? const LinearGradient(
-                            colors: [Color(0xFF3B82F6), Color(0xFF1E40AF)],
-                          )
-                        : null,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    _currentIndex == 4 ? Icons.person_rounded : Icons.person_outline,
-                    size: 24,
-                  ),
+                icon: Icon(
+                  _currentIndex == 4 ? Icons.person_rounded : Icons.person_outline,
+                  size: 24,
                 ),
                 label: '프로필',
               ),

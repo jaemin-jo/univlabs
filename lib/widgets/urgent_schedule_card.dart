@@ -216,7 +216,9 @@ class _UrgentScheduleCardState extends State<UrgentScheduleCard>
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              '${widget.schedule.date.month}월 ${widget.schedule.date.day}일 - ${widget.schedule.endDate!.month}월 ${widget.schedule.endDate!.day}일',
+                              widget.schedule.endDate != null 
+                                ? '${widget.schedule.date.month}월 ${widget.schedule.date.day}일 - ${widget.schedule.endDate!.month}월 ${widget.schedule.endDate!.day}일'
+                                : '${widget.schedule.date.month}월 ${widget.schedule.date.day}일',
                               style: TextStyle(
                                 color: Colors.grey[600],
                                 fontSize: 12,
