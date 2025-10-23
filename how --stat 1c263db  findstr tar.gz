@@ -1,0 +1,128 @@
+* [33m0fc1e12[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Remove large tar.gz file and update .gitignore
+* [33mfc3df9e[m Update Selenium to use Selenium Manager
+* [33m74f1098[m .
+* [33m1c263db[m .
+* [33m6e8c4ce[m Fix Firebase API key and Docker configuration for GCP VM deployment
+* [33m54a79c9[m[33m ([m[1;31morigin/main[m[33m)[m feat: VM 서버 연동 및 assignment.txt 직접 조회 기능 추가
+* [33m397d32f[m fix: Dockerfile Chrome 경로 수정
+* [33m00df81c[m fix: login_to_learnus 함수 추가
+* [33mf01d53e[m fix: Cloud Run 환경별 Chrome 드라이버 경로 자동 감지
+* [33mc03c4ab[m feat: 하이브리드 자동화 코드 최적화 및 중복 파일 정리
+* [33m162dba0[m Add comprehensive local test pipelines: Create basic and advanced test pipelines for complete Cloud Run deployment testing with detailed error analysis and logging
+* [33m732ace0[m Fix SyntaxError in test_real_automation_hybrid.py: Remove incorrect indentation at line 1077 that was causing 'expected except or finally block' error
+* [33m1b90593[m Simplify Chrome setup: Use Chromium instead of Google Chrome for better Cloud Run compatibility and reduce deployment complexity
+* [33m8656411[m Add simple test server for Cloud Run debugging: Create minimal FastAPI server to diagnose container startup issues
+* [33mb46b31f[m Fix IAM policy issue: Change Cloud Run deployment to require authentication instead of allowing unauthenticated access
+* [33m3e1b351[m Simplify Cloud Run deployment: Remove complex start.sh script and integrate Xvfb management directly into scheduler_server.py for better container startup reliability
+* [33mc4868ad[m Enhance logging for Cloud Build failure diagnosis: Add detailed logging to Dockerfile, scheduler_server.py, cloudbuild.yaml, and test_real_automation_hybrid.py for precise error identification
+* [33m4883670[m Fix NoneType error in file saving: Add null check for all_lectures before iteration
+* [33m69a9e10[m Remove 9887 input requirement from hybrid code: Use automatic login settings
+* [33ma2a5d63[m Fix Cloud Build issues: Add psutil dependency and disable circular imports
+* [33mcdd1868[m Fix SyntaxError in test_real_automation_hybrid.py: Fix indentation for line 575
+* [33m9373830[m Add detailed logging and use real user account (2024248012, cjm9887@) instead of dummy data
+* [33m371fd0e[m Re-enable Chrome browser automation: Remove dummy data mode and restore real Chrome automation
+* [33me3dc3ba[m Fix Cloud Run timeout issues: Add startup delays, health checks, and timeout configurations
+* [33m784de6c[m Fix Cloud Run SyntaxError: Add safe import handling for core modules to prevent startup failures
+* [33m2cb4078[m Fix Cloud Run deployment: Disable Chrome execution and add dummy data mode for debugging
+* [33m5477c52[m Fix Cloud Run deployment: Add conditional import handling for optimized modules to prevent startup failures
+* [33m38c5c73[m Apply Cloud Run PORT environment variable solution: Add workers=1 and enhanced logging
+* [33m1196f90[m Fix Cloud Run PORT environment variable: Add debug logging and ensure proper port binding
+* [33m44ebf60[m Fix Cloud Run PORT environment variable handling - use shell command for proper env var substitution
+* [33m2677aa8[m Fix Cloud Run deployment: Use simplest approach - remove all complex scripts and Xvfb handling
+* [33m8d20d30[m Fix Cloud Run deployment: Simplify Dockerfile and improve error handling
+* [33m7452372[m Fix Cloud Run deployment: Restore start.sh script with improved error handling
+* [33mf135539[m Fix Cloud Run deployment: Remove start.sh script and integrate Xvfb into Python app
+* [33m4eade6b[m Fix Cloud Run deployment: Optimize start.sh script with better error handling
+* [33m2ddb0f0[m Remove all MCP server related files and configurations
+* [33m4fc263e[m Fix MCP server Dockerfile: Correct file paths for Cloud Build context
+* [33m020ece1[m Fix MCP server Dockerfile: Update Google Cloud SDK installation method
+* [33m9900703[m Fix MCP server Cloud Build configuration: correct Dockerfile path
+* [33m1c63e83[m Add MCP server deployment configuration and scripts
+* [33m7067f10[m Add GCP MCP server for automated cloud resource management
+* [33m9af6808[m Fix Cloud Run deployment: Improve start.sh script with better error handling and logging
+* [33me01be1a[m Fix footer text visibility on bright background
+* [33m84c88cc[m Update company name and footer background color
+* [33m8940ec4[m Restore footer to original simple design - clear company info display
+* [33m84af230[m Restore original footer styling - remove extra background and adjust text colors
+* [33me4be5c4[m Fix footer company info visibility - add white text color and background
+* [33mf5a0ef7[m 푸터 company-info CSS 충돌 해결 - 노트북에서 흰색 배경 문제 수정
+* [33m3aa7370[m 푸터 원상복구 - 위치와 배경색상 원래대로 복구
+* [33mffa379f[m 푸터 하단 배경색 복구
+* [33md00042b[m 푸터 하단 배경색 제거하여 전체 배경과 통일
+* [33m33a7284[m 푸터 위치 복구 및 배경색상을 전체 배경과 동일하게 설정
+* [33m928b45a[m 푸터를 (주)유니버와 홈기능소개 사이로 이동 및 배경 투명화
+* [33m1ec268f[m 학사일정과 과제알림 색상을 더 밝은 파랑으로 변경
+* [33m0bb2861[m 모바일 텍스트 줄바꿈 개선 및 강조 색상 변경
+* [33m7aa95c1[m Fix mobile text wrapping and improve highlight colors
+* [33m1cc9886[m Add highlight colors for academic schedule and assignment notification text
+* [33mb2ce610[m Revert header background and logo text color to original
+* [33m0c25fb1[m Adjust logo color to deeper blue with subtle purple tint
+* [33m831dc01[m Change navbar logo text color to purple-blue
+* [33m710d562[m Fix mobile menu visibility with dark background and white text
+* [33m74bdb47[m Brighten navbar background and make hamburger menu white
+* [33mbd883c7[m Minimize footer and arrange company info horizontally
+* [33me326ecf[m Fix spacing in Banpo branch name and simplify footer background
+* [33m8eb9e64[m Add Banpo branch (virtual office) to company locations
+* [33m11ee570[m Clean up footer company locations layout and styling
+* [33m9bc6722[m Replace broken footer logo with animated GIF
+* [33med2d5f8[m Add company locations information to footer
+* [33m24c740b[m Update contact information: email and phone number
+* [33m2908ca0[m Replace navbar logo with animated GIF and improve styling
+* [33m971288e[m Fix navbar logo with robot head icon and improve styling
+* [33m22f8934[m Add Flutter logo to download section
+* [33m004984b[m Fix mobile responsive design for About section text overflow
+* [33me361879[m Fix GitHub Pages: Remove Flutter submodule causing deployment failure
+* [33m4d8b2e6[m SECURITY: Remove exposed API key and use environment variables
+* [33m93b2285[m Trigger rebuild
+* [33m88c0c80[m Remove duplicate web folder to fix GitHub Pages 404 error
+* [33m9ed0d6e[m Fix GitHub Pages 404: Move web files to root and update asset paths
+* [33m3fdb99b[m Add Univer AI website with dark blue theme and responsive design
+* [33me00a5b5[m Fix Cloud Run deployment issues: PORT environment variable and import statements
+* [33m6163db9[m Replace with verified hybrid backup code - 13 courses processed successfully
+* [33ma294d77[m Fix QUOTA_EXCEEDED error by disabling DevTools and Google services
+* [33m38d5a3d[m Fix login issues with enhanced error handling and Chrome options optimization
+* [33m9e8ba0f[m Replace main automation with verified hybrid backup version - 13 courses processed successfully
+* [33m803e75a[m Add hybrid backup version based fixed automation with slight improvements
+* [33mdaa991c[m Add completely new simple automation approach to solve Stale Element issues
+* [33m69756ab[m Fix indentation error in browser reinitialization logic
+* [33m25c825f[m Add selective browser reinitialization to solve Stale Element issues
+* [33mbcd5afd[m Fix course iteration logic and add stability checks between courses
+* [33m94bd1bd[m Add Chrome driver fallback methods and enhanced error handling
+* [33m9a07f5a[m Add PDB and breakpoint debugging documentation and examples
+* [33m6584227[m Add comprehensive Firebase debugging and alternative authentication methods
+* [33m799ec10[m Remove duplicate Chrome options and optimize for Cloud Run environment
+* [33m58eb20b[m Fix SessionNotCreatedException by optimizing Chrome options for Cloud Run environment
+* [33m82e37bb[m Fix dummy data to match actual Firebase data with correct student ID and credentials
+* [33mec038b7[m Final fix: Firebase initialization, test dummy data, and environment variables
+* [33m8ec1450[m .
+* [33m437d3fd[m Fix Firebase initialization and add test dummy data for automation
+* [33m06278eb[m Add detailed debugging logs for course iteration and Chrome driver issues
+* [33m9b87f43[m .
+* [33mcf2aecf[m .
+* [33mfe0be89[m .
+* [33md1f5b98[m Fix DevToolsActivePort error with enhanced virtual display and Chrome options
+* [33m2161dfd[m Fix all syntax errors and indentation issues in test_real_automation_hybrid.py
+* [33mfcfc2f0[m Fix Cloud Run container startup by removing blocking automation call
+* [33m7a4de22[m Fix DevToolsActivePort error with essential Chrome options and virtual display
+* [33m70f9b37[m Fix Chrome DevToolsActivePort error with chromium-driver and multiple fallback paths
+* [33me537861[m Fix Chrome DevToolsActivePort error in Cloud Run
+* [33m699a015[m Fix: Add missing 'os' import for Chrome driver setup
+* [33m0d91ec7[m Fix: Use stable ChromeDriver version in Dockerfile
+* [33m71868ef[m Fix: Chrome driver setup for Cloud Run environment
+* [33mb08c461[m Fix: Cloud Run optimization and error handling improvements
+* [33m27d247f[m Fix: Use correct FirebaseService method with user UID parameter
+* [33mdb8f7ee[m Add: Auto-detect LearnUs credentials and skip login process
+* [33md1bb82f[m Fix: Use FastAPI startup event for scheduler initialization
+* [33mbd00cfe[m Fix: Function definition order for Cloud Run scheduler
+* [33m9ef909b[m Fix: Cloud Run scheduler auto-start and immediate execution
+* [33mcd03d61[m Fix: Add developer-friendly null error handling in ScheduleCard
+* [33m051b537[m Fix: Disable horizontal swipe navigation in assignments screen
+* [33m8d857bf[m Fix: Auto-start scheduler in Cloud Run environment
+* [33m925bdc2[m Fix: Optimize Selenium for Cloud Run environment
+* [33mba610e8[m Add: Update time display in assignments screen
+* [33mf547609[m Update: Add Cloud Run backend URL to Flutter app
+* [33m4f61867[m Fix: Add beautifulsoup4 dependency to requirements.txt
+* [33m548b6f6[m Fix Dockerfile: Replace deprecated apt-key with modern gpg keyring method
+* [33m483f32e[m Fix Docker build context path in cloudbuild.yaml
+* [33m6b70546[m Fix cloudbuild.yaml logging configuration for service account
+* [33m60be4ca[m Initial commit: UnivLabs Flutter app with backend automation
